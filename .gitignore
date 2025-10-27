@@ -1,4 +1,27 @@
-# Logs
+# ===========================
+# SISTEMA DIRECCION DE NUCLEO FRONTEND
+# Vue 3 + Vite + Quasar + Pinia + Axios + Jest
+# Compatible con Windows / Linux
+# ===========================
+
+# --- Dependencias ---
+node_modules/
+
+# --- Builds / compilaciones ---
+dist/
+build/
+dist-ssr/
+
+# --- Cachés y temporales ---
+.cache/
+.vite/
+vite.config.timestamp*
+.eslintcache
+.prettiercache
+*.tmp
+*.bak
+
+# --- Logs ---
 logs
 *.log
 npm-debug.log*
@@ -7,18 +30,73 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# --- Variables de entorno ---
+.env
+.env.*
+!.env.example
 
-# Editor directories and files
+# --- Archivos del IDE / Editores ---
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.iml
+*.code-workspace
+
+# --- Archivos del sistema operativo ---
 .DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# --- Archivos locales o personales ---
+*.local
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+*.swn
+
+# --- Pruebas (Jest / Vitest) ---
+coverage/
+*.lcov
+jest-stare/
+__tests__/temp/
+__tests__/**/__snapshots__/
+test-results/
+
+# --- Documentos o exportaciones temporales ---
+/docs-temp/
+/temp/
+/backup/
+*.zip
+*.tar.gz
+
+# --- Archivos de lock ---
+# 🔒 Si todo el equipo usa npm, mantenlo.
+# Si hay mezcla de gestores, ignóralos.
+# package-lock.json
+# pnpm-lock.yaml
+# yarn.lock
+
+# --- Archivos del sistema Quasar ---
+.quasar/
+
+# --- Linux-specific ---
+*~
+.npm/
+.bash_history
+.bashrc
+
+# --- Windows-specific ---
+$RECYCLE.BIN/
+System Volume Information/
+*.lnk
+
+# --- Otros ---
+*.rej
+*.orig
