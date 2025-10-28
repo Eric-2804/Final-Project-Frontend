@@ -3,13 +3,13 @@ Pasos para Empezar
 
 Cada integrante debe clonar este fork, no el repositorio original.
 
-git clone git@github.com:EricShanty/Proyecto-final.git
+git clone https://github.com/Eric-2804/Final-Project-Frontend.git
 cd Proyecto-final
 
 
 Si el SSH da error, también puedes usar HTTPS:
 
-git clone https://github.com/EricShanty/Proyecto-final.git
+git clone https://github.com/Eric-2804/Final-Project-Frontend.git
 
 2️⃣ Cambiar a la rama base del frontend
 
