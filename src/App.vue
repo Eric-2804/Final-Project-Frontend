@@ -1,9 +1,8 @@
 <template>
-  <q-btn label="clic me" @click="alerta" />
-</template>
+  <div>
+    <q-btn flat label="Home" to="/" />
+    <q-btn flat label="Vista" to="/vista" />
 
-<script setup>
-function alerta() {
-  alert('quasar funciona 🎉')
-}
-</script>
+    <router-view />
+  </div>
+</template>
