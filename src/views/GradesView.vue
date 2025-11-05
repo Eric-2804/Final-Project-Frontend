@@ -51,7 +51,7 @@
               <q-chip
                 dense
                 outline
-                :color="props.row.status === 'Aprobado' ? 'green-3' : 'red-3'"
+                :color="props.row.status === 'Aprobado' ? 'green-7' : 'red-7'"
                 text-color="black"
                 class="status-chip"
               >
