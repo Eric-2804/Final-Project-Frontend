@@ -2,13 +2,8 @@
   <div>
     <h2>headquarters table</h2>
 
-    <BaseTable
-      :columns="columnsHeadquarters"
-      :rows="rowsHeadquarters"
-      :actions="true"
-      @edit="edit"
-      @toggleState="toggleState"
-    />
+    <BaseTable :columns="columnsHeadquarters" :rows="rowsHeadquarters" :actions="true" @edit="edit"
+      @toggleState="toggleState" />
   </div>
 </template>
 
@@ -16,7 +11,7 @@
 import { ref } from 'vue'
 import BaseTable from '@/components/tables.vue'
 
-// columnas
+//  
 const columnsHeadquarters = [
   { name: 'code', label: 'Codigo', field: 'code', align: 'left' },
   { name: 'name', label: 'Nombre', field: 'name', align: 'left' },
@@ -33,7 +28,7 @@ const columnsHeadquarters = [
 
 const rowsHeadquarters = ref([
   { code: 'S01', name: 'central', phone: '3121112222', active: true, lastChange: '2025-11-04T16:45:00' },
-  { code: 'S02', name: 'norte', phone: '3203334444', active: false , lastChange: '2025-11-04T16:47:00'}
+  { code: 'S02', name: 'norte', phone: '3203334444', active: false, lastChange: '2025-11-04T16:47:00' }
 ])
 
 

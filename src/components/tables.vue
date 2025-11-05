@@ -2,6 +2,8 @@
   <div class="translator">
     <div class="block">
       <div class="top-controls">
+
+        <!--Input del buscador  -->
         <q-input
           v-model="filter"
           label="buscar..."
@@ -16,6 +18,7 @@
           </template>
         </q-input>
 
+        <!--Boton del ultimo cambio -->
         <q-btn
           flat
           color="primary"
@@ -25,7 +28,8 @@
           class="sort-btn"
         />
       </div>
-
+      
+      <!--Tabla -->
       <q-table
         :rows="sortedRows"
         :columns="columns"
@@ -34,7 +38,7 @@
         color="primary"
         class="board"
       >
-        <!-- acciones -->
+              //Acciones
         <template v-if="actions" v-slot:body-cell-actions="props">
           <q-td :props="props" class="text-center">
             <q-btn
