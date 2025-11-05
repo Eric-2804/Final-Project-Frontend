@@ -1,122 +1,145 @@
-Pasos para Empezar
-1️⃣ Clonar el repositorio (este fork)
+# 🚀 Pasos para Empezar — Flujo de trabajo Frontend
 
-Cada integrante debe clonar este fork, no el repositorio original.
+Este repositorio es un **fork** del proyecto principal.  
+Cada integrante trabajará en su propia rama dentro de **este fork**, y **todas las Pull Requests (PR)** se harán hacia la rama `frontend` de este mismo repositorio.
 
+---
+
+## 1️⃣ Clonar el repositorio (este fork)
+
+Cada integrante debe clonar **este fork**, no el repositorio original.
+
+```bash
 git clone https://github.com/Eric-2804/Final-Project-Frontend.git
-cd Proyecto-final
+cd Final-Project-Frontend
+```
 
+Si el método SSH da error, pueden usar HTTPS (ya está en el ejemplo anterior).
 
-Si el SSH da error, también puedes usar HTTPS:
+---
 
-git clone https://github.com/Eric-2804/Final-Project-Frontend.git
+## 2️⃣ Cambiar a la rama base del frontend
 
-2️⃣ Cambiar a la rama base del frontend
+Antes de crear su rama de trabajo, asegúrense de estar en la rama `frontend`:
 
-Antes de crear su propia rama, asegúrense de estar en la rama frontend:
-
+```bash
 git checkout frontend
+```
 
-3️⃣ Crear su rama de trabajo
+---
+
+## 3️⃣ Crear su rama de trabajo
 
 Cada pareja trabajará en una rama propia, identificada con los nombres de los integrantes.
-De esta forma se sabrá fácilmente quién está a cargo de cada módulo o vista.
 
-Ejemplo:
+**Formato recomendado:**
 
-git checkout -b frontend-Laura-Tatiana
-
-
-🔹 Usen siempre el formato:
+```text
 frontend-[Nombre1-Nombre2]
-(sin espacios, con guiones medios)
+```
 
-4️⃣ Subir su rama al repositorio remoto
+**Ejemplo:**
 
-Después de crear la rama, deben subirla al fork para que quede disponible en GitHub:
+```bash
+git checkout -b frontend-Laura-Tatiana
+```
 
+🔹 Usa guiones medios y evita espacios.  
+🔹 Haz commits pequeños y descriptivos.
+
+---
+
+## 4️⃣ Subir la rama al fork (GitHub)
+
+Después de crear la rama, súbanla a este fork para que quede visible en GitHub:
+
+```bash
 git push origin frontend-Laura-Tatiana
+```
 
+> Reemplacen `Laura-Tatiana` por los nombres de su pareja.
 
- Reemplacen Laura-Tatiana por los nombres de su propia pareja.
+---
 
-5️⃣ Mantener su rama actualizada con la rama principal (frontend)
+## 5️⃣ Mantener su rama actualizada con `frontend`
 
-Cada cierto tiempo (o antes de hacer un pull request), actualicen su rama con los últimos cambios del equipo:
+Cada cierto tiempo (o antes de hacer un Pull Request), actualicen su rama con los últimos cambios del equipo:
 
+```bash
 git fetch origin
 git checkout frontend
 git pull origin frontend
 git checkout frontend-Laura-Tatiana
 git merge frontend
 git push origin frontend-Laura-Tatiana
-
+```
 
 Esto evita conflictos y asegura que todos trabajen con la versión más reciente.
 
-6️⃣ Hacer Pull Request (PR)
+---
 
-Cuando terminen su parte o una versión estable del módulo:
+## 6️⃣ Hacer un Pull Request (PR)
 
-Suban los últimos cambios:
+Cuando terminen su módulo o tengan una versión estable:
 
-git push origin frontend-Laura-Tatiana
+1. Asegúrense de tener todos los cambios subidos:
+   ```bash
+   git push origin frontend-Laura-Tatiana
+   ```
 
+2. En GitHub, abran un nuevo **Pull Request** desde su rama hacia la rama `frontend` de este fork.
 
-En GitHub, abran un nuevo Pull Request (PR) desde su rama hacia la rama frontend.
+En la descripción incluyan:
+- Resumen del cambio realizado.
+- Pasos para probar o comandos de build.
+- Indiquen **Ready for test** cuando el código esté listo para revisión.
 
-Agreguen una descripción clara del trabajo realizado.
+⚠️ **No mergeen su PR por cuenta propia.**
 
-🔸 Ejemplo de título de PR:
-“Agrega interfaz de login con validación de usuario y alertas visuales”
+---
 
-7️⃣ Comunicación y coordinación
+## 7️⃣ Política de Testing
 
-Cada pareja solo debe modificar los archivos de su módulo o vista.
+- Solo el **tester designado** ejecuta las pruebas con Jest y decide la aprobación o merge.
+- Los autores deben dejar instrucciones claras en el PR.
 
-Si necesitan usar componentes comunes (header, footer, botones, etc.), consulten antes para evitar conflictos.
+### Cómo el tester revisa un PR localmente
 
-No hacer commits directamente sobre la rama frontend.
+#### Opción 1: con GitHub CLI (recomendado)
 
-🧭 Resumen visual del flujo de trabajo
-┌──────────────────────────
-│ Fork de Final-Project-Frontend 
-│  (rama base: frontend)   
-└────────────┬───────────────────
-             │
-             ▼
-    Cada pareja crea su rama:
-     ├── frontend-Laura-Tatiana
-     ├── frontend-Juan-Pedro
-     ├── frontend-Ana-Maria
-     ├── frontend-Carlos-Luisa
-     ├── frontend-Sofia-Andres
-     ├── frontend-Mateo-Daniela
-     ├── frontend-Diana-Paula
-     └── frontend-Sergio-Valentina
-             │
-             ▼
-     Trabajan, hacen commits,
-     actualizan y luego PR → frontend
+```bash
+gh pr checkout <PR-number>
+npm ci
+npm run test
+```
 
-💡 Buenas prácticas Git (recomendado)
+#### Opción 2: manualmente desde el fork del autor
 
-Commits pequeños y descriptivos.
-Ejemplo:
+```bash
+git remote add contrib git@github.com:usuario/Final-Project-Frontend.git
+git fetch contrib
+git checkout -b review/usuario-branch contrib/branch
+npm ci
+npm run test
+```
 
-git commit -m "Agrega formulario de login con validaciones básicas"
+Si todo pasa, el tester aprobará y hará el merge a `frontend` de este fork.  
+Luego, cuando todo esté listo, el tester creará el PR desde `frontend` hacia el repositorio original (`upstream`).
 
+---
 
-Un PR por funcionalidad o vista.
-No mezclar varios módulos en un solo PR.
+## 8️⃣ Comunicación y buenas prácticas
 
-Actualizar antes de subir.
-Siempre hacer:
+- Cada pareja trabaja **solo** en su módulo o vista.
+- Coordinen antes de editar componentes comunes.
+- Un PR por funcionalidad o vista.
+- Antes de un push importante:
+  ```bash
+  git fetch origin && git pull origin frontend
+  ```
+- Si tienes dudas sobre el estado o proceso del PR, consulta al tester antes de abrirlo.
 
-git fetch origin && git pull origin frontend
+---
 
-
-antes de un push importante.
-
-Comentarios claros.
-Dejar notas breves en el código si algo requiere revisión.
+### 💬 Gracias por colaborar
+Sigue estas reglas y haremos revisiones más rápidas, ordenadas y seguras. 🚀
