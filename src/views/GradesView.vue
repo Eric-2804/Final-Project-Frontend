@@ -1,6 +1,5 @@
 <template>
   <div class="q-pa-md">
-    <!-- Card wrapper to match the design in the image -->
     <q-card flat bordered class="card-table">
       <q-card-section class="row items-center justify-between q-px-lg q-pt-lg">
         <div>
@@ -14,7 +13,6 @@
       </q-card-section>
 
       <q-card-section v-if="!loading" class="q-pt-none q-px-lg">
-        <!-- top controls: selects + search -->
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-12 col-md-4">
             <q-select filled v-model="selectedYear" :options="years" label="Seleccionar Año" dense />
@@ -48,7 +46,6 @@
           class="styled-table"
           :grid="$q.screen.lt.md"
         >
-          <!-- status chip -->
           <template v-slot:body-cell-status="props">
             <q-td :props="props">
               <q-chip
@@ -63,7 +60,6 @@
             </q-td>
           </template>
 
-          <!-- footer with pagination + summary like design -->
           <template v-slot:bottom="scope">
             <div class="row items-center q-pa-sm justify-between full-width">
               <div class="text-caption text-grey">
@@ -146,13 +142,11 @@ const grades = ref([
 
 const search = ref('')
 
-// pagination state
 const pagination = ref({
   page: 1,
   rowsPerPage: 6
 })
-
-// filtered rows according to search/selects
+  
 const filteredGrades = computed(() => {
   const q = search.value && search.value.toString().toLowerCase().trim()
   let list = grades.value.slice()
@@ -167,7 +161,6 @@ const filteredGrades = computed(() => {
   return list
 })
 
-// pagination helpers
 const pageCount = computed(() => Math.max(1, Math.ceil(filteredGrades.value.length / pagination.value.rowsPerPage)))
 const startIndex = computed(() => {
   const p = pagination.value.page
@@ -191,10 +184,7 @@ async function downloadPDF() {
   showNotify('Descargando boletín en formato PDF...', 'positive', 'cloud_download')
 
   try {
-    // Simula una llamada a la API o una operación de larga duración
     await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // Aquí iría la lógica para generar y descargar el PDF
 
     showNotify('Boletín descargado exitosamente', 'positive', 'check_circle')
   } catch (error) {
@@ -210,19 +200,16 @@ async function downloadPDF() {
   font-weight: bold;
 }
 
-/* Card visual style to match the provided design */
 .card-table {
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
   border: 1px solid #e6e9ee;
 }
 
-/* search input stretch on mobile */
 .search-input {
   width: 100%;
 }
 
-/* table tweaks */
 .styled-table .q-table__bottom {
   border-top: 0;
 }
@@ -230,7 +217,6 @@ async function downloadPDF() {
   padding: 16px 12px;
 }
 
-/* status chip style similar to the image (soft pastel) */
 .status-chip {
   border-radius: 999px;
   padding-left: 8px;
@@ -238,7 +224,6 @@ async function downloadPDF() {
   font-weight: 600;
 }
 
-/* hide some elements on small screens if needed */
 .hide-mobile {
   display: inline-flex;
 }
