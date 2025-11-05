@@ -1,17 +1,23 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from "vue";
+import { Quasar } from "quasar";
+import quasarIconSet from "quasar/icon-set/material-icons";
+import quasarLang from "quasar/lang/es";
+import { createPinia } from "pinia";
+import router from "./router/index.js";
+import App from "./App.vue";
 
-import router from './router'
-// 🔥 importa quasar y sus estilos
-import { Quasar } from 'quasar'
-import 'quasar/dist/quasar.css'
-import '@quasar/extras/material-icons/material-icons.css'
+import "@quasar/extras/material-icons/material-icons.css";
+import "quasar/src/css/index.sass";
 
-const app = createApp(App)
+const app = createApp(App);
 
-// 🔥 registra quasar
-app.use(Quasar, { plugins: {} })
+app.use(Quasar, {
+  plugins: {}, 
+  lang: quasarLang,
+  iconSet: quasarIconSet,
+});
 
-app.use (router)
+app.use(createPinia());
+app.use(router);
 
-app.mount('#app')
+app.mount("#app");

@@ -1,22 +1,37 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import vista from '../views/vista.vue'
+import { createRouter, createWebHashHistory } from "vue-router";
+import Login from "../views/login.vue";
+import Home from "../views/home.vue";
+import Dashboard from "../views/dashboard.vue";
+import { useAuthStore } from "../store/authStore";
+
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomeView
+  { path: "/login", component: Login },
+  { 
+    path: "/dashboard", component: Dashboard,
+    meta: { requiresAuth: true }
   },
-   {
-    path: '/vista',
-    name: 'vista',
-    component: vista
-  }
-]
+  { 
+    path: "/home", component: Home,
+    meta: { requiresAuth: true }
+  },
+  { path: "/", redirect: "/login" },
+  
+];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
-})
+});
 
-export default router
+// Protección de rutas
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore();
+
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    next("/login");
+  } else {
+    next();
+  }
+});
+
+export default router;
