@@ -1,67 +1,85 @@
 <template>
-    <div>
-      <h2>Students Table</h2>
-      <BaseTable
-        :columns="studentColumns"
-        :rows="studentRows"
-        :actions="true"
-        @edit="edit"
-        @delete="deleteRow"
-      />
-    </div>
-  </template>
-  
-  <script setup>
-  import BaseTable from '@/components/tables.vue'
-  
-  const studentColumns = [
-    { name: 'name', label: 'Nombre', field: 'name', align: 'left' },
-    { name: 'age', label: 'Edad', field: 'age', align: 'center' },
-    { name: 'class', label: 'Curso', field: 'class', align: 'left' },
-    { name: 'email', label: 'Email', field: 'email', align: 'left' },
-    { name: 'phone', label: 'Telefono', field: 'phone', align: 'left' },
-    { name: 'actions', label: 'Accion', field: 'actions', align: 'center' }
-  ]
-  
-  const studentRows = [
-    { name: 'Ana Gómez', age: 15, class: '10A', email: 'ana.gomez@email.com', phone: '3104567890' },
-    { name: 'Luis Rodríguez', age: 16, class: '11B', email: 'luis.rodriguez@email.com', phone: '3129876543' },
-    { name: 'María López', age: 14, class: '9C', email: 'maria.lopez@email.com', phone: '3204561237' },
-    { name: 'Carlos Pérez', age: 17, class: '11A', email: 'carlos.perez@email.com', phone: '3006549871' },
-    { name: 'Valentina Torres', age: 13, class: '8B', email: 'valentina.torres@email.com', phone: '3018529637' },
-    { name: 'David Castro', age: 15, class: '10C', email: 'david.castro@email.com', phone: '3184567892' },
-    { name: 'Laura Fernández', age: 16, class: '11C', email: 'laura.fernandez@email.com', phone: '3196541230' },
-    { name: 'Mateo Jiménez', age: 14, class: '9A', email: 'mateo.jimenez@email.com', phone: '3158796541' },
-    { name: 'Sara Martínez', age: 15, class: '10B', email: 'sara.martinez@email.com', phone: '3123457890' },
-    { name: 'Andrés Rojas', age: 17, class: '11D', email: 'andres.rojas@email.com', phone: '3114789652' },
-    { name: 'Camila Díaz', age: 13, class: '8A', email: 'camila.diaz@email.com', phone: '3221457896' },
-    { name: 'Juan Herrera', age: 16, class: '11E', email: 'juan.herrera@email.com', phone: '3009857412' },
-    { name: 'Daniela Ruiz', age: 14, class: '9B', email: 'daniela.ruiz@email.com', phone: '3198745123' },
-    { name: 'Sebastián León', age: 15, class: '10D', email: 'sebastian.leon@email.com', phone: '3125487963' },
-    { name: 'Natalia Vargas', age: 17, class: '11F', email: 'natalia.vargas@email.com', phone: '3106547891' },
-    { name: 'Julián Mora', age: 13, class: '8C', email: 'julian.mora@email.com', phone: '3019658742' },
-    { name: 'Isabella Gómez', age: 15, class: '10E', email: 'isabella.gomez@email.com', phone: '3179857412' },
-    { name: 'Felipe Ortiz', age: 16, class: '11G', email: 'felipe.ortiz@email.com', phone: '3164587920' },
-    { name: 'Lucía Ramírez', age: 14, class: '9D', email: 'lucia.ramirez@email.com', phone: '3129658741' },
-    { name: 'Tomás Gil', age: 15, class: '10F', email: 'tomas.gil@email.com', phone: '3001254789' },
-    { name: 'Sofía Cárdenas', age: 13, class: '8D', email: 'sofia.cardenas@email.com', phone: '3117896542' },
-    { name: 'Emilio Torres', age: 14, class: '9E', email: 'emilio.torres@email.com', phone: '3154789621' },
-    { name: 'Victoria Méndez', age: 15, class: '10G', email: 'victoria.mendez@email.com', phone: '3214569872' },
-    { name: 'Diego Patiño', age: 17, class: '11H', email: 'diego.patino@email.com', phone: '3126547893' },
-    { name: 'Gabriela Suárez', age: 16, class: '11I', email: 'gabriela.suarez@email.com', phone: '3109876541' },
-    { name: 'Santiago Acosta', age: 14, class: '9F', email: 'santiago.acosta@email.com', phone: '3204789561' },
-    { name: 'Martina Espinosa', age: 13, class: '8E', email: 'martina.espinosa@email.com', phone: '3117854692' },
-    { name: 'Nicolás Navarro', age: 15, class: '10H', email: 'nicolas.navarro@email.com', phone: '3198741256' },
-    { name: 'Valeria Moreno', age: 16, class: '11J', email: 'valeria.moreno@email.com', phone: '3224567890' },
-    { name: 'Brayan Vega', age: 17, class: '11K', email: 'brayan.vega@email.com', phone: '3132589647' }
-  ]
-  
-  function edit(row) {
-    alert(`Editar ${row.name}`)
+  <div>
+    <h2>tabla de estudiantes</h2>
+    <BaseTable
+      :columns="studentColumns"
+      :rows="studentRows"
+      :actions="true"
+      @edit="edit"
+      @toggleState="toggleState"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import BaseTable from '@/components/tables.vue'
+
+// columnas
+const studentColumns = [
+  { name: 'name', label: 'Nombre', field: 'name', align: 'left' },
+  { name: 'age', label: 'Edad', field: 'age', align: 'center' },
+  { name: 'class', label: 'Curso', field: 'class', align: 'left' },
+  { name: 'email', label: 'Email', field: 'email', align: 'left' },
+  { name: 'phone', label: 'Teléfono', field: 'phone', align: 'left' },
+  {
+    name: 'lastChange',
+    label: 'Ultimo cambio',
+    align: 'center',
+    field: row => formatDate(row.lastChange)
+  },
+  { name: 'actions', label: 'Acción', field: 'actions', align: 'center' }
+]
+
+
+function formatDate(fecha) {
+  if (!fecha) return ''
+  const d = new Date(fecha)
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  return `${day}/${month}/${year}`
+}
+
+
+const studentRows = ref([
+  { name: 'ana gómez', age: 15, class: '10a', email: 'ana.gomez@email.com', phone: '3104567890', active: true, lastChange: '2025-11-04T16:45:00' },
+  { name: 'luis rodríguez', age: 16, class: '11b', email: 'luis.rodriguez@email.com', phone: '3129876543', active: true, lastChange: '2025-11-04T14:22:00' },
+  { name: 'maría lópez', age: 14, class: '9c', email: 'maria.lopez@email.com', phone: '3204561237', active: false, lastChange: '2025-11-03T10:10:00' },
+  { name: 'carlos pérez', age: 17, class: '11a', email: 'carlos.perez@email.com', phone: '3006549871', active: true, lastChange: '2025-11-02T19:05:00' },
+  { name: 'valentina torres', age: 13, class: '8b', email: 'valentina.torres@email.com', phone: '3018529637', active: false, lastChange: '2025-11-01T08:30:00' },
+  { name: 'david castro', age: 15, class: '10c', email: 'david.castro@email.com', phone: '3184567892', active: true, lastChange: '2025-11-04T17:10:00' },
+  { name: 'laura fernández', age: 16, class: '11c', email: 'laura.fernandez@email.com', phone: '3196541230', active: true, lastChange: '2025-11-03T22:00:00' },
+  { name: 'mateo jiménez', age: 14, class: '9a', email: 'mateo.jimenez@email.com', phone: '3158796541', active: false, lastChange: '2025-10-30T11:45:00' },
+  { name: 'sara martínez', age: 15, class: '10b', email: 'sara.martinez@email.com', phone: '3123457890', active: true, lastChange: '2025-11-04T09:00:00' },
+  { name: 'andrés rojas', age: 17, class: '11d', email: 'andres.rojas@email.com', phone: '3114789652', active: true, lastChange: '2025-11-04T15:33:00' },
+  { name: 'camila díaz', age: 13, class: '8a', email: 'camila.diaz@email.com', phone: '3221457896', active: false, lastChange: '2025-10-29T07:50:00' },
+  { name: 'juan herrera', age: 16, class: '11e', email: 'juan.herrera@email.com', phone: '3009857412', active: true, lastChange: '2025-11-04T18:20:00' },
+  { name: 'daniela ruiz', age: 14, class: '9b', email: 'daniela.ruiz@email.com', phone: '3198745123', active: true, lastChange: '2025-11-02T13:10:00' },
+  { name: 'sebastián león', age: 15, class: '10d', email: 'sebastian.leon@email.com', phone: '3125487963', active: false, lastChange: '2025-11-03T09:15:00' },
+  { name: 'natalia vargas', age: 17, class: '11f', email: 'natalia.vargas@email.com', phone: '3106547891', active: true, lastChange: '2025-11-01T21:00:00' },
+  { name: 'isabella gómez', age: 15, class: '10e', email: 'isabella.gomez@email.com', phone: '3179857412', active: false, lastChange: '2025-10-31T17:40:00' },
+  { name: 'felipe ortiz', age: 16, class: '11g', email: 'felipe.ortiz@email.com', phone: '3164587920', active: true, lastChange: '2025-11-04T12:15:00' },
+  { name: 'lucía ramírez', age: 14, class: '9d', email: 'lucia.ramirez@email.com', phone: '3129658741', active: true, lastChange: '2025-11-02T09:25:00' },
+  { name: 'tomás gil', age: 15, class: '10f', email: 'tomas.gil@email.com', phone: '3001254789', active: false, lastChange: '2025-10-28T19:10:00' },
+  { name: 'sofia cárdenas', age: 13, class: '8d', email: 'sofia.cardenas@email.com', phone: '3117896542', active: true, lastChange: '2025-11-04T11:50:00' }
+])
+
+
+function edit(row) {
+  alert(`editar ${row.name}`)
+}
+
+function toggleState(row) {
+  if (row.active) {
+    row.active = false
+    row.lastChange = new Date().toISOString()
+    alert(`el estudiante "${row.name}" ha sido desactivado correctamente`)
+  } else {
+    row.active = true
+    row.lastChange = new Date().toISOString()
+    alert(`el estudiante "${row.name}" ha sido activado correctamente`)
   }
-  
-  function deleteRow(row) {
-    alert(`Eliminar${row.name}`)
-  }
-  </script>
-  
+}
+</script>
+
