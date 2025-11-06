@@ -1,39 +1,36 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from "vue-router";
+import Login from "../views/login.vue";
+import Home from "../views/home.vue";
+import Dashboard from "../views/dashboard.vue";
+import { useAuthStore } from "../store/authStore";
 
 const routes = [
   {
     path: '/',
-    component: () => import('@/views/DashboardPage.vue')
+    name: 'home',
+    component: HomeView
   },
-  {
-    path: '/teams',
-    component: () => import('@/views/TeamsPage.vue')
-  },
-  {
-    path: '/payments',
-    component: () => import('@/views/PaymentsPage.vue')
-  },
-  {
-    path: '/attendance',
-    component: () => import('@/views/AttendancePage.vue')
-  },
-  {
-    path: '/settings',
-    component: () => import('@/views/SettingsPage.vue')
-  },
-  {
-    path: '/notifications',
-    component: () => import('@/views/NotificationsPage.vue')
-  },
-  {
-    path: '/grades',
-    component: () => import('@/views/GradesView.vue')
+   {
+    path: '/vista',
+    name: 'vista',
+    component: vista
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes
-})
+});
+
+// Protección de rutas
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore();
+
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    next("/login");
+  } else {
+    next();
+  }
+});
 
 export default router
