@@ -5,22 +5,12 @@
     show-if-above
     :width="250"
     :mini="mini"
-    :overlay="false"
-    style="background-color: #1E40AF; color: white;"
+    overlay
+
+    style="background-color: #1E40AF; color: white; margin-top: 50px;"
   >
     <q-scroll-area class="fit">
       <q-list>
-        <div class="q-pa-sm">
-          <q-btn
-            flat
-            dense
-            round
-            icon="menu"
-            aria-label="Menú"
-            @click="$emit('update:leftDrawerOpen', !leftDrawerOpen)"
-            class="text-white"
-          />
-        </div>
 
         <EssentialLink
           v-for="link in links"

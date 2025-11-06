@@ -10,11 +10,11 @@
       @update:left-drawer-open="toggleLeftDrawer"
     />
 
-    <q-page-container>
+    <q-page-container style="padding-left: 100px">
       <router-view />
     </q-page-container>
 
-    <FooterComponent />
+    <FooterComponent style="padding-left: 100px" />
   </q-layout>
 </template>
 
