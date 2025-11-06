@@ -1,21 +1,38 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import vista from '../views/vista.vue'
+
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    component: () => import('@/views/DashboardPage.vue')
   },
-   {
-    path: '/vista',
-    name: 'vista',
-    component: vista
+  {
+    path: '/teams',
+    component: () => import('@/views/TeamsPage.vue')
+  },
+  {
+    path: '/payments',
+    component: () => import('@/views/PaymentsPage.vue')
+  },
+  {
+    path: '/attendance',
+    component: () => import('@/views/AttendancePage.vue')
+  },
+  {
+    path: '/settings',
+    component: () => import('@/views/SettingsPage.vue')
+  },
+  {
+    path: '/notifications',
+    component: () => import('@/views/NotificationsPage.vue')
+  },
+  {
+    path: '/grades',
+    component: () => import('@/views/GradesView.vue')
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 

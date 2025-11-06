@@ -1,14 +1,11 @@
-import { Quasar, Notify } from 'quasar'
-import quasarLang from 'quasar/lang/es'
-import quasarIconSet from 'quasar/icon-set/material-icons'
+import { Quasar, Notify } from 'quasar';
+import 'quasar/src/css/index.sass';
+import '@quasar/extras/material-icons/material-icons.css';
 
-import 'quasar/dist/quasar.css'
-import '@quasar/extras/material-icons/material-icons.css'
-
-export default (app) => {
+export default function installQuasar(app) {
   app.use(Quasar, {
-    plugins: { Notify },
-    lang: quasarLang,
-    iconSet: quasarIconSet,
-  })
+    plugins: {
+      Notify,
+    },
+  });
 }

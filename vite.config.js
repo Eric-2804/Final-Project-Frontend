@@ -6,7 +6,11 @@ import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 export default defineConfig({
   plugins: [
     vue({ template: { transformAssetUrls } }),
-    quasar()
+    quasar({
+      sassVariables: '@/quasar-variables.sass',
+      autoImportComponentCase: 'kebab',
+      importStrategy: 'manual'
+    })
   ],
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') }
