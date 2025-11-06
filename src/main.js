@@ -1,17 +1,12 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue' 
+import App from './App.vue' 
 
-import router from './router'
-// 🔥 importa quasar y sus estilos
-import { Quasar } from 'quasar'
-import 'quasar/dist/quasar.css'
-import '@quasar/extras/material-icons/material-icons.css'
+import installQuasar from './plugins/quasar'; 
+import router from './router';
 
-const app = createApp(App)
+const app = createApp(App); 
 
-// 🔥 registra quasar
-app.use(Quasar, { plugins: {} })
-
-app.use (router)
+installQuasar(app); 
+app.use(router);
 
 app.mount('#app')
