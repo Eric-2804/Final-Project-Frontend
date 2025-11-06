@@ -1,8 +1,7 @@
 <template>
-  <q-header elevated style="background-color: #1E40AF; color: white;">
+  <q-header style="background-color: #1E40AF; color: white; z-index: 10000;">
     <q-toolbar>
       <q-btn
-        v-if="!leftDrawerOpen"
         flat
         dense
         round
