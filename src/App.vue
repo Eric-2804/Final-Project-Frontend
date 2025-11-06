@@ -1,15 +1,9 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="full-height-layout">
-    <HeaderComponent
-      :left-drawer-open="leftDrawerOpen"
-      :toggle-left-drawer="toggleLeftDrawer"
-    />
-    <SidebarComponent
-      :left-drawer-open="leftDrawerOpen"
-      :mini="miniState"
-      @update:left-drawer-open="toggleLeftDrawer"
-    />
+  <div>
+    <q-btn flat label="Home" to="/" />
+    <q-btn flat label="Vista" to="/vista" />
 
+<<<<<<< HEAD
     <q-page-container style="padding-left: 100px">
       <router-view />
     </q-page-container>
@@ -84,3 +78,8 @@ export default defineComponent({
   padding-bottom: 100px; /* evita que el texto toque el footer */
 }
 </style>
+=======
+    <router-view />
+  </div>
+</template>
+>>>>>>> 655f356d64d09b7221d9b896b5a32903c82aef04
