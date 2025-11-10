@@ -1,13 +1,9 @@
-// por favor coordinar y verificar las rutas con el equipo de desarrollo antes de hacer cambios
 import { createRouter, createWebHistory } from 'vue-router'
 import login from '../views/login.vue'
 
+
 const routes = [
-  {
-    path: '/',
-    name: 'login',
-    component: login
-  }
+  { path: '/', name: 'login', component: login },
 ]
 
 const router = createRouter({
@@ -15,4 +11,16 @@ const router = createRouter({
   routes
 })
 
-export default router
+
+// Protección de rutas para que no ingrese a otras paginas sin estar logueados 
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore();
+
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    next("/login");
+  } else {
+    next();
+  }
+});
+
+export default router;

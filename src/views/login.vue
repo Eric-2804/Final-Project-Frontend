@@ -1,34 +1,82 @@
 <template>
-  <div class="contenedorLogin">
+  <div class="containerLogin">
     <div class="login">
       <h1>Bienvenido</h1>
       <h2>Inicie sesión para continuar</h2>
 
-      <q-form @submit.prevent="showSpinner" class="formulario">
+      <q-form @submit.prevent="showSpinner" class="form">
         <h2>Selecciona tu rol</h2>
-        <q-select outlined v-model="rol"
+        <q-select outlined v-model="role"
           :options="['Administrador', 'Rector', 'Coordinador', 'Acudiente', 'Estudiante', 'Profesor']" label="Opciones"
           class="input" :rules="[val => !!val || 'Debe seleccionar un rol']" lazy-rules />
 
         <h2>Correo electrónico</h2>
-        <q-input outlined v-model="correo" label="usuario@gmail.com" class="input" type="email" :rules="correoRules"
+        <q-input outlined v-model="email" label="usuario@gmail.com" class="input" type="email" :rules="emailRules"
           lazy-rules />
 
         <h2>Contraseña</h2>
-        <q-input outlined v-model="contrasena" type="password" label="Ingrese su contraseña" class="input"
-          :rules="contrasenaRules" lazy-rules />
+        <q-input outlined v-model="password" type="password" label="Ingrese su contraseña" class="input"
+          :rules="passwordRules" lazy-rules />
 
         <h2>Año</h2>
-        <q-select outlined v-model="anio" :options="['2023', '2024', '2025']" label="Seleccione el año" class="input"
+        <q-select outlined v-model="year" :options="['2023', '2024', '2025']" label="Seleccione el año" class="input"
           :rules="[val => !!val || 'Debe seleccionar un año']" lazy-rules />
 
-        <a href="#" class="recuperar">Recuperar Contraseña</a>
+        <a href="#" class="recover">Recuperar Contraseña</a>
 
         <BaseButton :loading="loading" color="primary" label="Iniciar Sesión" type="submit"
-          style="width: 100%; border-radius: 5px; margin-top: 15px; margin-bottom: 15px;" />
+          style="width: 100%; border-radius: 5px; margin-top: 10px; margin-bottom: 10px;" />
+
+          <a href="#" class="register">¿No tienes una cuenta? Regístrate</a>
 
         <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
       </q-form>
+    </div>
+    <div class="containerRegister">
+         <q-btn label="Alert" color="primary" @click="alert = true" />
+
+    <q-dialog v-model="alert">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Alert</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+      <q-form @submit.prevent="showSpinner" class="form">
+         <h2>Nombre Completo</h2>
+        <q-input outlined v-model="fullName" label="Sayury Yuliana Rodríguez Pinzón" class="input" type="fullName" :rules="fullNameRules"
+          lazy-rules />
+       
+        <h2>Selecciona tu rol</h2>
+        <q-select outlined v-model="role"
+          :options="['Administrador', 'Rector', 'Coordinador', 'Acudiente', 'Estudiante', 'Profesor']" label="Opciones"
+          class="input" :rules="[val => !!val || 'Debe seleccionar un rol']" lazy-rules />
+
+        <h2>Correo electrónico</h2>
+        <q-input outlined v-model="email" label="usuario@gmail.com" class="input" type="email" :rules="emailRules"
+          lazy-rules />
+
+        <h2>Contraseña</h2>
+        <q-input outlined v-model="password" type="password" label="Ingrese su contraseña" class="input"
+          :rules="passwordRules" lazy-rules />
+
+          <h2>Confirmar Contraseña</h2>
+        <q-input outlined v-model="password" type="password" label="Confirme su contraseña" class="input"
+          :rules="passwordRules" lazy-rules />
+
+        <BaseButton :loading="loading" color="primary" label="Crear Cuenta" type="submit"
+          style="width: 100%; border-radius: 5px; margin-top: 10px; margin-bottom: 10px;" />
+      </q-form>
+
+
     </div>
   </div>
 </template>
@@ -37,24 +85,29 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
-//import BaseButton from "../components/BaseButton.vue";
+import BaseButton from "../components/BaseButton.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
 
-const correo = ref("");
-const contrasena = ref("");
-const rol = ref("");
-const anio = ref("");
+const email = ref("");
+const password = ref("");
+const role = ref("");
+const year = ref("");
 const errorMsg = ref("");
 const loading = ref(false);
 
-const correoRules = [
+const alert = ref(false)
+const confirm = ref(false)
+const prompt = ref(false)
+const address = ref('')
+
+const emailRules = [
   val => !!val || "El correo es obligatorio",
   val => /.+@.+\..+/.test(val) || "Ingrese un correo electrónico válido",
 ];
 
-const contrasenaRules = [
+const passwordRules = [
   val => !!val || "La contraseña es obligatoria",
   val => val.length >= 8 || "Debe tener al menos 8 caracteres",
   val => /[A-Z]/.test(val) || "Debe tener al menos una letra mayúscula",
@@ -73,16 +126,20 @@ const showSpinner = async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        correo: correo.value,
-        contraseña: contrasena.value,
-        rol: rol.value,
-        año: anio.value,
+        email: email.value,
+        password: password.value,
+        role: role.value,
+        year: Number(year.value)
       }),
     });
 
     const data = await response.json();
 
     if (response.ok) {
+      auth.user = { email: email.value, role: role.value };
+      auth.token = data.token || "fakeToken"; 
+      localStorage.setItem("user", JSON.stringify(auth.user));
+      localStorage.setItem("token", auth.token);
       setTimeout(() => {
         router.push("/dashboard");
       }, 1500);
@@ -106,7 +163,7 @@ const showSpinner = async () => {
   margin: 0;
 }
 
-.contenedorLogin {
+.containerLogin {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -115,7 +172,7 @@ const showSpinner = async () => {
 }
 
 .login {
-  margin-top: 30px;
+  margin-top: 17px;
   width: 400px;
   height: auto;
   background: white;
@@ -123,7 +180,7 @@ const showSpinner = async () => {
   border: 2px solid #3b82f6;
   text-align: center;
   box-shadow: 1px 1px 1px 0px #3b82f6;
-  margin-bottom: 30px;
+  margin-bottom: 17px;
 }
 
 .login h1 {
@@ -141,13 +198,13 @@ const showSpinner = async () => {
   margin-bottom: 12px;
 }
 
-.formulario {
+.form {
   width: 330px;
   margin: 0 auto;
   text-align: left;
 }
 
-.formulario h2 {
+.form h2 {
   color: #1e1e1e;
   font-size: 15px;
   margin: 0px 0 0px 0;
@@ -157,7 +214,17 @@ const showSpinner = async () => {
   width: 100%;
 }
 
-.recuperar {
+.register{
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  color: #2563eb;
+  text-decoration: none;
+  text-align: center;
+  margin-bottom: 17px;
+}
+
+.recover {
   display: block;
   text-align: center;
   font-size: 14px;
