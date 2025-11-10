@@ -24,7 +24,7 @@
 
         <a href="#" class="recover">Recuperar Contraseña</a>
 
-        <BaseButton :loading="loading" color="primary" label="Iniciar Sesión" type="submit"
+        <Button :loading="loading" color="primary" label="Iniciar Sesión" type="submit"
           style="width: 100%; border-radius: 5px; margin-top: 10px; margin-bottom: 10px;" />
 
           <a href="#" class="register">¿No tienes una cuenta? Regístrate</a>
@@ -72,7 +72,7 @@
         <q-input outlined v-model="password" type="password" label="Confirme su contraseña" class="input"
           :rules="passwordRules" lazy-rules />
 
-        <BaseButton :loading="loading" color="primary" label="Crear Cuenta" type="submit"
+        <Button :loading="loading" color="primary" label="Crear Cuenta" type="submit"
           style="width: 100%; border-radius: 5px; margin-top: 10px; margin-bottom: 10px;" />
       </q-form>
 
@@ -85,7 +85,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
-import BaseButton from "../components/BaseButton.vue";
+import Button from "../components/Button.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
