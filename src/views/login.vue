@@ -37,7 +37,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
-import BaseButton from "../components/BaseButton.vue";
+//import BaseButton from "../components/BaseButton.vue";
 
 const router = useRouter();
 const auth = useAuthStore();

@@ -5,9 +5,9 @@ import router from './router/index.js'
 
 <template>
   <div>
-    <q-btn flat label="Home" to="/" />
-    <q-btn flat label="Vista" to="/vista" />
-
+    <q-btn flat label="login" to="/" />
+  
+    
     <router-view />
   </div>
 </template>
