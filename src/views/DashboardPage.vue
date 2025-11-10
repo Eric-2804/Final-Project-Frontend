@@ -1,15 +1,121 @@
 <template>
- <q-page padding class="dashboard-page">
-    <h5>Contenido del Dashboard</h5>
-    <h5>«Sin embargo, para que entiendas de dónde vino todo este error, a los que culpan al placer y exaltan el dolor, explicaré toda la pregunta y presentaré las ideas expresadas por el famoso explorador de la verdad, casi diría desde el constructor de la felicidad humana. . De hecho, nadie odia, odia o rechaza el placer como tal, solo porque es placer, sino porque el gran sufrimiento afecta a aquellos que no pueden alcanzar el placer a través de la razón; y por el contrario, no hay nadie que ame, persiga, quiera alcanzar el dolor en sí mismo, solo porque es el dolor, sino porque a veces ocurren situaciones tales que a través del sufrimiento o el dolor uno trata de alcanzar un gran placer. . Centrándonos en casos de poca importancia: ¿quién de nosotros realiza un ejercicio gimnástico, si no para obtener alguna ventaja? Y, por otro lado, ¿quién tendría razones para criticar a quien desea probar un placer que no sigue a ninguna molestia, o al que huye de un dolor que no produce placer?
-Por el contrario, sin embargo, nosotros con indignación denunciamos y consideramos que merecemos odio a quienes, suavizados y corrompidos por los placeres del momento, cegados por el deseo, no prevén qué tristezas y qué sufrimiento sufrirán, y la misma culpa a quienes abandonan sus deberes. Fuera de la pereza de la mente, es evitar la fatiga y el dolor. Ciertamente es fácil y rápido distinguir estos casos. De hecho, en nuestro tiempo libre, cuando tenemos toda nuestra capacidad de elegir y nada nos impide hacer lo que más nos gusta, debemos aceptar todos los placeres y rechazar todo dolor. Pero en otras ocasiones, o en los deberes u obligaciones inevitables que nos vienen de las circunstancias, a menudo sucederá que debemos rechazar el placer y dar la bienvenida a la molestia. Y así, el hombre sabio se adapta a sí mismo eligiendo entre estas actitudes, asegurándose de que cualquiera de ellas, rechazando el placer, se agranda o, soportando el dolor, evita lo peor.»</h5>
+  <div class="q-pa-md responsive-dashboard">
+    <div class="row q-col-gutter-md q-mb-md">
+      <!-- Tarjetas de resumen -->
+      <div
+        v-for="(card, index) in summaryCards"
+        :key="index"
+        class="col-12 col-sm-6 col-md-3"
+      >
+        <q-card class="q-pa-md text-center card-summary">
+          <q-icon :name="card.icon" size="40px" color="primary" />
+          <div class="text-h6 q-mt-sm">{{ card.title }}</div>
+          <div class="text-subtitle2 text-grey-7">{{ card.value }}</div>
+        </q-card>
+      </div>
+    </div>
 
-  </q-page>
+    <!-- Contenedor principal -->
+    <div class="row q-col-gutter-md q-mt-md">
+      <!-- Gráfico de asistencia -->
+      <div class="col-12 col-md-8">
+        <q-card class="q-pa-md card-section">
+          <div class="text-h6 q-mb-sm">Gráfico de Asistencia</div>
+          <div class="chart-placeholder">
+            <q-icon name="insert_chart" size="80px" color="grey-6" />
+            <p class="text-grey-7">Aquí irá un gráfico (ej. Chart.js o ApexCharts)</p>
+          </div>
+        </q-card>
+      </div>
+
+      <!-- Lista de avisos -->
+      <div class="col-12 col-md-4">
+        <q-card class="q-pa-md card-section">
+          <div class="text-h6 q-mb-sm">Avisos Recientes</div>
+          <q-list bordered separator>
+            <q-item v-for="(notice, index) in notices" :key="index">
+              <q-item-section>
+                <q-item-label>{{ notice.title }}</q-item-label>
+                <q-item-label caption>{{ notice.date }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
-export default defineComponent({
-  name: 'DashboardPage'
-});
+<script setup>
+import { ref } from 'vue'
+
+const summaryCards = ref([
+  { title: 'Estudiantes', value: 245, icon: 'school' },
+  { title: 'Profesores', value: 32, icon: 'person' },
+  { title: 'Cursos', value: 18, icon: 'book' },
+  { title: 'Asistencia Hoy', value: '92%', icon: 'check_circle' }
+])
+
+const notices = ref([
+  { title: 'Reunión de docentes', date: '10 Nov 2025' },
+  { title: 'Entrega de boletines', date: '12 Nov 2025' },
+  { title: 'Inicio de evaluaciones', date: '15 Nov 2025' }
+])
 </script>
+
+<style scoped>
+.card-summary {
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+
+.card-summary:hover {
+  transform: translateY(-4px);
+}
+
+.card-section {
+  border-radius: 12px;
+}
+
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 220px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+}
+
+/* RESPONSIVIDAD */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .responsive-dashboard {
+    padding: 8px !important;
+  }
+
+  .chart-placeholder {
+    height: 180px;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .text-h6 {
+    font-size: 1.1rem;
+  }
+
+  .text-subtitle2 {
+    font-size: 0.9rem;
+  }
+
+  .chart-placeholder {
+    height: 150px;
+  }
+
+  .card-summary {
+    text-align: center;
+  }
+}
+</style>
