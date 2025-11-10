@@ -1,17 +1,19 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia' // 👈 esta línea te falta
 import App from './App.vue'
-
 import router from './router'
+
 // 🔥 importa quasar y sus estilos
 import { Quasar } from 'quasar'
 import 'quasar/dist/quasar.css'
 import '@quasar/extras/material-icons/material-icons.css'
 
 const app = createApp(App)
+const pinia = createPinia() // ya estará definida correctamente
 
-// 🔥 registra quasar
+// 🔥 registra los plugins
 app.use(Quasar, { plugins: {} })
-
-app.use (router)
+app.use(pinia) // 👈 ahora pinia funciona bien
+app.use(router)
 
 app.mount('#app')
