@@ -1,5 +1,13 @@
 <template>
   <div class="containerLogin">
+    <!-- Botones de prueba para acceder a vistas del coordinador -->
+    <div class="test-buttons-header">
+      <q-btn flat label="Gestión de Grupos" color="primary" to="/coordinator/group-management" />
+      <q-btn flat label="Inscripciones" color="primary" to="/coordinator/registrations" />
+      <q-btn flat label="Comunicados" color="primary" to="/coordinator/press-releases" />
+      <q-btn flat label="Monitoreo" color="primary" to="/coordinator/teacher-monitoring" />
+    </div>
+
     <div class="login">
       <h1>Bienvenido</h1>
       <h2>Inicie sesión para continuar</h2>
@@ -237,5 +245,23 @@ const showSpinner = async () => {
   color: red;
   text-align: center;
   margin-top: 1px;
+}
+
+/* Estilos para botones de prueba */
+.test-buttons-header {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 20px;
+  background-color: #f0f4f8;
+  border-bottom: 2px solid #3b82f6;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.test-buttons-header :deep(.q-btn) {
+  font-size: 12px;
+  padding: 8px 12px;
 }
 </style>
