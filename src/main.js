@@ -13,7 +13,7 @@ const pinia = createPinia() // ya estará definida correctamente
 
 // 🔥 registra los plugins
 app.use(Quasar, { plugins: {} })
-app.use(pinia) // 👈 ahora pinia funciona bien
+app.use(pinia) 
 app.use(router)
 
 app.mount('#app')
