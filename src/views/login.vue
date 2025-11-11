@@ -1,12 +1,5 @@
 <template>
   <div class="containerLogin">
-    <!-- Botones de prueba para acceder a vistas del coordinador -->
-    <div class="test-buttons-header">
-      <q-btn flat label="Gestión de Grupos" color="primary" to="/coordinator/group-management" />
-      <q-btn flat label="Inscripciones" color="primary" to="/coordinator/registrations" />
-      <q-btn flat label="Comunicados" color="primary" to="/coordinator/press-releases" />
-      <q-btn flat label="Monitoreo" color="primary" to="/coordinator/teacher-monitoring" />
-    </div>
 
     <div class="login">
       <h1>Bienvenido</h1>
