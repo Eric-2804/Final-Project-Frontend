@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import login from '../views/login.vue'
 import Home from "../views/home.vue";
 import { useAuthStore } from "../store/authStore";
-import dashboard from '../views/coordinatorViews/dashboardView.vue'
+import coordinatorRoutes from './coordinatorRouter' 
+
 
 
 const routes = [
@@ -14,16 +15,13 @@ const routes = [
   
 ]
 
-const routes_coordinator = [
-
-  { path : '/dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard}
-  
-  ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-  routes_coordinator
+  routes: [
+  ...routes,
+  ...coordinatorRoutes.options.routes, 
+  ]
 })
 
 // Protección de rutas para que no ingresen a otra pagina sin loguearse 
