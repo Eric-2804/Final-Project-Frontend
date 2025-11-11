@@ -1,11 +1,16 @@
 <template>
-  <div class="press-releases">
-    <h1>Comunicados de Prensa</h1>
-    <p>Aquí irán los comunicados de prensa</p>
-  </div>
+  <MainLayout>
+    <template #default>
+      <div class="press-releases">
+        <h1>Comunicados de Prensa</h1>
+        <p>Aquí irán los comunicados de prensa</p>
+      </div>
+    </template>
+  </MainLayout>
 </template>
 
 <script setup>
+import MainLayout from '../../layouts/MainLayout.vue'
 </script>
 
 <style scoped>

@@ -1,11 +1,16 @@
 <template>
-  <div class="teacher-monitoring">
-    <h1>Monitoreo de Profesores</h1>
-    <p>Aquí irá el monitoreo de profesores</p>
-  </div>
+  <MainLayout>
+    <template #default>
+      <div class="teacher-monitoring">
+        <h1>Monitoreo de Profesores</h1>
+        <p>Aquí irá el monitoreo de profesores</p>
+      </div>
+    </template>
+  </MainLayout>
 </template>
 
 <script setup>
+import MainLayout from '../../layouts/MainLayout.vue'
 </script>
 
 <style scoped>

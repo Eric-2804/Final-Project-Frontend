@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="main-layout">
 
-    <main-header @toggle-left-drawer="toggleLeftDrawer" />
+    <MainHeader @toggle-left-drawer="toggleLeftDrawer" />
 
     <q-drawer
       v-model="leftDrawerOpen"
@@ -10,7 +10,7 @@
       :width="220"
       class="bg-grey-1 shadow-2"
     >
-      <main-sidebar />
+      <MainSidebar />
     </q-drawer>
 
     <q-page-container class="main-content">
@@ -19,16 +19,16 @@
       </transition>
     </q-page-container>
 
-    <main-footer />
+    <MainFooter />
   </q-layout>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import MainHeader from 'components/MainHeader.vue'
-import MainSidebar from 'components/MainSidebar.vue'
-import MainFooter from 'components/MainFooter.vue'
+import MainHeader from '../components/Header.vue'
+import MainSidebar from '../components/Sidebar.vue'
+import MainFooter from '../components/Footer.vue'
 
 const leftDrawerOpen = ref(true)
 const $q = useQuasar()

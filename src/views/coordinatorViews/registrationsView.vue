@@ -1,11 +1,16 @@
 <template>
-  <div class="registrations">
-    <h1>Gestión de Inscripciones</h1>
-    <p>Aquí irá la gestión de inscripciones</p>
-  </div>
+  <MainLayout>
+    <template #default>
+      <div class="registrations">
+        <h1>Gestión de Inscripciones</h1>
+        <p>Aquí irá la gestión de inscripciones</p>
+      </div>
+    </template>
+  </MainLayout>
 </template>
 
 <script setup>
+import MainLayout from '../../layouts/MainLayout.vue'
 </script>
 
 <style scoped>
