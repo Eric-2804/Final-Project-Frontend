@@ -1,0 +1,11 @@
+[33m8aff498[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfrontend[m[33m)[m HEAD@{0}: commit: prueba views coordinador
+[33mb689886[m HEAD@{1}: pull: Fast-forward
+[33m19efd44[m HEAD@{2}: pull origin frontend: Fast-forward
+[33m285f13e[m HEAD@{3}: pull origin frontend: Fast-forward
+[33m175842d[m HEAD@{4}: pull origin frontend: Fast-forward
+[33m3a91595[m HEAD@{5}: commit: viewsCoordinador y coreccion del servidor
+[33m3247736[m HEAD@{6}: commit: Correcion carpeta Layout-Responsividad
+[33mcfb1b0d[m HEAD@{7}: pull origin frontend: Fast-forward
+[33m5614d51[m HEAD@{8}: commit: Revision y correcion filesystem
+[33m3a655fd[m[33m ([m[1;31morigin/frontend-Layout-Responsividad[m[33m, [m[1;31morigin/frontend-DuvanAndres[m[33m)[m HEAD@{9}: checkout: moving from main to frontend
+[33m3b837d2[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;31morigin/Daniela[m[33m, [m[1;32mmain[m[33m)[m HEAD@{10}: clone: from github.com:Eric-2804/Final-Project-Frontend.git
