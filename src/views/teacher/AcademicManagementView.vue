@@ -1,5 +1,5 @@
-s<template>
-  <q-page padding>
+<template>
+  <div padding>
     <div v-if="loading" class="spinner-container">
       <Spinner />
     </div>
@@ -27,7 +27,7 @@ s<template>
         />
       </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -102,11 +102,5 @@ export default {
 .actions-container > * {
   margin-left: 10px;
 }
-</style>
 
-<style scoped>
-.q-page {
-  max-width: 1200px;
-  margin: 0 auto;
-}
 </style>

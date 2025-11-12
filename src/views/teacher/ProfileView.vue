@@ -1,5 +1,5 @@
 <template>
-  <q-page class="profile-page">
+  <div class="profile-page">
     <div class="profile-container">
       <h1 class="page-title">Mi Perfil</h1>
 
@@ -278,7 +278,7 @@
         </div>
       </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script>
