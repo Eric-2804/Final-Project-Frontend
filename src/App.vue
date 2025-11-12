@@ -1,7 +1,14 @@
 <template>
-  <div>
-    <q-btn flat label="login" to="/" />
-    <q-btn flat label="dashboard" to="/dashboardCoordinator" />
+  <component :is="isLoginRoute ? 'div' : MainLayout">
     <router-view />
-  </div>
+  </component>
 </template>
+
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import MainLayout from './layouts/MainLayout.vue'
+
+const route = useRoute()
+const isLoginRoute = computed(() => route.path === '/')
+</script>

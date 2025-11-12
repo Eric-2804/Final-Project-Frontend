@@ -2,9 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import login from '../views/login.vue'
 import Home from "../views/home.vue";
 import { useAuthStore } from "../store/authStore";
-import coordinatorRoutes from './coordinatorRouter' 
-
-
+import { routes_coordinator } from './coordinatorRouter'
 
 const routes = [
   { path: '/', name: 'login', component: login },
@@ -12,15 +10,14 @@ const routes = [
     path: "/home", component: Home, meta: { requiresAuth: true }
   },
   { path: "/", redirect: "/login" },
-  
+  // ...otras rutas comunes...
 ]
-
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-  ...routes,
-  ...coordinatorRoutes.options.routes, 
+    ...routes,
+    ...routes_coordinator
   ]
 })
 
