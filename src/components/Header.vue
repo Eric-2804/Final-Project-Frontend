@@ -1,15 +1,9 @@
 <template>
-  <q-header style="background-color: #1E40AF; color: white; z-index: 10000;">
+  <q-header
+    elevated
+    class="header-fixed"
+  >
     <q-toolbar>
-      <q-btn
-        flat
-        dense
-        round
-        icon="menu"
-        aria-label="Menú"
-        @click="toggleLeftDrawer"
-      />
-
       <q-toolbar-title>
         Institución Educativa
       </q-toolbar-title>
@@ -17,7 +11,7 @@
       <q-space />
 
       <div class="q-gutter-sm row items-center no-wrap">
-        <q-btn round dense flat color="grey-8" icon="notifications" to="/notifications">
+        <q-btn round dense flat color="white" icon="notifications" to="/notifications">
           <q-badge color="red" text-color="white" floating>
             2
           </q-badge>
@@ -47,14 +41,15 @@
 
             <q-separator />
 
-            <q-item clickable v-close-popup>
-              <q-item-section avatar>
-                <q-icon name="person" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Mi Perfil</q-item-label>
-              </q-item-section>
-            </q-item>
+            <q-item clickable v-close-popup to="/teacher/profile">
+  <q-item-section avatar>
+    <q-icon name="person" />
+  </q-item-section>
+  <q-item-section>
+    <q-item-label>Mi Perfil</q-item-label>
+  </q-item-section>
+</q-item>
+
 
             <q-item clickable v-close-popup>
               <q-item-section avatar>
@@ -71,20 +66,13 @@
   </q-header>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'HeaderComponent',
-  props: {
-    leftDrawerOpen: {
-      type: Boolean,
-      required: true
-    },
-    toggleLeftDrawer: {
-      type: Function,
-      required: true
-    }
-  }
-})
+<script setup>
 </script>
+
+<style scoped>
+.header-fixed {
+  background-color: #1E40AF;
+  color: white;
+  z-index: 2000;
+}
+</style>
