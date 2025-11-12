@@ -3,6 +3,7 @@ import login from '../views/login.vue'
 import Home from "../views/home.vue";
 import { useAuthStore } from "../store/authStore";
 import coordinatorRoutes from './coordinatorRouter' 
+import acudienteRouter from './acudienteRouter'
 
 
 
@@ -18,9 +19,11 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
+  
   routes: [
   ...routes,
   ...coordinatorRoutes.options.routes, 
+  ...acudienteRouter.options.routes,
   ]
 })
 
