@@ -28,13 +28,13 @@ import registrations from '../views/coordinatorViews/registrationsView.vue'
 import teacherMonitoring from '../views/coordinatorViews/teacherMonitoringView.vue'
 
 // vistas del profesor
-import DashboardView from '../views/teacher/DashboardView.vue'
-import ProfileView from '../views/teacher/ProfileView.vue'
-import GroupsAndSubjectsView from '../views/teacher/GroupsAndSubjectsView.vue'
-import AcademicManagementView from '../views/teacher/AcademicManagementView.vue'
-import PerformanceIndicatorsView from '../views/teacher/PerformanceIndicatorsView.vue'
-import GroupReportsView from '../views/teacher/GroupReportsView.vue'
-import CommunicationsView from '../views/teacher/CommunicationsView.vue'
+import TeacherDashboardView from '@/views/teacher/DashboardView.vue'
+import TeacherProfileView from '@/views/teacher/ProfileView.vue'
+import TeacherGroupsAndSubjectsView from '@/views/teacher/GroupsAndSubjectsView.vue'
+import AcademicManagementView from '@/views/teacher/AcademicManagementView.vue'
+import PerformanceIndicatorsView from '@/views/teacher/PerformanceIndicatorsView.vue'
+import GroupReportsView from '@/views/teacher/GroupReportsView.vue'
+import CommunicationsView from '@/views/teacher/CommunicationsView.vue'
 
 
 const routes = [
@@ -66,7 +66,7 @@ const routes = [
 
 
 
-  // rutas del profesor 
+  // rutas del profesor
   { path: '/teacherDashboard', name: 'TeacherDashboard', component: DashboardView },
   { path: '/teacherProfile', name: 'TeacherProfile', component: ProfileView },
   { path: '/teacherGroups', name: 'TeacherGroupsAndSubjects', component: GroupsAndSubjectsView },
@@ -74,9 +74,9 @@ const routes = [
   { path: '/teacherPerformanceIndicators', name: 'PerformanceIndicators', component: PerformanceIndicatorsView },
   { path: '/teacherGroupReports', name: 'GroupReports', component: GroupReportsView },
   { path: '/teacherCommunications', name: 'TeacherCommunications', component: CommunicationsView },
-
-
 ]
+
+
 
 const router = createRouter({
   history: createWebHistory(),
