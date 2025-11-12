@@ -5,6 +5,12 @@ import { useAuthStore } from '../store/authStore'
 import login from '../views/login.vue'
 import Home from '../views/home.vue'
 
+
+// vistas del acudiente 
+import ProfileViews from '../views/guardianViews/profileViews.vue'
+
+
+
 // vistas del coordinador
 import dashboard from '../views/coordinatorViews/dashboardView.vue'
 import generalAcademic from '../views/coordinatorViews/generalAcademicManagementView.vue'
@@ -24,12 +30,15 @@ import PerformanceIndicatorsView from '../views/teacher/PerformanceIndicatorsVie
 import GroupReportsView from '../views/teacher/GroupReportsView.vue'
 import CommunicationsView from '../views/teacher/CommunicationsView.vue'
 
+
 const routes = [
   // rutas generales
   { path: '/', name: 'login', component: login },
   { path: '/home', name: 'home', component: Home },
 
 
+// rutas del acudiente
+  { path: '/guardianProfile', name: 'GuardianProfile', component: ProfileViews },
 
   // rutas del coordinador
   { path: '/dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard },
