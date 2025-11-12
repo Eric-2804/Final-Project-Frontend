@@ -37,8 +37,11 @@ const routes = [
   { path: '/home', name: 'home', component: Home },
 
 
+
 // rutas del acudiente
   { path: '/guardianProfile', name: 'GuardianProfile', component: ProfileViews },
+  
+
 
   // rutas del coordinador
   { path: '/dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard },
