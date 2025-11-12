@@ -14,9 +14,9 @@
     </q-drawer>
 
     <q-page-container class="main-content">
-      <transition name="fade" mode="out-in">
+      <!-- <transition name="fade" mode="out-in"> -->
         <router-view />
-      </transition>
+      <!-- </transition> -->
     </q-page-container>
 
     <MainFooter />
