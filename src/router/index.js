@@ -8,8 +8,14 @@ import Home from '../views/home.vue'
 
 // vistas del acudiente 
 import ProfileViews from '../views/guardianViews/profileViews.vue'
-
-
+import AttendancePage from '../views/guardianViews/AttendancePage.vue'
+import DashboardGuardian from '../views/guardianViews/DashboardGuardianView.vue'
+import DashboardPage from '../views/guardianViews/DashboardPage.vue'
+import EnrollmentsDetailsView from '../views/guardianViews/EnrollmentsDetailsView.vue'
+import EnrollmentsFormView from '../views/guardianViews/EnrollmentsFormView.vue'
+/* import EnrollmentsView from '../views/guardianViews/EnrollmentsView.vue' */
+import GradesView from '../views/guardianViews/GradesView.vue'
+import TeacherView from '../views/guardianViews/TeacherView.vue'
 
 // vistas del coordinador
 import dashboard from '../views/coordinatorViews/dashboardView.vue'
@@ -39,8 +45,16 @@ const routes = [
 
 // rutas del acudiente
   { path: '/guardianProfile', name: 'GuardianProfile', component: ProfileViews },
+  { path: '/DashboardGuardian', name: 'DashboardGuardian', component: DashboardGuardian },
+  { path: '/DashboardPage', name: 'DashboardPage', component: DashboardPage},
+  { path: '/AttendancePage', name: 'AttendancePage', component: AttendancePage},
+  { path: '/EnrollmentsDetailsView', name: 'EnrollmentsDetailsView', component: EnrollmentsDetailsView},
+  { path: '/EnrollmentsFormView', name: 'EnrollmentsFormView', component: EnrollmentsFormView},
+  /* { path: '/EnrollmentsView', name: 'EnrollmentsView', component: EnrollmentsView}, */
+  { path: '/GradesView', name: 'GradesView', component: GradesView},
+  { path: '/TeacherView', name: 'TeacherView', component: TeacherView},
 
-  // rutas del coordinador
+// rutas del coordinador
   { path: '/dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard },
   { path: '/generalAcademicCoordinator', name: 'GeneralAcademic', component: generalAcademic },
   { path: '/groupManagementCoordinator', name: 'GroupManagement', component: groupManagement },

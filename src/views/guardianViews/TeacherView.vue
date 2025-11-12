@@ -101,7 +101,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useQuasar } from "quasar";
-import Spinner from "../components/Spinner.vue";
+/* import Spinner from "../components/Spinner.vue"; */
 
 const $q = useQuasar();
 const loading = ref(true);
