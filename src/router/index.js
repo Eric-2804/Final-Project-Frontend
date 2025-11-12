@@ -24,9 +24,15 @@ import PerformanceIndicatorsView from '../views/teacher/PerformanceIndicatorsVie
 import GroupReportsView from '../views/teacher/GroupReportsView.vue'
 import CommunicationsView from '../views/teacher/CommunicationsView.vue'
 
+//vistas del estudiante
+import DashboardStudent from '../views/students/dashboardStudent.vue'
+import PerfilStudent from '../views/students/perfilStudent.vue'
+
+
 const routes = [
   // rutas generales
   { path: '/', name: 'login', component: login },
+
   { path: '/home', name: 'home', component: Home },
 
 
@@ -51,6 +57,18 @@ const routes = [
   { path: '/teacherPerformanceIndicators', name: 'PerformanceIndicators', component: PerformanceIndicatorsView },
   { path: '/teacherGroupReports', name: 'GroupReports', component: GroupReportsView },
   { path: '/teacherCommunications', name: 'TeacherCommunications', component: CommunicationsView },
+
+
+
+  //rutas del estudiante
+  { path: '/dashboard', name: 'DashboardStudent', component: DashboardStudent},
+  { path: '/perfil-Student', name: 'PerfilStudent', component: PerfilStudent},
+  
+
+
+
+ 
+
 
 
 ]
