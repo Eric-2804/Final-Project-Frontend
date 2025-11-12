@@ -3,8 +3,7 @@ import login from '../views/login.vue'
 import Home from "../views/home.vue";
 import { useAuthStore } from "../store/authStore";
 import coordinatorRoutes from './coordinatorRouter' 
-import studentsRoutes from './studentsRouter'
-
+import teacherRoutes from './teacherRoutes';
 
 
 const routes = [
@@ -23,6 +22,7 @@ const router = createRouter({
   ...routes,
   ...coordinatorRoutes.options.routes, 
   ...studentsRoutes.options.routes
+  ...teacherRoutes.options.routes,
   ]
 })
 
