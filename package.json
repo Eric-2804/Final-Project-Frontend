@@ -10,12 +10,15 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.17.0",
-    "axios": "^1.12.2",
+    "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.2",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.5.0",
     "quasar": "^2.18.5",
     "vue": "^3.5.22",
-    "vue-router": "^4.6.3"
+    "vue-router": "^4.6.3",
+    "vue-signature-pad": "^3.0.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
