@@ -1,86 +1,90 @@
 <template>
-  <div class="group-management-page">
-    <!-- Header -->
-    <div class="header-section">
-      <div class="title-row">
-        <q-icon name="groups" color="primary" size="32px" class="q-mr-md" />
-        <div>
-          <h2 class="main-title">Consulta de Grupos</h2>
-          <p class="subtitle">
-            Visualiza la información de los estudiantes y acudientes de tus grupos asignados.
-          </p>
+  <MainLayout>
+    <template #default>
+      <div class="group-management-page">
+        <!-- Header -->
+        <div class="header-section">
+          <div class="title-row">
+            <q-icon name="groups" color="primary" size="32px" class="q-mr-md" />
+            <div>
+              <h2 class="main-title">Consulta de Grupos</h2>
+              <p class="subtitle">
+                Visualiza la información de los estudiantes y acudientes de tus grupos asignados.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Filtros -->
-    <div class="filters-row q-mb-md row items-center">
-      <div class="q-gutter-md row items-center">
-        <span>Seleccionar Grupo:</span>
-        <q-select
-          v-model="selectedGroup"
-          :options="groupOptions"
-          outlined
-          dense
-          style="min-width: 150px;"
+        <!-- Filtros -->
+        <div class="filters-row q-mb-md row items-center">
+          <div class="q-gutter-md row items-center">
+            <span>Seleccionar Grupo:</span>
+            <q-select
+              v-model="selectedGroup"
+              :options="groupOptions"
+              outlined
+              dense
+              style="min-width: 150px;"
+            />
+          </div>
+
+          <div class="q-gutter-md row items-center q-ml-md">
+            <span>Buscar:</span>
+            <q-input
+              v-model="search"
+              outlined
+              dense
+              clearable
+              placeholder="Buscar por estudiante..."
+              style="min-width: 220px;"
+            />
+          </div>
+        </div>
+
+        <!-- Tabla -->
+        <Tables
+          :columns="columns"
+          :rows="paginatedRows"
+          :actions="true"
+          @edit="handleEdit"
+          @toggleState="handleToggleState"
         />
+
+        <!-- Paginación -->
+        <div class="pagination-row q-mt-md row items-center justify-end">
+          <div class="results-info q-mr-md">
+            Mostrando {{ startIndex + 1 }} - {{ endIndex }} de {{ filteredRows.length }}
+          </div>
+          <q-pagination v-model="page" :max="maxPage" color="primary" />
+        </div>
+
+        <!-- Diálogo de edición -->
+        <q-dialog v-model="showEditDialog" persistent>
+          <BaseForm
+            title="Editar Estudiante"
+            subtitle="Modifica la información y guarda los cambios"
+            submitLabel="Guardar Cambios"
+            cancelLabel="Cancelar"
+            :modelValue="editFormData"
+            @submit="saveEdit"
+            @cancel="showEditDialog = false"
+          >
+            <template #fields="{ form }">
+              <q-input v-model="form.estudiante" label="Nombre del Estudiante" outlined dense />
+              <q-input v-model="form.documento" label="Documento" outlined dense />
+              <q-input v-model="form.telefono" label="Teléfono" outlined dense />
+              <q-input v-model="form.correo" label="Correo" outlined dense />
+            </template>
+          </BaseForm>
+        </q-dialog>
       </div>
-
-      <div class="q-gutter-md row items-center q-ml-md">
-        <span>Buscar:</span>
-        <q-input
-          v-model="search"
-          outlined
-          dense
-          clearable
-          placeholder="Buscar por estudiante..."
-          style="min-width: 220px;"
-        />
-      </div>
-    </div>
-
-    <!-- Tabla -->
-    <Tables
-      :columns="columns"
-      :rows="paginatedRows"
-      :actions="true"
-      @edit="handleEdit"
-      @toggleState="handleToggleState"
-    />
-
-    <!-- Paginación -->
-    <div class="pagination-row q-mt-md row items-center justify-end">
-      <div class="results-info q-mr-md">
-        Mostrando {{ startIndex + 1 }} - {{ endIndex }} de {{ filteredRows.length }}
-      </div>
-      <q-pagination v-model="page" :max="maxPage" color="primary" />
-    </div>
-
-    <!-- Diálogo para editar -->
-    <q-dialog v-model="showEditDialog" persistent>
-      <BaseForm
-        title="Editar Estudiante"
-        subtitle="Modifica la información y guarda los cambios"
-        submitLabel="Guardar Cambios"
-        cancelLabel="Cancelar"
-        :modelValue="editFormData"
-        @submit="saveEdit"
-        @cancel="showEditDialog = false"
-      >
-        <!-- Campos del formulario -->
-        <template #fields="{ form }">
-          <q-input v-model="form.estudiante" label="Nombre del Estudiante" outlined dense />
-          <q-input v-model="form.documento" label="Documento" outlined dense />
-          <q-input v-model="form.telefono" label="Teléfono" outlined dense />
-          <q-input v-model="form.correo" label="Correo" outlined dense />
-        </template>
-      </BaseForm>
-    </q-dialog>
-  </div>
+    </template>
+  </MainLayout>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import MainLayout from '@/layouts/MainLayout.vue'
 import Tables from '@/components/tables.vue'
 import BaseForm from '@/components/BaseForm.vue'
 
@@ -126,7 +130,7 @@ const endIndex = computed(() => Math.min(page.value * rowsPerPage, filteredRows.
 const maxPage = computed(() => Math.max(1, Math.ceil(filteredRows.value.length / rowsPerPage)))
 const paginatedRows = computed(() => filteredRows.value.slice(startIndex.value, startIndex.value + rowsPerPage))
 
-// Abrir formulario al editar
+// Editar
 function handleEdit(row) {
   editFormData.value = { ...row }
   showEditDialog.value = true
@@ -139,7 +143,7 @@ function saveEdit(updated) {
   showEditDialog.value = false
 }
 
-// Cambiar estado
+// Activar/desactivar
 function handleToggleState(row) {
   const idx = rows.value.findIndex(r => r.index === row.index)
   if (idx !== -1) rows.value[idx].active = !rows.value[idx].active
