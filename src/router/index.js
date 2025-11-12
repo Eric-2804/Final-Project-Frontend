@@ -5,6 +5,12 @@ import { useAuthStore } from '../store/authStore'
 import login from '../views/login.vue'
 import Home from '../views/home.vue'
 
+
+// vistas del acudiente 
+import ProfileViews from '../views/guardianViews/profileViews.vue'
+
+
+
 // vistas del coordinador
 import dashboard from '../views/coordinatorViews/dashboardView.vue'
 import generalAcademic from '../views/coordinatorViews/generalAcademicManagementView.vue'
@@ -36,7 +42,11 @@ const routes = [
   { path: '/home', name: 'home', component: Home },
 
 
+// rutas del acudiente
+  { path: '/guardianProfile', name: 'GuardianProfile', component: ProfileViews },
 
+
+  
   // rutas del coordinador
   { path: '/dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard },
   { path: '/generalAcademicCoordinator', name: 'GeneralAcademic', component: generalAcademic },
@@ -64,11 +74,6 @@ const routes = [
   { path: '/dashboard', name: 'DashboardStudent', component: DashboardStudent},
   { path: '/perfil-Student', name: 'PerfilStudent', component: PerfilStudent},
   
-
-
-
- 
-
 
 
 ]
