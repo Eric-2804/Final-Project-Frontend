@@ -1,4 +1,3 @@
-// src/services/cordinatorServices/coordinatorService.js
 import api from '../api'
 
 // obtener el período activo
@@ -25,16 +24,3 @@ export const getMatriculasPorYear = async (year) => {
   }
 }
 
-export const getGruposActivos = async () => {
-  try {
-    const response = await api.get('/api/groups') // endpoint que lista grupos
-    const grupos = response.data
-
-    // filtrar solo los que estén activos
-    const gruposActivos = grupos.filter(g => g.state === 'ACTIVO')
-    return gruposActivos
-  } catch (error) {
-    console.error('Error al obtener grupos activos:', error)
-    throw error
-  }
-}

@@ -1,36 +1,35 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <!-- header -->
+    
     <HeaderComponent
       :leftDrawerOpen="leftDrawerOpen"
       :toggleLeftDrawer="toggleLeftDrawer"
     />
 
-    <!-- menú lateral -->
+    
     <SidebarComponent
       :leftDrawerOpen="leftDrawerOpen"
       :mini="mini"
       @update:leftDrawerOpen="leftDrawerOpen = $event"
     />
 
-    <!-- contenido principal -->
     <q-page-container>
       <q-page class="contenedor-cards">
 
-        <!-- título de bienvenida -->
+        
         <div class="welcome_title">
           <h1>Bienvenido, Coordinador</h1>
         </div>
 
         <div class="cards-grid">
-          <!-- Grupos activos -->
+          
           <div class="card">
             <q-icon name="groups" size="40px" color="primary" />
             <h3>Grupos activos</h3>
             <p>600</p>
           </div>
 
-          <!-- Estudiantes matriculados -->
+         
           <div class="card">
             <q-icon name="school" size="40px" color="primary" />
             <h3>Estudiantes matriculados</h3>
@@ -38,14 +37,14 @@
             <p v-else>{{ matriculas.length }}</p>
           </div>
 
-          <!-- Promedio institucional -->
+          
           <div class="card">
             <q-icon name="bar_chart" size="40px" color="primary" />
             <h3>Promedio institucional</h3>
             <p>3.04</p>
           </div>
 
-          <!-- Período activo -->
+        
           <div class="card">
             <q-icon name="calendar_month" size="40px" color="primary" />
             <h3>Período activo</h3>
@@ -55,7 +54,7 @@
           </div>
         </div>
 
-        <!-- Lista de matrículas -->
+       
         <div class="matriculas-list">
           <h2>Matrículas del período activo</h2>
           <p v-if="loadingMatriculas">Cargando matrículas...</p>
@@ -77,7 +76,7 @@ import HeaderComponent from '../../components/Header.vue'
 import SidebarComponent from '../../components/Sidebar.vue'
 import { getPeriodoActivo, getMatriculasPorYear } from '../../services/cordinatorServices/coordinatorService'
 
-/* --- VARIABLES REACTIVAS --- */
+
 const leftDrawerOpen = ref(true)
 const mini = ref(false)
 const periodoActivo = ref(null)
@@ -85,7 +84,7 @@ const loadingPeriodo = ref(true)
 const matriculas = ref([])
 const loadingMatriculas = ref(true)
 
-/* --- FUNCIONES --- */
+
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
@@ -115,7 +114,7 @@ const cargarMatriculas = async (year) => {
   }
 }
 
-/* --- EJECUCIÓN --- */
+
 onMounted(() => {
   cargarPeriodoActivo()
 })
@@ -223,4 +222,3 @@ watch(periodoActivo, (newPeriodo) => {
   border-bottom: 1px solid #e5e7eb;
 }
 </style>
-  
