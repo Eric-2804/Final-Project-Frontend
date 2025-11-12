@@ -8,8 +8,14 @@ import Home from '../views/home.vue'
 
 // vistas del acudiente 
 import ProfileViews from '../views/guardianViews/profileViews.vue'
-
-
+import AttendancePage from '../views/guardianViews/AttendancePage.vue'
+import DashboardGuardian from '../views/guardianViews/DashboardGuardianView.vue'
+import DashboardPage from '../views/guardianViews/DashboardPage.vue'
+import EnrollmentsDetailsView from '../views/guardianViews/EnrollmentsDetailsView.vue'
+import EnrollmentsFormView from '../views/guardianViews/EnrollmentsFormView.vue'
+import EnrollmentsView from '../views/guardianViews/EnrollmentsView.vue'
+import GradesView from '../views/guardianViews/GradesView.vue'
+import TeacherView from '../views/guardianViews/TeacherView.vue'
 
 // vistas del coordinador
 import dashboard from '../views/coordinatorViews/dashboardView.vue'
@@ -59,10 +65,10 @@ const routes = [
 
 
 
-  // rutas del profesor 
-  { path: '/teacherDashboard', name: 'TeacherDashboard', component: DashboardView },
-  { path: '/teacherProfile', name: 'TeacherProfile', component: ProfileView },
-  { path: '/teacherGroups', name: 'TeacherGroupsAndSubjects', component: GroupsAndSubjectsView },
+  // rutas del profesor
+  { path: '/teacherDashboard', name: 'TeacherDashboard', component: TeacherDashboardView },
+  { path: '/teacherProfile', name: 'TeacherProfile', component: TeacherProfileView },
+  { path: '/teacherGroups', name: 'TeacherGroupsAndSubjects', component: TeacherGroupsAndSubjectsView },
   { path: '/teacherAcademicManagement', name: 'AcademicManagement', component: AcademicManagementView },
   { path: '/teacherPerformanceIndicators', name: 'PerformanceIndicators', component: PerformanceIndicatorsView },
   { path: '/teacherGroupReports', name: 'GroupReports', component: GroupReportsView },
@@ -77,6 +83,8 @@ const routes = [
 
 
 ]
+
+
 
 const router = createRouter({
   history: createWebHistory(),

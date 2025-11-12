@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <div padding>
     <h1 class="q-ma-none q-mb-md">Informes de Grupo</h1>
     <q-card>
       <q-card-section>
@@ -62,7 +62,7 @@
         </div>
       </q-card-section>
     </q-card>
-  </q-page>
+  </div>
 </template>
 
 <script>
