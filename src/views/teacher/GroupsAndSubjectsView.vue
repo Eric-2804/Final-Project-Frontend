@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <div padding>
     <h1 class="q-ma-none q-mb-md">Grupos y Materias</h1>
     <tables
       :columns="columns"
@@ -7,7 +7,7 @@
       :actions="true"
       @edit="goToAcademicManagement"
     />
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -50,8 +50,5 @@ export default {
 </script>
 
 <style scoped>
-.q-page {
-  max-width: 1200px;
-  margin: 0 auto;
-}
+
 </style>
