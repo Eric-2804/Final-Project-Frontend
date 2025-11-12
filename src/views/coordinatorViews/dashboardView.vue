@@ -26,7 +26,10 @@
           <div class="card">
             <q-icon name="groups" size="40px" color="primary" />
             <h3>Grupos activos</h3>
-            <p>600</p>
+            <p v-if="loadingGrupos">Cargando...</p>
+<p v-else>{{ gruposActivos.length }}</p>
+
+
           </div>
 
          
@@ -54,16 +57,6 @@
           </div>
         </div>
 
-       
-        <div class="matriculas-list">
-          <h2>Matrículas del período activo</h2>
-          <p v-if="loadingMatriculas">Cargando matrículas...</p>
-          <ul v-else>
-            <li v-for="m in matriculas" :key="m._id">
-              {{ m.studentName }} {{ m.studentLastname }} – {{ m.grade }}
-            </li>
-          </ul>
-        </div>
 
       </q-page>
     </q-page-container>
@@ -74,21 +67,28 @@
 import { ref, onMounted, watch } from 'vue'
 import HeaderComponent from '../../components/Header.vue'
 import SidebarComponent from '../../components/Sidebar.vue'
-import { getPeriodoActivo, getMatriculasPorYear } from '../../services/cordinatorServices/coordinatorService'
+import { getPeriodoActivo, getMatriculasPorYear, getGruposActivos } from '../../services/cordinatorServices/coordinatorService'
 
-
+// estados del layout
 const leftDrawerOpen = ref(true)
 const mini = ref(false)
+
+// datos de la app
 const periodoActivo = ref(null)
 const loadingPeriodo = ref(true)
+
 const matriculas = ref([])
 const loadingMatriculas = ref(true)
 
+const gruposActivos = ref([])
+const loadingGrupos = ref(true)
 
+// toggle drawer
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
+// cargar periodo activo
 const cargarPeriodoActivo = async () => {
   loadingPeriodo.value = true
   try {
@@ -101,11 +101,12 @@ const cargarPeriodoActivo = async () => {
   }
 }
 
+// cargar matrículas por año
 const cargarMatriculas = async (year) => {
   loadingMatriculas.value = true
   try {
     const data = await getMatriculasPorYear(year)
-    matriculas.value = data
+    matriculas.value = Array.isArray(data) ? data : []
   } catch (error) {
     console.error('Error al cargar matrículas:', error)
     matriculas.value = []
@@ -114,17 +115,35 @@ const cargarMatriculas = async (year) => {
   }
 }
 
+const cargarGrupos = async () => {
+  loadingGrupos.value = true
+  try {
+    gruposActivos.value = await getGruposActivos()
+  } catch (error) {
+    console.error(error)
+    gruposActivos.value = []
+  } finally {
+    loadingGrupos.value = false
+  }
+}
 
+
+
+
+// al montar el componente
 onMounted(() => {
   cargarPeriodoActivo()
+  cargarGrupos()
 })
 
+// cuando se actualiza el periodo activo
 watch(periodoActivo, (newPeriodo) => {
   if (newPeriodo) {
     cargarMatriculas(newPeriodo.year)
   }
 })
 </script>
+
 
 <style scoped>
 .q-page {
@@ -195,30 +214,5 @@ watch(periodoActivo, (newPeriodo) => {
   font-weight: bold;
   color: #0f172a;
   margin: 0;
-}
-
-.matriculas-list {
-  width: 90%;
-  max-width: 1000px;
-  margin-top: 2rem;
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.matriculas-list h2 {
-  color: #1e40af;
-  margin-bottom: 1rem;
-}
-
-.matriculas-list ul {
-  list-style: none;
-  padding: 0;
-}
-
-.matriculas-list li {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #e5e7eb;
 }
 </style>

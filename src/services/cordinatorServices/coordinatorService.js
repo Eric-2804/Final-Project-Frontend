@@ -24,3 +24,17 @@ export const getMatriculasPorYear = async (year) => {
   }
 }
 
+// obtener grupos activos
+export const getGruposActivos = async () => {
+  try {
+    const res = await fetch('http://localhost:3000/api/groups/activos')
+    if (!res.ok) throw new Error('Error al obtener grupos activos')
+    const data = await res.json()
+    // si tu backend devuelve { success, message, data }
+    return Array.isArray(data.data) ? data.data : []
+  } catch (error) {
+    console.error('error al obtener grupos activos:', error)
+    return []
+  }
+}
+
