@@ -13,7 +13,7 @@ import DashboardGuardian from '../views/guardianViews/DashboardGuardianView.vue'
 import DashboardPage from '../views/guardianViews/DashboardPage.vue'
 import EnrollmentsDetailsView from '../views/guardianViews/EnrollmentsDetailsView.vue'
 import EnrollmentsFormView from '../views/guardianViews/EnrollmentsFormView.vue'
-/* import EnrollmentsView from '../views/guardianViews/EnrollmentsView.vue' */
+import EnrollmentsView from '../views/guardianViews/EnrollmentsView.vue'
 import GradesView from '../views/guardianViews/GradesView.vue'
 import TeacherView from '../views/guardianViews/TeacherView.vue'
 
@@ -50,7 +50,7 @@ const routes = [
   { path: '/AttendancePage', name: 'AttendancePage', component: AttendancePage},
   { path: '/EnrollmentsDetailsView', name: 'EnrollmentsDetailsView', component: EnrollmentsDetailsView},
   { path: '/EnrollmentsFormView', name: 'EnrollmentsFormView', component: EnrollmentsFormView},
-  /* { path: '/EnrollmentsView', name: 'EnrollmentsView', component: EnrollmentsView}, */
+  { path: '/EnrollmentsView', name: 'EnrollmentsView', component: EnrollmentsView},
   { path: '/GradesView', name: 'GradesView', component: GradesView},
   { path: '/TeacherView', name: 'TeacherView', component: TeacherView},
 
