@@ -1,5 +1,6 @@
 <template>
   <div class="containerLogin">
+
     <div class="login">
       <h1>Bienvenido</h1>
       <h2>Inicie sesión para continuar</h2>
