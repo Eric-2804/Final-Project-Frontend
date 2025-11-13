@@ -21,31 +21,31 @@ const teacherLinks = ref([
     title: 'Dashboard',
     caption: 'Inicio',
     icon: 'dashboard',
-    link: '/teacher/dashboard'
+    link: '/teacherDashboard'
   },
   {
     title: 'Mis Grupos y Materias',
     caption: 'Tus grupos y materias',
     icon: 'group',
-    link: '/teacher/groups'
+    link: '/teacherGroups'
   },
   {
     title: 'Indicadores de Desempeño',
     caption: 'Gestiona los indicadores',
     icon: 'assessment',
-    link: '/teacher/performance-indicators'
+    link: '/teacherPerformanceIndicators'
   },
   {
     title: 'Reportes del Grupo',
     caption: 'Genera reportes',
     icon: 'article',
-    link: '/teacher/group-reports'
+    link: '/teacherGroupReports'
   },
   {
     title: 'Comunicados',
     caption: 'Envía comunicados',
     icon: 'send',
-    link: '/teacher/communications'
+    link: '/teacherCommunications'
   }
 ])
 </script>
