@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <div padding>
     <h1 class="q-ma-none q-mb-md">Comunicaciones</h1>
     <div class="row q-col-gutter-md">
       <div class="col-12 col-md-5">
@@ -51,7 +51,7 @@
         </q-card>
       </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -108,11 +108,5 @@ export default {
   display: flex;
   justify-content: flex-end;
 }
-</style>
 
-<style scoped>
-.q-page {
-  max-width: 1400px;
-  margin: 0 auto;
-}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <div padding>
     <h1 class="q-ma-none q-mb-md">Inicio / Dashboard Docente</h1>
 
     <div class="row q-col-gutter-md">
@@ -60,7 +60,7 @@
         </q-item>
       </q-list>
     </q-card>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -97,8 +97,5 @@ export default {
 </script>
 
 <style scoped>
-.q-page {
-  max-width: 1200px;
-  margin: 0 auto;
-}
+
 </style>
