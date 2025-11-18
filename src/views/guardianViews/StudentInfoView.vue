@@ -3,9 +3,9 @@ import { reactive } from 'vue'
 
 /* Datos temporales (quemados) para pruebas */
 const user = reactive({
-  firstName: 'Maria',
-  lastName: 'Gonzalez',
-  email: 'maria.gonzalez@gmail.com',
+  firstName: 'Edward',
+  lastName: 'Petrico',
+  email: 'EdPetrico@gmail.com',
   role: 'Guardian',
   nucleus: 'Central Educational Nucleus'
 })
