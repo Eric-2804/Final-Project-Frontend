@@ -257,7 +257,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
 import Button from "../components/Button.vue";
-import { useNotify } from "../composables/useNotify";
+import { useNotify } from "../composables/useNotify.js";
 import api from "../services/api.js";
 
 
