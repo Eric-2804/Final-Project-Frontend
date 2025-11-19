@@ -12,7 +12,11 @@ const app = createApp(App)
 const pinia = createPinia() // ya estará definida correctamente
 
 // 🔥 registra los plugins
-app.use(Quasar, { plugins: {Notify} })
+app.use(Quasar, { 
+  plugins: { 
+    Notify 
+  } 
+})
 app.use(pinia) 
 app.use(router)
 
