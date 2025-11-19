@@ -67,7 +67,11 @@
 </template>
 
 <script setup>
+import { useAuthStore } from "../store/authStore";
+import { storeToRefs } from "pinia";
 
+const auth = useAuthStore();
+const { user } = storeToRefs(auth);
 </script>
 
 <style scoped>
