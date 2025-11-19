@@ -127,11 +127,11 @@ const formData = ref({
 const schoolOptions = ref([])
 
 
-// Carga la lista de colegios. (Backend/Axios fix)
+// Carga la lista de colegios.
 const fetchSchools = async () => {
   try {
     const response = await api.get('/school');
-    const res = response.data; // Extraer la data de la respuesta de Axios
+    const res = response.data; 
     
     const items = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : [])
     schoolOptions.value = items.map(s => ({ label: s.name, value: s._id }))
@@ -141,12 +141,12 @@ const fetchSchools = async () => {
   }
 }
 
-// Listado de las sedes. (Backend/Axios fix)
+// Listado de las sedes. 
 const fetchHeadquarters = async () => {
   try {
     isLoading.value = true
     const response = await api.get("/sedes");
-    const res = response.data; // Extraer la data de la respuesta de Axios
+    const res = response.data; 
 
     if (Array.isArray(res)) {
       headquartersList.value = res
@@ -280,7 +280,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Tu clase CSS personalizada para el botón de acción */
 .actionButtonContainer {
   margin-left: 800px;
 }
