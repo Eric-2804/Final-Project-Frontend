@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-// No se necesita lógica de script para esta versión temporal
+
 </script>
 
 <style scoped>

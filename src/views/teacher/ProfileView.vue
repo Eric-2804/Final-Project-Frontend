@@ -292,7 +292,7 @@ export default {
   name: 'TeacherProfile',
   setup() {
     const route = useRoute();
-    const teacherId = '6917ec45ac5ef097ac96abce';
+    const teacherId = '6917ec45ac5ef097ac96abd1';
     const { showNotify, showErrorNotify } = useNotify();
 
     const profile = ref({
