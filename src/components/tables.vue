@@ -2,8 +2,7 @@
   <div class="translator">
     <div class="block">
       <div class="top-controls">
-
-        <!--Input del buscador  -->
+        <!-- Input del buscador -->
         <q-input
           v-model="filter"
           label="buscar..."
@@ -18,8 +17,9 @@
           </template>
         </q-input>
 
-        <!--Boton del ultimo cambio -->
+        <!-- Boton del ultimo cambio -->
         <q-btn
+          v-if="enableSorting"
           flat
           color="primary"
           icon="swap_vert"
@@ -28,37 +28,19 @@
           class="sort-btn"
         />
       </div>
-      
-      <!--Tabla -->
+
+      <!-- Tabla -->
       <q-table
-        :rows="sortedRows"
+        :rows="processedRows"
         :columns="columns"
         :filter="filter"
-        row-key="id"
+        :row-key="rowKey"
         color="primary"
         class="board"
       >
-              //Acciones
-        <template v-if="actions" v-slot:body-cell-actions="props">
-          <q-td :props="props" class="text-center">
-            <q-btn
-              size="sm"
-              color="primary"
-              icon="edit"
-              round
-              dense
-              class="q-mr-sm"
-              @click="$emit('edit', props.row)"
-            />
-            <q-btn
-              size="sm"
-              :color="props.row.active ? 'negative' : 'positive'"
-              :icon="props.row.active ? 'close' : 'check'"
-              round
-              dense
-              @click="$emit('toggleState', props.row)"
-            />
-          </q-td>
+        <!-- Passthrough para todos los slots -->
+        <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
+          <slot :name="slot" v-bind="scope" />
         </template>
       </q-table>
     </div>
@@ -66,28 +48,44 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   columns: Array,
   rows: Array,
-  actions: Boolean
-})
+  rowKey: {
+    type: String,
+    default: 'id',
+  },
+  enableSorting: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const filter = ref('')
-const sortOrder = ref('desc') 
+const filter = ref('');
+const sortOrder = ref('desc');
 
 function toggleSortOrder() {
-  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
+  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc';
 }
 
-const sortedRows = computed(() => {
-  return [...props.rows].sort((a, b) => {
-    const dateA = new Date(a.lastChange)
-    const dateB = new Date(b.lastChange)
-    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
-  })
-})
+const processedRows = computed(() => {
+  if (props.enableSorting) {
+    // Asegurarse de que las filas sean un array antes de ordenar
+    const rowsArray = Array.isArray(props.rows) ? [...props.rows] : [];
+    return rowsArray.sort((a, b) => {
+      const dateA = new Date(a.lastChange);
+      const dateB = new Date(b.lastChange);
+      // Manejar fechas inválidas
+      if (isNaN(dateA) || isNaN(dateB)) {
+        return 0;
+      }
+      return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }
+  return props.rows;
+});
 </script>
 
 <style scoped>
@@ -104,7 +102,6 @@ const sortedRows = computed(() => {
   width: 90%;
   max-width: 1200px;
 }
-
 
 .top-controls {
   display: flex;

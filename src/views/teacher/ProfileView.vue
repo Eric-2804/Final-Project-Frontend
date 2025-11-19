@@ -101,37 +101,9 @@
             </q-card-section>
           </q-card>
 
-          <!-- Card de Firma Digital -->
-          <q-card flat bordered class="info-card q-mt-lg">
-            <q-card-section>
-              <div class="section-header">
-                <q-icon name="draw" size="24px" color="primary" />
-                <h3 class="section-title">Firma Digital</h3>
-              </div>
-              <q-separator class="q-my-md" />
-              <div class="text-center">
-                <div v-if="profile.signature" class="signature-preview">
-                  <img :src="profile.signature" alt="Firma" />
-                </div>
-                <div v-else class="signature-placeholder">
-                  <q-icon name="gesture" size="48px" color="grey-5" />
-                  <p class="text-grey-6 q-mt-sm">No hay firma registrada</p>
-                </div>
-                <q-btn 
-                  unelevated
-                  color="primary" 
-                  :label="profile.signature ? 'Cambiar Firma' : 'Subir Firma'" 
-                  size="md"
-                  class="q-mt-md"
-                  icon="upload"
-                  @click="changeSignature" 
-                />
-              </div>
-            </q-card-section>
-          </q-card>
         </div>
 
-        <!-- Columna Derecha: Cambiar Contraseña -->
+        <!-- Columna Derecha: Cambiar Contraseña y Firma -->
         <div class="col-12 col-md-7">
           <q-card flat bordered class="password-card">
             <q-card-section>
@@ -272,6 +244,35 @@
                   </div>
                   <q-btn flat dense color="primary" label="Ver" size="sm" />
                 </div>
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <!-- Card de Firma Digital -->
+          <q-card flat bordered class="info-card q-mt-lg">
+            <q-card-section>
+              <div class="section-header">
+                <q-icon name="draw" size="24px" color="primary" />
+                <h3 class="section-title">Firma Digital</h3>
+              </div>
+              <q-separator class="q-my-md" />
+              <div class="text-center">
+                <div v-if="profile.signature" class="signature-preview">
+                  <img :src="profile.signature" alt="Firma" />
+                </div>
+                <div v-else class="signature-placeholder">
+                  <q-icon name="gesture" size="48px" color="grey-5" />
+                  <p class="text-grey-6 q-mt-sm">No hay firma registrada</p>
+                </div>
+                <q-btn 
+                  unelevated
+                  color="primary" 
+                  :label="profile.signature ? 'Cambiar Firma' : 'Subir Firma'" 
+                  size="md"
+                  class="q-mt-md"
+                  icon="upload"
+                  @click="changeSignature" 
+                />
               </div>
             </q-card-section>
           </q-card>
