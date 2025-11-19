@@ -3,38 +3,38 @@ import api from "../api.js";
 export default {
   // Obtener matrículas por año
   getAllByYear(year) {
-    return api.get(`/api/registration/year/${year}`);
+    return api.get(`/registration/year/${year}`);
   },
 
   // Obtener una matrícula por ID
   getById(id) {
-    return api.get(`/api/registration/${id}`);
+    return api.get(`/registration/${id}`);
   },
 
   // Crear matrícula
   create(data) {
-    return api.post(`/api/registration`, data);
+    return api.post(`/registration`, data);
   },
 
   // Actualizar matrícula
   update(id, data) {
-    return api.put(`/api/registration/${id}`, data);
+    return api.put(`/registration/${id}`, data);
   },
 
   // Cambios de estado
   activate(id) {
-    return api.put(`/api/registration/${id}/activate`);
+    return api.put(`/registration/${id}/activate`);
   },
 
   desactivate(id) {
-    return api.put(`/api/registration/${id}/desactivate`);
+    return api.put(`/registration/${id}/desactivate`);
   },
 
   desertion(id) {
-    return api.put(`/api/registration/${id}/desertion`);
+    return api.put(`/registration/${id}/desertion`);
   },
 
   graduated(id) {
-    return api.put(`/api/registration/${id}/graduated`);
+    return api.put(`/registration/${id}/graduated`);
   }
 };
