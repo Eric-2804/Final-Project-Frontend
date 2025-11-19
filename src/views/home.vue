@@ -1,4 +1,5 @@
 <template>
+  <q-page class="q-pa-md">
   <div class="dashboard">
     <h1>Bienvenido, {{ auth.user?.role }}</h1>
     <p>Correo: {{ auth.user?.email }}</p>
@@ -7,6 +8,7 @@
       <button @click="logout" class="btn-logout">Cerrar sesión</button>
     </div>
   </div>
+  </q-page>
 </template>
 
 <script setup>
