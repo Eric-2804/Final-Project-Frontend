@@ -282,31 +282,32 @@
   </div>
 </template>
 
+
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useNotify } from '../../composables/useNotify.js';
+import api from '../../services/api';
 
 export default {
   name: 'TeacherProfile',
   setup() {
+    const route = useRoute();
+    const teacherId = '6917ec45ac5ef097ac96abce';
     const { showNotify, showErrorNotify } = useNotify();
 
     const profile = ref({
-      name: 'Nombre del Docente',
-      role: 'Docente',
-      document: '12345678',
-      email: 'docente@example.com',
-      phone: '3001234567',
-      address: 'Calle Principal #123',
+      name: '',
+      role: '',
+      document: '',
+      email: '',
+      phone: '',
+      address: '',
       photo: null,
       signature: null,
     });
 
-    const academicLoad = ref([
-      { id: 1, group: 'Grupo A', subject: 'Matemáticas' },
-      { id: 2, group: 'Grupo B', subject: 'Física' },
-      { id: 3, group: 'Grupo C', subject: 'Química' },
-    ]);
+    const academicLoad = ref([]);
 
     const password = ref({
       current: '',
@@ -315,6 +316,8 @@ export default {
     });
 
     const showPasswordTips = ref(false);
+    const loading = ref(true);
+    const error = ref(null);
 
     const passwordStrength = computed(() => {
       const pwd = password.value.new;
@@ -351,7 +354,7 @@ export default {
       showNotify({ message: 'Función para cambiar firma' });
     };
 
-    const changePassword = () => {
+    const changePassword = async () => {
       if (password.value.new !== password.value.confirm) {
         showErrorNotify({ message: 'Las contraseñas no coinciden' });
         return;
@@ -362,12 +365,21 @@ export default {
         return;
       }
 
-      showNotify({
-        message: 'Contraseña cambiada exitosamente',
-        type: 'positive',
-      });
-      
-      resetPasswordForm();
+      try {
+        await api.put(`/api/usuarios-colegio/password/${teacherId}`, {
+          currentPassword: password.value.current,
+          newPassword: password.value.new,
+        });
+
+        showNotify({
+          message: 'Contraseña cambiada exitosamente',
+        });
+        
+        resetPasswordForm();
+      } catch (err) {
+        const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Error al cambiar la contraseña. Verifique su contraseña actual.';
+        showErrorNotify({ message: errorMessage });
+      }
     };
 
     const resetPasswordForm = () => {
@@ -378,6 +390,28 @@ export default {
       };
       showPasswordTips.value = false;
     };
+
+    onMounted(async () => {
+      try {
+        const response = await api.get(`/api/usuarios-colegio/${teacherId}`);
+        const teacherData = response.data;
+        profile.value = {
+          name: `${teacherData.names} ${teacherData.lastNames}`,
+          role: teacherData.roles.join(', '),
+          document: teacherData.numberDocument,
+          email: teacherData.email,
+          phone: teacherData.cellphone,
+          address: teacherData.direction,
+          photo: teacherData.profilePhoto,
+          signature: teacherData.signDigital,
+        };
+      } catch (err) {
+        error.value = 'Error al cargar el perfil del profesor. Por favor, inténtelo de nuevo más tarde.';
+        showErrorNotify({ message: error.value });
+      } finally {
+        loading.value = false;
+      }
+    });
 
     return {
       profile,
@@ -391,6 +425,8 @@ export default {
       changeSignature,
       changePassword,
       resetPasswordForm,
+      loading,
+      error,
     };
   },
 };
