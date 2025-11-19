@@ -124,7 +124,7 @@ const user = ref({
 });
 
 onMounted(async () => {
-  const teacherId = '6917ec45ac5ef097ac96abd1';
+  const teacherId = '6917ec45ac5ef097ac96abce';
   if (teacherId) {
     try {
       const response = await api.get(`/api/usuarios-colegio/${teacherId}`);
@@ -191,11 +191,7 @@ function logout() {
 .no-scroll {
   overflow-x: hidden;
 }
-.main-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
+
 /* === DRAWER PEGADO AL HEADER, SIN EMPUJAR === */
 .main-drawer {
   position: fixed !important;
@@ -229,23 +225,19 @@ function logout() {
 }
 
 /* === CONTENIDO PRINCIPAL === */
-
 .main-page-container {
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - 64px); /* Altura de la ventana menos el header */
-  margin-top: 64px; /* Espacio para el header fijo */
+  margin-top: -30px;/* espacio solo para el header */
+  margin-left: -50px; /* deja espacio para el menú mini */
   padding: 0;
   transition: margin-left 0.3s ease;
+  min-height: calc(100vh - 64px);
+  padding-top: 0;
 }
-
 .q-page-container {
   padding-left: 0 !important;
   margin-left: 0 !important;
 }
-.content-wrapper {
-  flex: 1; /* Hace que el contenido crezca y empuje el footer */
-}
+
 /* === EVITAR QUE EL CONTENIDO SE MUEVA CUANDO EL DRAWER ESTÁ EXPANDIDO === */
 .q-drawer--standard:not(.q-drawer--mini) {
   position: fixed !important;
@@ -325,4 +317,5 @@ main-footer {
     padding-top: 70px !important; /* espacio para que el menú no quede oculto */
   }
 }
+
 </style>
