@@ -6,13 +6,7 @@
   <q-layout v-else view="lHh Lpr lFf">
     
     <!-- Tu barra de botones para desarrollo -->
-    <div class="q-pa-sm bg-grey-3">
-      <q-btn flat label="login" to="/" />
-      <q-btn flat label="dashboard" to="/dashboardCoordinator" />
-      <q-btn flat label="Perfil Estudiante" to="/perfil-Student" />
-      <q-btn flat label="Dashboard Estudiante" to="/dashboard" />
-      <q-btn flat label="Sedes de la secretaria" to="/sedesSecretaria" />
-    </div>
+  
 
     <!-- El contenido de las otras páginas (login, etc.) -->
     <q-page-container>
