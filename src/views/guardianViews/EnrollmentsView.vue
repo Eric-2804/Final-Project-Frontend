@@ -186,123 +186,126 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useQuasar } from 'quasar'
-import api from '@/services/api.js'
-import Spinner from '@/components/Spinner.vue'
-import { useNotify } from '@/composables/useNotify'
+import { ref, reactive, onMounted, computed } from "vue";
+import { useQuasar } from "quasar";
+import Spinner from "@/components/Spinner.vue";
+import { useNotify } from "@/composables/useNotify";
 
-const $q = useQuasar()
-const { showNotify, showErrorNotify } = useNotify()
+import registrationService from "@/services/guardianServices/registrationService.js";
+import groupsService from "@/services/guardianServices/groupsService.js";
+
+
+const $q = useQuasar();
+const { showNotify, showErrorNotify } = useNotify();
 
 /* ============================
    STATE
 ============================ */
-const loading = ref(false)
-const currentYear = new Date().getFullYear()
-const rows = ref([])
-const selected = ref(null)
+const loading = ref(false);
+const currentYear = new Date().getFullYear();
+const rows = ref([]);
+const selected = ref(null);
 
-const viewDialog = ref(false)
-const formDialog = ref(false)
-const isEditing = ref(false)
+const viewDialog = ref(false);
+const formDialog = ref(false);
+const isEditing = ref(false);
 
 /* FORM MODEL */
 const form = reactive({
   _id: null,
-  student: '',
-  group: '',
-  registrationNumber: '',
-  registrationDate: new Date().toISOString().split('T')[0],
-  description: '',
+  student: "",
+  group: "",
+  registrationNumber: "",
+  registrationDate: new Date().toISOString().split("T")[0],
+  description: "",
   year: currentYear
-})
+});
 
 /* HELPERS */
-const groups = ref([])
-const students = ref([])
+const groups = ref([]);
+const students = ref([]);
 
 /* UI Select options */
 const groupOptions = computed(() =>
-  groups.value.map(g => ({
+  groups.value.map((g) => ({
     ...g,
-    label: `${g.grade || ''}${g.groupIdentifier ? g.groupIdentifier : ''} - ${g.session || ''}`
+    label: `${g.grade || ""}${g.groupIdentifier || ""} - ${g.session || ""}`
   }))
-)
+);
 
 const studentOptions = computed(() =>
-  students.value.map(s => ({
+  students.value.map((s) => ({
     ...s,
-    label: `${s.names} ${s.lastNames} — ${s.numberDocument || ''}`
+    label: `${s.names} ${s.lastNames} — ${s.numberDocument || ""}`
   }))
-)
+);
 
 /* TABLE COLUMNS */
 const columns = [
-  { name: 'registrationNumber', label: 'Código', field: 'registrationNumber', align: 'left' },
-  { name: 'studentName', label: 'Estudiante', field: 'studentName', align: 'left' },
-  { name: 'group', label: 'Grupo', field: 'group', align: 'left' },
-  { name: 'state', label: 'Estado', field: 'state', align: 'center' },
-  { name: 'registrationDate', label: 'Fecha', field: 'registrationDate', align: 'left' },
-  { name: 'actions', label: 'Acciones', field: 'actions', align: 'center' }
-]
+  { name: "registrationNumber", label: "Código", field: "registrationNumber" },
+  { name: "studentName", label: "Estudiante", field: "studentName" },
+  { name: "group", label: "Grupo", field: "group" },
+  { name: "state", label: "Estado", field: "state", align: "center" },
+  { name: "registrationDate", label: "Fecha", field: "registrationDate" },
+  { name: "actions", label: "Acciones", field: "actions", align: "center" }
+];
 
 /* ============================
-   UNIVERSAL ERROR HANDLER
+   ERROR HANDLER
 ============================ */
-function handleApiError(err, defaultMsg = 'Error en la operación') {
+function handleApiError(err, defaultMsg = "Error en la operación") {
   const msg =
     err?.response?.data?.msg ||
     err?.response?.data?.error ||
     err?.message ||
-    defaultMsg
+    defaultMsg;
 
-  showErrorNotify(msg)
+  showErrorNotify(msg);
 }
 
 /* ============================
    ON MOUNT
 ============================ */
 onMounted(() => {
-  loadAll()
-})
+  loadAll();
+});
 
 /* ============================
    LOAD ALL REGISTRATIONS + GROUPS
 ============================ */
 async function loadAll() {
-  loading.value = true
+  loading.value = true;
   try {
-    const regRes = await api.get(`/api/registration/year/${currentYear}`)
-    const list = Array.isArray(regRes.data?.data) ? regRes.data.data : []
+    const regRes = await registrationService.getAllByYear(currentYear);
+    const list = Array.isArray(regRes.data?.data) ? regRes.data.data : [];
 
-    const gRes = await api.get(`/api/grupos/year/${currentYear}`)
-    groups.value = Array.isArray(gRes.data?.data) ? gRes.data.data : []
+    const gRes = await groupsService.getByYear(currentYear);
+    groups.value = Array.isArray(gRes.data?.data) ? gRes.data.data : [];
 
-    rows.value = list.map(reg => ({
+    rows.value = list.map((reg) => ({
       id: reg._id,
       _raw: reg,
       registrationNumber: reg.registrationNumber,
       registrationDate: reg.registrationDate
         ? new Date(reg.registrationDate).toLocaleDateString()
-        : '-',
+        : "-",
       studentName: reg.student
         ? `${reg.student.names} ${reg.student.lastNames}`
-        : 'Sin estudiante',
+        : "Sin estudiante",
       groupLabel: reg.group
-        ? `${reg.group.grade || ''} ${reg.group.level || ''}`.trim()
-        : 'Sin grupo',
+        ? `${reg.group.grade || ""} ${reg.group.level || ""}`.trim()
+        : "Sin grupo",
       state: reg.state,
-      description: reg.description || '',
-      schoolName: reg.school?.name || 'Sin colegio',
-      lastChange: reg.updatedAt ? new Date(reg.updatedAt).toLocaleString() : '-'
-    }))
+      description: reg.description || "",
+      schoolName: reg.school?.name || "Sin colegio",
+      lastChange: reg.updatedAt ? new Date(reg.updatedAt).toLocaleString() : "-"
+    }));
 
-    showNotify('Datos cargados correctamente')
+    showNotify("Datos cargados correctamente");
   } catch (err) {
-    handleApiError(err, 'Error cargando matrículas')
+    handleApiError(err, "Error cargando matrículas");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -310,15 +313,18 @@ async function loadAll() {
    LOAD STUDENTS BY GROUP
 ============================ */
 async function loadStudentsByGroup(groupId) {
-  students.value = []
-  if (!groupId) return
+  students.value = [];
+  if (!groupId) return;
+
   try {
-    const res = await api.get(`/api/grupos/${groupId}/estudiantes`)
+    const res = await groupsService.getStudents(groupId);
     students.value = Array.isArray(res.data?.data)
       ? res.data.data
-      : (res.data?.data ? [res.data.data] : [])
+      : res.data?.data
+      ? [res.data.data]
+      : [];
   } catch (err) {
-    handleApiError(err, 'No se pudieron cargar los estudiantes del grupo')
+    handleApiError(err, "No se pudieron cargar los estudiantes del grupo");
   }
 }
 
@@ -326,58 +332,57 @@ async function loadStudentsByGroup(groupId) {
    ACTIONS: VIEW / CREATE / EDIT
 ============================ */
 function openView(row) {
-  selected.value = row
-  viewDialog.value = true
+  selected.value = row;
+  viewDialog.value = true;
 }
 
 function openCreate() {
-  isEditing.value = false
-  resetForm()
-  formDialog.value = true
+  isEditing.value = false;
+  resetForm();
+  formDialog.value = true;
 }
 
 async function openEdit(row) {
-  isEditing.value = true
-  resetForm()
+  isEditing.value = true;
+  resetForm();
+
   try {
-    const res = await api.get(`/api/registration/${row.id}`)
-    const reg = res.data?.data
-    if (!reg) {
-      showErrorNotify('Registro no encontrado')
-      return
-    }
+    const res = await registrationService.getById(row.id);
+    const reg = res.data?.data;
 
-    form._id = reg._id
-    form.group = reg.group
-    form.student = reg.student
-    form.registrationNumber = reg.registrationNumber
+    if (!reg) return showErrorNotify("Registro no encontrado");
+
+    form._id = reg._id;
+    form.group = reg.group;
+    form.student = reg.student;
+    form.registrationNumber = reg.registrationNumber;
     form.registrationDate = reg.registrationDate
-      ? reg.registrationDate.split('T')[0]
-      : new Date().toISOString().split('T')[0]
-    form.description = reg.description || ''
-    form.year = reg.year || currentYear
+      ? reg.registrationDate.split("T")[0]
+      : new Date().toISOString().split("T")[0];
+    form.description = reg.description || "";
+    form.year = reg.year || currentYear;
 
-    await loadStudentsByGroup(form.group)
-    formDialog.value = true
+    await loadStudentsByGroup(form.group);
+    formDialog.value = true;
   } catch (err) {
-    handleApiError(err, 'No se pudo cargar la matrícula')
+    handleApiError(err, "No se pudo cargar la matrícula");
   }
 }
 
 function resetForm() {
-  form._id = null
-  form.student = ''
-  form.group = ''
-  form.registrationNumber = ''
-  form.registrationDate = new Date().toISOString().split('T')[0]
-  form.description = ''
-  form.year = currentYear
-  students.value = []
+  form._id = null;
+  form.student = "";
+  form.group = "";
+  form.registrationNumber = "";
+  form.registrationDate = new Date().toISOString().split("T")[0];
+  form.description = "";
+  form.year = currentYear;
+  students.value = [];
 }
 
-/* GROUP SELECT ON CHANGE */
+/* GROUP SELECT CHANGE */
 function onGroupChange(val) {
-  loadStudentsByGroup(val)
+  loadStudentsByGroup(val);
 }
 
 /* ============================
@@ -386,12 +391,11 @@ function onGroupChange(val) {
 async function submitForm() {
   try {
     if (!form.group || !form.student || !form.registrationNumber || !form.registrationDate) {
-      showErrorNotify('Complete los campos obligatorios')
-      return
+      return showErrorNotify("Complete los campos obligatorios");
     }
 
     if (isEditing.value && form._id) {
-      await api.put(`/api/registration/${form._id}`, {
+      await registrationService.update(form._id, {
         student: form.student,
         attendant: [],
         group: form.group,
@@ -399,10 +403,10 @@ async function submitForm() {
         registrationDate: form.registrationDate,
         registrationNumber: form.registrationNumber,
         description: form.description
-      })
-      showNotify('Matrícula actualizada')
+      });
+      showNotify("Matrícula actualizada");
     } else {
-      await api.post('/api/registration', {
+      await registrationService.create({
         student: form.student,
         attendant: [],
         group: form.group,
@@ -410,15 +414,14 @@ async function submitForm() {
         registrationDate: form.registrationDate,
         registrationNumber: form.registrationNumber,
         description: form.description
-      })
-      showNotify('Matrícula creada')
+      });
+      showNotify("Matrícula creada");
     }
 
-    formDialog.value = false
-    await loadAll()
-
+    formDialog.value = false;
+    await loadAll();
   } catch (err) {
-    handleApiError(err)
+    handleApiError(err);
   }
 }
 
@@ -426,37 +429,31 @@ async function submitForm() {
    CHANGE STATE
 ============================ */
 async function changeState(row, action) {
-  if (!row?.id) return
+  if (!row?.id) return;
 
-  const confirm = await $q.dialog({
-    title: 'Confirmar',
-    message: `¿Seguro que deseas ejecutar "${action}" sobre la matrícula ${row.registrationNumber}?`,
-    cancel: true,
-    persistent: true
-  }).onOk(() => true).onCancel(() => false)
+  const confirm = await $q
+    .dialog({
+      title: "Confirmar",
+      message: `¿Seguro que deseas ejecutar "${action}" sobre la matrícula ${row.registrationNumber}?`,
+      cancel: true,
+      persistent: true
+    })
+    .onOk(() => true)
+    .onCancel(() => false);
 
-  if (!confirm) return
+  if (!confirm) return;
 
   try {
-    loading.value = true
+    loading.value = true;
 
-    const endpoint = {
-      activate: `/api/registration/${row.id}/activate`,
-      desactivate: `/api/registration/${row.id}/desactivate`,
-      desertion: `/api/registration/${row.id}/desertion`,
-      graduated: `/api/registration/${row.id}/graduated`
-    }[action]
+    await registrationService[action](row.id);
 
-    if (!endpoint) throw new Error('Acción inválida')
-
-    await api.put(endpoint)
-    showNotify(`Estado actualizado: ${action}`)
-    await loadAll()
-
+    showNotify(`Estado actualizado: ${action}`);
+    await loadAll();
   } catch (err) {
-    handleApiError(err, 'No se pudo cambiar el estado')
+    handleApiError(err, "No se pudo cambiar el estado");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
