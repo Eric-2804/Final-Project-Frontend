@@ -124,7 +124,7 @@ const user = ref({
 });
 
 onMounted(async () => {
-  const teacherId = '6917ec45ac5ef097ac96abce';
+  const teacherId = '6917ec45ac5ef097ac96abd1';
   if (teacherId) {
     try {
       const response = await api.get(`/api/usuarios-colegio/${teacherId}`);
