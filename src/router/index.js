@@ -40,6 +40,10 @@ import CommunicationsView from '@/views/teacher/CommunicationsView.vue'
 import DashboardStudent from '../views/students/dashboardStudent.vue'
 import PerfilStudent from '../views/students/perfilStudent.vue'
 
+//vistas  de la secretaria
+import SedesSecretaria from '../views/secretaria/sedesSecretaria.vue'
+
+
 
 const routes = [
   // rutas generales
@@ -79,8 +83,17 @@ const routes = [
   { path: '/teacherPerformanceIndicators', name: 'PerformanceIndicators', component: PerformanceIndicatorsView },
   { path: '/teacherGroupReports', name: 'GroupReports', component: GroupReportsView },
   { path: '/teacherCommunications', name: 'TeacherCommunications', component: CommunicationsView },
-]
 
+
+   //Rutas del estudiante
+  {path: '/dashboard', name: 'dashboardStudents', component: DashboardStudent},
+  {path: '/perfil-Student', name: 'perfilStudents', component: PerfilStudent},
+
+
+   //Rutas de la secretaria
+     {path: '/sedesSecretaria', name: 'sedes_Secretaria', component: SedesSecretaria},
+
+]
 
 
 const router = createRouter({
