@@ -6,7 +6,8 @@
       <q-btn flat label="dashboard" to="/dashboardCoordinator" />
       <q-btn flat label="Perfil Estudiante" to="/perfil-Student" />
       <q-btn flat label="Dashboard Estudiante" to="/dashboard" />
-      <q-btn flat label="Sedes de la secretaria" to="/sedesSecretaria" />
+      <q-btn flat label="Sedes de la secretaria" to="/headquartersSecretariat"/>
+      
     </div>
 
     <q-page-container>

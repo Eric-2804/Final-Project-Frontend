@@ -43,7 +43,7 @@ import DashboardStudent from '../views/students/dashboardStudent.vue'
 import PerfilStudent from '../views/students/perfilStudent.vue'
 
 //vistas  de la secretaria
-import SedesSecretaria from '../views/secretaria/sedesSecretaria.vue'
+import headquartersSecretariat from '../views/secretaria/headquartersSecretariat.vue'
 
 
 
@@ -95,7 +95,7 @@ const routes = [
 
 
    //Rutas de la secretaria
-     {path: '/sedesSecretaria', name: 'sedes_Secretaria', component: SedesSecretaria},
+  {path: '/headquartersSecretariat', name: 'headquarters-secretariat', component: headquartersSecretariat},
 
 ]
 

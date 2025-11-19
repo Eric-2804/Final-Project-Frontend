@@ -67,7 +67,11 @@
 </template>
 
 <script setup>
-// No se necesita lógica de script para esta versión temporal
+import { useAuthStore } from "../store/authStore";
+import { storeToRefs } from "pinia";
+
+const auth = useAuthStore();
+const { user } = storeToRefs(auth);
 </script>
 
 <style scoped>
