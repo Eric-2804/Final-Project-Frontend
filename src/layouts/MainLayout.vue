@@ -1,7 +1,6 @@
 <template>
  <q-layout view="hHh Lpr lFf" class="main-layout no-scroll">
 
-
     <!-- HEADER -->
     <q-header elevated class="main-header fixed-header">
       <q-toolbar>
@@ -35,7 +34,7 @@
                 <q-avatar size="26px" class="q-mr-sm">
                   <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
                 </q-avatar>
-                <span>Administrador</span>
+                <span>{{ user.name }} ({{ user.role }})</span>
               </div>
             </template>
 
@@ -45,14 +44,15 @@
                   <q-avatar size="72px" class="q-mb-sm">
                     <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
                   </q-avatar>
-                  <div class="text-subtitle1">Juan Pérez</div>
-                  <div class="text-caption text-grey">juan.perez@example.com</div>
+                  <div class="text-subtitle1">{{ user.name }} {{ user.lastName }}</div>
+                  <div class="text-caption text-grey">{{user.email}}</div>
                 </q-item-section>
               </q-item>
 
               <q-separator />
 
-              <q-item clickable v-close-popup to="/teacher/profile">
+              <!-- ESTA ES LA LÍNEA CORREGIDA -->
+              <q-item clickable v-close-popup to="/teacherProfile/6917ec45ac5ef097ac96abd1">
                 <q-item-section avatar>
                   <q-icon name="person" />
                 </q-item-section>
@@ -76,71 +76,101 @@
     </q-header>
 
     <!-- SIDEBAR ÚNICO -->
-<q-drawer
-  v-model="drawerOpen"
-  :mini="!$q.screen.lt.md && mini"
-  :overlay="$q.screen.lt.md"
-  :width="220"
-  :mini-width="70"
-  side="left"
-  bordered
-  class="main-drawer"
->
-  <main-sidebar :mini="!$q.screen.lt.md && mini" />
-</q-drawer>
-
-
+    <q-drawer
+      v-model="drawerOpen"
+      :mini="!$q.screen.lt.md && mini"
+      :overlay="$q.screen.lt.md"
+      :width="220"
+      :mini-width="70"
+      side="left"
+      bordered
+      class="main-drawer"
+    >
+      <main-sidebar :mini="!$q.screen.lt.md && mini" />
+    </q-drawer>
 
     <!-- CONTENIDO PRINCIPAL -->
     <q-page-container class="main-page-container">
-      <router-view />
+      <div class="content-wrapper">
+        <router-view />
+      </div>
       <main-footer />
     </q-page-container>
+
+    <!-- SE ELIMINA EL Q-FOOTER QUE CAUSABA LA SUPERPOSICIÓN -->
 
   </q-layout>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
-import MainSidebar from '../components/Sidebar.vue'
-import MainFooter from '../components/Footer.vue'
+import { ref, onMounted } from 'vue';
+import api from '@/services/api';
+import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
+import MainSidebar from '../components/Sidebar.vue';
+import MainFooter from '../components/Footer.vue';
 
-const $q = useQuasar()
-const router = useRouter()
+const $q = useQuasar();
+const router = useRouter();
 
-const drawerOpen = ref(true) // visible siempre
-const mini = ref(true) // inicia en modo mini
+const drawerOpen = ref(true);
+const mini = ref(true);
 
-// Alternar entre mini y completo
+const user = ref({
+  name: 'Usuario',
+  lastName: 'de Prueba',
+  email: 'test@example.com',
+  role: 'rol'
+});
+
+onMounted(async () => {
+  const teacherId = '6917ec45ac5ef097ac96abd1';
+  if (teacherId) {
+    try {
+      const response = await api.get(`/api/usuarios-colegio/${teacherId}`);
+      if (response.data) {
+        const teacherData = response.data;
+        user.value = {
+          name: teacherData.names,
+          lastName: teacherData.lastNames,
+          email: teacherData.email,
+          role: teacherData.roles ? teacherData.roles.join(', ') : 'Profesor'
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      $q.notify({
+        type: 'negative',
+        message: 'No se pudo cargar el perfil del usuario.'
+      });
+    }
+  }
+});
+
 function toggleDrawer() {
-  // En pantallas grandes: alterna mini <-> completo
   if (!$q.screen.lt.md) {
-    mini.value = !mini.value
+    mini.value = !mini.value;
   } else {
-    // En móvil: abrir/cerrar completamente
-    drawerOpen.value = !drawerOpen.value
+    drawerOpen.value = !drawerOpen.value;
   }
 }
-// Evitar que el menú se cierre al cambiar de ruta
-router.afterEach(() => {
-  if (!$q.screen.lt.md) {
-    drawerOpen.value = true
-    mini.value = true
-  }
-})
 
-// Cerrar sesión
+// En pantallas de móvil, cierra el menú lateral al cambiar de ruta
+router.afterEach(() => {
+  if ($q.screen.lt.md) {
+    drawerOpen.value = false;
+  }
+});
+
 function logout() {
   $q.notify({
-    type: 'positive',
-    message: 'Sesión cerrada exitosamente',
+    type: 'info',
+    message: 'Función de cerrar sesión no implementada.',
     position: 'top'
-  })
+  });
+  // Aquí iría la lógica para desloguear al usuario
 }
 </script>
-
 
 <style scoped>
 /* === HEADER FIJO === */
@@ -161,7 +191,11 @@ function logout() {
 .no-scroll {
   overflow-x: hidden;
 }
-
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 /* === DRAWER PEGADO AL HEADER, SIN EMPUJAR === */
 .main-drawer {
   position: fixed !important;
@@ -195,19 +229,23 @@ function logout() {
 }
 
 /* === CONTENIDO PRINCIPAL === */
+
 .main-page-container {
-  margin-top: -30px;/* espacio solo para el header */
-  margin-left: -50px; /* deja espacio para el menú mini */
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px); /* Altura de la ventana menos el header */
+  margin-top: 64px; /* Espacio para el header fijo */
   padding: 0;
   transition: margin-left 0.3s ease;
-  min-height: calc(100vh - 64px);
-  padding-top: 0;
 }
+
 .q-page-container {
   padding-left: 0 !important;
   margin-left: 0 !important;
 }
-
+.content-wrapper {
+  flex: 1; /* Hace que el contenido crezca y empuje el footer */
+}
 /* === EVITAR QUE EL CONTENIDO SE MUEVA CUANDO EL DRAWER ESTÁ EXPANDIDO === */
 .q-drawer--standard:not(.q-drawer--mini) {
   position: fixed !important;
@@ -287,5 +325,4 @@ main-footer {
     padding-top: 70px !important; /* espacio para que el menú no quede oculto */
   }
 }
-
 </style>
