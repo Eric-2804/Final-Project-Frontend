@@ -72,7 +72,7 @@ const routes = [
 
   // rutas del profesor
   { path: '/teacherDashboard', name: 'TeacherDashboard', component: TeacherDashboardView },
-  { path: '/teacherProfile', name: 'TeacherProfile', component: TeacherProfileView },
+  { path: '/teacherProfile/:id', name: 'TeacherProfile', component: TeacherProfileView },
   { path: '/teacherGroups', name: 'TeacherGroupsAndSubjects', component: TeacherGroupsAndSubjectsView },
   { path: '/teacherAcademicManagement', name: 'AcademicManagement', component: AcademicManagementView },
   { path: '/teacherPerformanceIndicators', name: 'PerformanceIndicators', component: PerformanceIndicatorsView },
