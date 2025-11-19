@@ -4,9 +4,6 @@
 
   <!-- 2. Si NO es ruta de profesor, se muestra un layout simple con TUS botones de navegación -->
   <q-layout v-else view="lHh Lpr lFf">
-    
-    <!-- Tu barra de botones para desarrollo -->
-  
 
     <!-- El contenido de las otras páginas (login, etc.) -->
     <q-page-container>

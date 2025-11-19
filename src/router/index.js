@@ -42,7 +42,7 @@ import DashboardStudent from '../views/students/dashboardStudent.vue'
 import PerfilStudent from '../views/students/perfilStudent.vue'
 
 // vistas de la secretaria
-import SedesSecretaria from '../views/secretaria/sedesSecretaria.vue'
+import SedesSecretaria from '../views/secretaria/headquartersSecretariat.vue'
 
 const routes = [
   // rutas públicas → sin layout

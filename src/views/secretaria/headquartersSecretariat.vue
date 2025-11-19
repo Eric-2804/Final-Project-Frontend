@@ -6,22 +6,29 @@
     </q-header>
 
     <q-page-container>
-      <q-page class="q-pa-md"> <div class="row q-col-gutter-md"> <section class="col-12"> <q-card class="shadow1">
+      <q-page class="q-pa-md">
+        <div class="row q-col-gutter-md">
+          <section class="col-12">
+            <q-card class="shadow1">
               <q-card-section>
 
-                <div v-if="isLoading" class="text-center q-pa-xl"> <q-spinner-dots size="50px" color="primary" />
+                <div v-if="isLoading" class="text-center q-pa-xl">
+                  <q-spinner size="50px" color="primary" />
                   <div class="loadingMessage">Cargando sedes...</div>
                 </div>
 
-                <div class="row items-center q-mb-lg"> <q-card-section class="pageHeaderInfo">
+                <div class="row items-center q-mb-lg">
+                  <q-card-section class="pageHeaderInfo">
                     <div class="pageTitle">
                       Gestión de Sedes
                     </div>
-                    <div class="text-caption text-grey-7 q-mt-xs"> Crear y gestionar las sedes de la institución
+                    <div class="text-caption text-grey-7 q-mt-xs">
+                      Crear y gestionar las sedes de la institución
                     </div>
                   </q-card-section>
 
-                  <q-space /> <div class="actionButtonContainer">
+                  <q-space />
+                  <div class="actionButtonContainer">
                     <q-btn color="primary" icon="add" label="AGREGAR SEDE" @click="openCreateDialog" />
                   </div>
                 </div>
@@ -31,7 +38,8 @@
 
                 <q-dialog v-model="showDialog" persistent>
                   <q-card style="min-width: 520px; max-width: 90vw;">
-                    <q-card-section class="row items-center q-pb-none dialogHeader"> <div class="text-h6">{{ isEditMode ? 'Editar Sede' : 'Crear Sede' }}</div>
+                    <q-card-section class="row items-center q-pb-none dialogHeader">
+                      <div class="text-h6">{{ isEditMode ? 'Editar Sede' : 'Crear Sede' }}</div>
                       <q-space />
                       <q-btn icon="close" flat round dense @click="closeDialog" />
                     </q-card-section>
@@ -42,7 +50,8 @@
                       <q-form @submit.prevent="submitForm">
 
                         <div class="row q-col-gutter-md">
-                          <div class="col-12"> <q-select
+                          <div class="col-12">
+                            <q-select
                               v-model="formData.school"
                               :options="schoolOptions"
                               label="Colegio"
@@ -53,31 +62,40 @@
                             />
                           </div>
 
-                          <div class="col-12 col-md-6"> <q-input v-model="formData.name" label="Nombre" outlined
+                          <div class="col-12 col-md-6">
+                            <q-input v-model="formData.name" label="Nombre" outlined
                               :rules="[val => !!val || 'Nombre requerido']" />
                           </div>
-                          <div class="col-12 col-md-6"> <q-input v-model="formData.abbreviation" label="Abreviatura" outlined
+                          <div class="col-12 col-md-6">
+                            <q-input v-model="formData.abbreviation" label="Abreviatura" outlined
                               :rules="[val => !!val || 'Abreviatura requerida']" />
                           </div>
 
-                          <div class="col-12 col-md-6"> <q-input v-model="formData.code" label="Código" outlined
+                          <div class="col-12 col-md-6">
+                            <q-input v-model="formData.code" label="Código" outlined
                               :rules="[val => !!val || 'Código requerido']" />
                           </div>
 
-                          <div class="col-12 col-md-6"> <q-input v-model="formData.phone" label="Teléfono" outlined
+                          <div class="col-12 col-md-6">
+                            <q-input v-model="formData.phone" label="Teléfono" outlined
                               :rules="[val => !!val || 'Teléfono requerido']" />
                           </div>
 
-                          <div class="col-12"> <q-input v-model="formData.address" label="Dirección" outlined autogrow
+                          <div class="col-12">
+                            <q-input v-model="formData.address" label="Dirección" outlined autogrow
                               :rules="[val => !!val || 'Dirección requerida']" />
                           </div>
                         </div>
 
-                        <div class="row q-mt-md"> <div class="col-12"> <q-toggle v-model="formData.isActive" label="Sede activa" />
+                        <div class="row q-mt-md">
+                          <div class="col-12">
+                            <q-toggle v-model="formData.isActive" label="Sede activa" />
                           </div>
                         </div>
 
-                        <div class="row q-mt-md justify-end"> <q-btn flat label="Cancelar" color="grey-7" class="q-mr-sm" @click="closeDialog" /> <q-btn type="submit" color="primary" :label="isEditMode ? 'Guardar cambios' : 'Crear sede'" />
+                        <div class="row q-mt-md justify-end">
+                          <q-btn flat label="Cancelar" color="grey-7" class="q-mr-sm" @click="closeDialog" />
+                          <q-btn type="submit" color="primary" :label="isEditMode ? 'Guardar cambios' : 'Crear sede'" />
                         </div>
                       </q-form>
                     </q-card-section>
@@ -127,13 +145,16 @@ const formData = ref({
 const schoolOptions = ref([])
 
 
-// Carga la lista de colegios. (Backend/Axios fix)
+// Carga la lista de colegios.
 const fetchSchools = async () => {
   try {
     const response = await api.get('/school');
-    const res = response.data; // Extraer la data de la respuesta de Axios
+    const res = response.data;
     
+    // Normalización de la respuesta del API para obtener la lista de items
     const items = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : [])
+    
+    // Mapea la lista al formato { label, value } requerido por q-select
     schoolOptions.value = items.map(s => ({ label: s.name, value: s._id }))
   } catch (err) {
     console.error('Error al cargar colegios:', err)
@@ -141,13 +162,14 @@ const fetchSchools = async () => {
   }
 }
 
-// Listado de las sedes. (Backend/Axios fix)
+// Listado de las sedes.
 const fetchHeadquarters = async () => {
   try {
     isLoading.value = true
     const response = await api.get("/sedes");
-    const res = response.data; // Extraer la data de la respuesta de Axios
+    const res = response.data;
 
+    // Normalización de la respuesta del API (basado en el controlador: busca 'headquarters', 'data' o el array directo)
     if (Array.isArray(res)) {
       headquartersList.value = res
     } else if (Array.isArray(res?.data)) {
@@ -182,6 +204,7 @@ const createHeadquarters = async () => {
 // Actualizar la sede
 const updateHeadquarters = async () => {
   try {
+    // La ruta usa el _id del item que se está editando
     await api.put(`/sedes/${editingItem.value._id}`, {
       school: formData.value.school,
       name: formData.value.name,
@@ -202,8 +225,10 @@ const updateHeadquarters = async () => {
 // estado de una sede.
 const toggleStatus = async (headquartersItem) => {
   try {
+    // Determina el endpoint basado en el estado actual (si está activa, se llama a inactivar)
     const endpoint = headquartersItem.isActive ? `/sedes/${headquartersItem._id}/inactivar` : `/sedes/${headquartersItem._id}/activar`
-    await api.put(endpoint, {})
+    await api.put(endpoint, {}) // PUT a la ruta de activación/inactivación
+    
     info(`Sede ${headquartersItem.isActive ? 'inactivada' : 'activada'} correctamente`)
     await fetchHeadquarters()
   } catch (err) {
@@ -230,6 +255,7 @@ const filteredRows = computed(() => {
 // Abre el diálogo para crear.
 const openCreateDialog = () => {
   isEditMode.value = false
+  // Reinicia el formulario
   formData.value = { school: '', name: '', abbreviation: '', code: '', address: '', phone: '', isActive: true }
   showDialog.value = true
 }
@@ -238,7 +264,9 @@ const openCreateDialog = () => {
 const handleEditHeadquarters = (h) => {
   isEditMode.value = true
   editingItem.value = h
+  // Llena el formulario con los datos de la sede seleccionada
   formData.value = {
+    // Permite que la propiedad 'school' sea el _id o el objeto school completo
     school: h?.school?._id || h?.school || '',
     name: h?.name || '',
     abbreviation: h?.abbreviation || '',
@@ -273,6 +301,7 @@ const columns = [
   { name: "actions", label: "Acciones", field: "actions", align: "center" },
 ]
 
+// Ciclo de vida: Carga los datos al iniciar el componente
 onMounted(() => {
   fetchHeadquarters()
   fetchSchools()
@@ -280,8 +309,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Tu clase CSS personalizada para el botón de acción */
 .actionButtonContainer {
+  /* Clase personalizada para mantener la posición del botón */
   margin-left: 800px;
 }
 </style>
