@@ -16,6 +16,8 @@ import EnrollmentsFormView from '../views/guardianViews/EnrollmentsFormView.vue'
 import EnrollmentsView from '../views/guardianViews/EnrollmentsView.vue'
 import GradesView from '../views/guardianViews/GradesView.vue'
 import TeacherView from '../views/guardianViews/TeacherView.vue'
+import StudentInfoView from '../views/guardianViews/StudentInfoView.vue'
+import AcademicLoad from '../views/guardianViews/AcademicLoad.vue'
 
 // vistas del coordinador
 import dashboard from '../views/coordinatorViews/dashboardView.vue'
@@ -62,6 +64,8 @@ const routes = [
   { path: '/EnrollmentsView', name: 'EnrollmentsView', component: EnrollmentsView},
   { path: '/GradesView', name: 'GradesView', component: GradesView},
   { path: '/TeacherView', name: 'TeacherView', component: TeacherView},
+  { path: '/StudentInfoView', name: 'StudentInfoView', component: StudentInfoView},
+  { path: '/AcademicLoad', name: 'AcademicLoad', component: AcademicLoad},
 
 // rutas del coordinador
   { path: '/dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard },
