@@ -5,6 +5,8 @@ import { useAuthStore } from '../store/authStore'
 import login from '../views/login.vue'
 import Home from '../views/home.vue'
 
+// vistas de materias
+import subjects from "../views/subjectsViews/subjects.vue"
 
 // vistas del acudiente 
 import ProfileViews from '../views/guardianViews/profileViews.vue'
@@ -44,7 +46,9 @@ const routes = [
   { path: '/home', name: 'home', component: Home },
 
 
-
+// rutas de materias
+  { path: '/subjects', name: 'Subjects', component: subjects },
+  
 // rutas del acudiente
   { path: '/guardianProfile', name: 'GuardianProfile', component: ProfileViews },
   { path: '/DashboardGuardian', name: 'DashboardGuardian', component: DashboardGuardian },
