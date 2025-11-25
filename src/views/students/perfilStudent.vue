@@ -108,6 +108,7 @@ import { useNotify } from '../../composables/useNotify';
 import api from '../../services/api'; 
 import HeaderComponent from '../../components/Header.vue';
 import FooterComponent from '../../components/Footer.vue';
+import { getData, postData, putData, deleteData } from '@/services/httpService';
 
 const leftDrawerOpen = ref(false);
 const toggleLeftDrawer = () => {
@@ -139,7 +140,7 @@ onMounted(async () => {
 
     /* // 🔹 CÓDIGO REAL DEL BACKEND - DESCOMENTAR CUANDO 'api' ESTÉ CONFIGURADO
     // Endpoint para obtener datos del usuario: GET /api/usuarios-colegio/:id
-    const response = await api.get(`/api/usuarios-colegio/${userId}`);
+    const response = await getData(`/api/usuarios-colegio/${userId}`);
     estudiante.value = response.data;
     */
 
@@ -172,7 +173,7 @@ const handleChangePassword = async () => {
   
   try {
     // 🔹 Endpoint para cambiar contraseña: PUT /api/usuarios-colegio/:id/change-password
-    await api.put(`/api/usuarios-colegio/${userId}/change-password`, {
+    await putData(`/api/usuarios-colegio/${userId}/change-password`, {
       currentPassword: passwordForm.value.currentPassword,
       newPassword: passwordForm.value.newPassword
     });

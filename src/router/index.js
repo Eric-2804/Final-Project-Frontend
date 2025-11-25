@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '../layouts/MainLayout.vue'
+import RegisterView from '../views/RegisterView.vue'
 
 // vistas generales
 import login from '../views/login.vue'
@@ -9,7 +10,6 @@ import Home from '../views/home.vue'
 import ProfileViews from '../views/guardianViews/profileViews.vue'
 import AttendancePage from '../views/guardianViews/AttendancePage.vue'
 import DashboardGuardian from '../views/guardianViews/DashboardGuardianView.vue'
-import DashboardPage from '../views/guardianViews/DashboardPage.vue'
 import EnrollmentsDetailsView from '../views/guardianViews/EnrollmentsDetailsView.vue'
 import EnrollmentsFormView from '../views/guardianViews/EnrollmentsFormView.vue'
 import EnrollmentsView from '../views/guardianViews/EnrollmentsView.vue'
@@ -47,6 +47,7 @@ import SedesSecretaria from '../views/secretaria/headquartersSecretariat.vue'
 const routes = [
   // rutas públicas → sin layout
   { path: '/', name: 'login', component: login },
+  { path: '/register', name: 'register', component: RegisterView },
   { path: '/home', name: 'home', component: Home },
 
   // rutas internas → con MainLayout
@@ -57,9 +58,8 @@ const routes = [
       // acudiente
       { path: 'guardianProfile', name: 'GuardianProfile', component: ProfileViews },
       { path: 'DashboardGuardian', name: 'DashboardGuardian', component: DashboardGuardian },
-      { path: 'DashboardPage', name: 'DashboardPage', component: DashboardPage },
       { path: 'AttendancePage', name: 'AttendancePage', component: AttendancePage },
-      { path: 'EnrollmentsDetailsView', name: 'EnrollmentsDetailsView', component: EnrollmentsDetailsView },
+      { path: 'EnrollmentsDetailsView/:id', name: 'EnrollmentsDetailsView', component: EnrollmentsDetailsView },
       { path: 'EnrollmentsFormView', name: 'EnrollmentsFormView', component: EnrollmentsFormView },
       { path: 'EnrollmentsView', name: 'EnrollmentsView', component: EnrollmentsView },
       { path: 'GradesView', name: 'GradesView', component: GradesView },
@@ -91,7 +91,28 @@ const routes = [
       { path: 'perfil-Student', name: 'perfilStudents', component: PerfilStudent },
 
       // secretaria
-      { path: 'sedesSecretaria', name: 'sedes_Secretaria', component: SedesSecretaria }
+      { path: 'sedesSecretaria', name: 'sedes_Secretaria', component: SedesSecretaria },
+
+      // rector
+      { path: 'rector/dashboard', name: 'DashboardRector', component: () => import('../views/rector/DashboardRector.vue') },
+      { path: 'rector/direccion-nucleo', name: 'DireccionNucleo', component: () => import('../views/rector/DireccionNucleo.vue') },
+      { path: 'rector/colegios', name: 'Colegios', component: () => import('../views/rector/Colegios.vue') },
+      { path: 'rector/sedes', name: 'Sedes', component: () => import('../views/rector/Sedes.vue') },
+      { path: 'rector/matriculas', name: 'Matriculas', component: () => import('../views/rector/Matriculas.vue') },
+      { path: 'rector/estructura-academica', name: 'EstructuraAcademica', component: () => import('../views/rector/EstructuraAcademica.vue') },
+      { path: 'rector/asignacion-docente', name: 'AsignacionDocente', component: () => import('../views/rector/AsignacionDocente.vue') },
+
+      // management
+      { path: 'management/vigencia', name: 'Vigencia', component: () => import('../views/management/VigenciaView.vue') },
+      { path: 'management/periodo', name: 'Periodo', component: () => import('../views/management/PeriodoView.vue') },
+      { path: 'management/materia-area', name: 'MateriaArea', component: () => import('../views/management/MateriaAreaView.vue') },
+      { path: 'management/grupo', name: 'Grupo', component: () => import('../views/management/GrupoView.vue') },
+      { path: 'management/parametros', name: 'Parametros', component: () => import('../views/management/ParametrosView.vue') },
+      { path: 'management/indicadores', name: 'Indicadores', component: () => import('../views/management/IndicadoresView.vue') },
+      { path: 'management/matricula', name: 'Matricula', component: () => import('../views/management/MatriculaView.vue') },
+      { path: 'management/carga-academica', name: 'CargaAcademica', component: () => import('../views/management/CargaAcademicaView.vue') },
+      { path: 'management/calificacion', name: 'Calificacion', component: () => import('../views/management/CalificacionView.vue') },
+      { path: 'management/usuarios-colegio', name: 'UsuariosColegio', component: () => import('../views/management/UsuariosColegioView.vue') }
     ]
   }
 ]

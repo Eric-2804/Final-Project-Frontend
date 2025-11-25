@@ -11,17 +11,16 @@
 
       <q-separator />
  
-      <q-card-section class="q-pa-lg">
+      <q-card-section class="q-pa-lg" v-if="enrollment">
         <div class="row q-col-gutter-lg">
           <div class="col-12 col-md-6">
             <q-card flat bordered>
               <q-card-section>
                 <div class="text-h6">Datos del Estudiante</div>
                 <div class="q-mt-sm">
-                  <p><strong>Nombre:</strong> {{ enrollment.student.name }}</p>
+                  <p><strong>Nombre:</strong> {{ enrollment.student.names }} {{ enrollment.student.lastNames }}</p>
                   <p><strong>Documento:</strong> {{ enrollment.student.document }}</p>
-                  <p><strong>Grado:</strong> {{ enrollment.grade }}</p>
-                  <p><strong>Jornada:</strong> {{ enrollment.session }}</p>
+                  <p><strong>Grado:</strong> {{ enrollment.group.name }}</p>
                 </div>
               </q-card-section>
             </q-card>
@@ -31,10 +30,10 @@
             <q-card flat bordered>
               <q-card-section>
                 <div class="text-h6">Datos del Acudiente</div>
-                <div class="q-mt-sm">
-                  <p><strong>Nombre:</strong> {{ enrollment.guardian.name }}</p>
-                  <p><strong>Teléfono:</strong> {{ enrollment.guardian.phone }}</p>
-                  <p><strong>Correo:</strong> {{ enrollment.guardian.email }}</p>
+                <div class="q-mt-sm" v-if="enrollment.attendant && enrollment.attendant.length > 0">
+                  <p><strong>Nombre:</strong> {{ enrollment.attendant[0].names }} {{ enrollment.attendant[0].lastNames }}</p>
+                  <p><strong>Teléfono:</strong> {{ enrollment.attendant[0].phone }}</p>
+                  <p><strong>Correo:</strong> {{ enrollment.attendant[0].email }}</p>
                 </div>
               </q-card-section>
             </q-card>
@@ -46,58 +45,60 @@
             <q-card-section>
               <div class="text-h6">Información Académica</div>
               <div class="q-mt-sm">
-                <p><strong>Periodo:</strong> {{ enrollment.period }}</p>
+                <p><strong>Periodo:</strong> {{ enrollment.year }}</p>
                 <p><strong>Estado de matrícula:</strong> 
                   <q-chip 
-                    :color="enrollment.status === 'Activa' ? 'green-3' : 'red-3'" 
+                    :color="enrollment.state === 'Activo' ? 'green-3' : 'red-3'" 
                     text-color="black" 
                     dense 
                     outline
                   >
-                    {{ enrollment.status }}
+                    {{ enrollment.state }}
                   </q-chip>
                 </p>
-                <p><strong>Fecha de registro:</strong> {{ enrollment.date }}</p>
+                <p><strong>Fecha de registro:</strong> {{ new Date(enrollment.registrationDate).toLocaleDateString() }}</p>
               </div>
             </q-card-section>
           </q-card>
         </div>
-
-        <div class="q-mt-lg row justify-end q-gutter-sm">
-          <q-btn color="primary" icon="edit" label="Editar Matrícula" />
-          <q-btn color="negative" icon="delete" label="Eliminar" />
-        </div>
+      </q-card-section>
+      <q-card-section v-else>
+        <p>Cargando detalles de la matrícula...</p>
       </q-card-section>
     </q-card>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
+import { useAuthStore } from '../../stores/auth.js'
 
+const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 
-// Datos simulados de la matrícula (se reemplazará con datos reales luego)
-const enrollment = ref({
-  student: {
-    name: 'Juan Pérez',
-    document: '1023456789'
-  },
-  grade: '7° A',
-  session: 'Mañana',
-  guardian: {
-    name: 'María López',
-    phone: '3004567890',
-    email: 'maria.lopez@gmail.com'
-  },
-  period: '2025',
-  status: 'Activa',
-  date: '2025-02-15'
-})
+const enrollment = ref(null)
+
+onMounted(async () => {
+  const enrollmentId = route.params.id;
+  if (enrollmentId) {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/registration/${enrollmentId}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      });
+      enrollment.value = response.data.data;
+    } catch (error) {
+      console.error("Error fetching enrollment details:", error);
+    }
+  }
+});
 
 const goBack = () => {
-  router.push('/matriculas')
+  router.push({ name: 'EnrollmentsView' });
 }
 </script>
 

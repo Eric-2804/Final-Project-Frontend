@@ -91,11 +91,9 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <q-page-container class="main-page-container">
-      <div class="content-wrapper">
-        <router-view />
-      </div>
-      <main-footer />
-    </q-page-container>
+      <router-view />
+        </q-page-container>
+    <main-footer />
 
     <!-- SE ELIMINA EL Q-FOOTER QUE CAUSABA LA SUPERPOSICIÓN -->
 
@@ -109,6 +107,7 @@ import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import MainSidebar from '../components/Sidebar.vue';
 import MainFooter from '../components/Footer.vue';
+import { getData, postData, putData, deleteData } from '@/services/httpService';
 
 const $q = useQuasar();
 const router = useRouter();
@@ -127,7 +126,7 @@ onMounted(async () => {
   const teacherId = '6917ec45ac5ef097ac96abd1';
   if (teacherId) {
     try {
-      const response = await api.get(`/api/usuarios-colegio/${teacherId}`);
+      const response = await getData(`/api/usuarios-colegio/${teacherId}`);
       if (response.data) {
         const teacherData = response.data;
         user.value = {

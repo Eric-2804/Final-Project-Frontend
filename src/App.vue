@@ -1,38 +1,3 @@
 <template>
-  <!-- 1. Si es una ruta de profesor, se muestra el Layout principal COMPLETO -->
-  <MainLayout v-if="isTeacherRoute" />
-
-  <!-- 2. Si NO es ruta de profesor, se muestra un layout simple con TUS botones de navegación -->
-  <q-layout v-else view="lHh Lpr lFf">
-
-    <!-- El contenido de las otras páginas (login, etc.) -->
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-
-  </q-layout>
+  <router-view />
 </template>
-
-<script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-
-const route = useRoute()
-
-// Propiedad que comprueba si la ruta actual es de un profesor
-const isTeacherRoute = computed(() => {
-  const teacherPaths = [
-    '/teacherDashboard',
-    '/teacherProfile',
-    '/teacherGroups',
-    '/teacherAcademicManagement',
-    '/teacherPerformanceIndicators',
-    '/teacherGroupReports',
-    '/teacherCommunications'
-  ];
-  
-  // Devuelve true si la URL actual empieza con alguna de las rutas de la lista
-  return teacherPaths.some(path => route.path.startsWith(path));
-});
-</script>

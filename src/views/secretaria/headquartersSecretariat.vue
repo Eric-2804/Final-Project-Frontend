@@ -117,9 +117,10 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
+import api from '../../services/api.js';
+
 
 import Table from "../../components/tables.vue"
-import api from "../../services/api.js"
 import { useNotify } from "../../composables/useNotify.js"
 const { showNotify: info, showErrorNotify: error } = useNotify()
 import HeaderComponent from '../../components/Header.vue'

@@ -288,6 +288,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useNotify } from '../../composables/useNotify.js';
 import api from '../../services/api';
+import { getData, postData, putData, deleteData } from '@/services/httpService';
 
 export default {
   name: 'TeacherProfile',
@@ -366,7 +367,7 @@ export default {
       }
 
       try {
-        await api.put(`/api/usuarios-colegio/password/${teacherId}`, {
+        await putData(`/api/usuarios-colegio/password/${teacherId}`, {
           currentPassword: password.value.current,
           newPassword: password.value.new,
         });
@@ -393,7 +394,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await api.get(`/api/usuarios-colegio/${teacherId}`);
+        const response = await getData(`/api/usuarios-colegio/${teacherId}`);
         const teacherData = response.data;
         profile.value = {
           name: `${teacherData.names} ${teacherData.lastNames}`,

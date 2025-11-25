@@ -1,8 +1,9 @@
 <template>
   <q-page class="q-pa-md">
   <div class="dashboard">
-    <h1>Bienvenido, {{ auth.user?.role }}</h1>
+    <h1>Bienvenido, {{ auth.user?.firstName }}</h1>
     <p>Correo: {{ auth.user?.email }}</p>
+    <p>Rol: {{ auth.userRole }}</p>
 
     <div class="actions">
       <button @click="logout" class="btn-logout">Cerrar sesión</button>
@@ -12,7 +13,7 @@
 </template>
 
 <script setup>
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../stores/auth.js";
 import { useRouter } from "vue-router";
 
 const auth = useAuthStore();

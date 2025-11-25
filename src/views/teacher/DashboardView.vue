@@ -261,6 +261,7 @@ import { useAuthStore } from '../../store/authStore.js';
 import axios from 'axios';
 import TablesComponent from '../../components/tables.vue';
 import { useNotify } from "../../composables/useNotify.js";
+import { getData, postData, putData, deleteData } from '@/services/httpService';
 
 const authStore = useAuthStore();
 const { showNotify, showErrorNotify } = useNotify();
@@ -503,7 +504,7 @@ const getActivePeriod = async (year) => {
   const url = `${API_URL}/periodos/year/${year}`;
   console.log(`📞 API Call: GET ${url}`);
   try {
-    const response = await axios.get(url);
+    const response = await getData(url);
     const periods = response.data;
     // Busca el período que tiene la propiedad `active` en `true`.
     const activePeriod = periods.find(p => p.active === true);
@@ -527,7 +528,7 @@ const getGroupsByYear = async (year) => {
   const url = `${API_URL}/grupos/year/${year}`;
   console.log(`📞 API Call: GET ${url}`);
   try {
-    const response = await axios.get(url);
+    const response = await getData(url);
     return response.data || []; // Devuelve un array vacío si no hay datos.
   } catch (error) {
     console.error('❌ Error en getGroupsByYear:', error.message);
@@ -543,7 +544,7 @@ const getStudentsByGroup = async (groupId) => {
   const url = `${API_URL}/grupos/${groupId}/estudiantes`;
   console.log(`📞 API Call: GET ${url}`);
   try {
-    const response = await axios.get(url);
+    const response = await getData(url);
     return response.data || [];
   } catch (error) {
     // Si el backend devuelve un 404, ahora debería devolver un array vacío.
@@ -561,7 +562,7 @@ const getGradesByGroup = async (groupId, year) => {
   const url = `${API_URL}/calificaciones/grupos/${groupId}/calificaciones`;
   console.log(`📞 API Call: GET ${url}`);
   try {
-    const response = await axios.get(url);
+    const response = await getData(url);
     return response.data || [];
   } catch (error) {
     console.error(`❌ Error en getGradesByGroup para grupo ${groupId}:`, error.message);
@@ -573,7 +574,7 @@ const createGroup = async (groupData) => {
   const url = `${API_URL}/grupos`;
   console.log(`📞 API Call: POST ${url}`);
   try {
-    const response = await axios.post(url, groupData);
+    const response = await postData(url, groupData);
     showNotify("Grupo creado exitosamente");
     return response.data;
   } catch (error) {
@@ -587,7 +588,7 @@ const updateGroup = async (groupId, groupData) => {
   const url = `${API_URL}/grupos/${groupId}`;
   console.log(`📞 API Call: PUT ${url}`);
   try {
-    const response = await axios.put(url, groupData);
+    const response = await putData(url, groupData);
     showNotify("Grupo actualizado exitosamente");
     return response.data;
   } catch (error) {
@@ -601,7 +602,7 @@ const deleteGroup = async (groupId) => {
   const url = `${API_URL}/grupos/${groupId}`;
   console.log(`📞 API Call: DELETE ${url}`);
   try {
-    await axios.delete(url);
+    await deleteData(url);
 showNotify("Grupo eliminado exitosamente");
   } catch (error) {
     console.error('❌ Error en deleteGroup:', error.message);
