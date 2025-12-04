@@ -1,6 +1,6 @@
 <template>
   <div padding>
-    <h1 class="q-ma-none q-mb-md">subjets</h1>
+    <h1 class="q-ma-none q-mb-md"> gestion de materias </h1>
     <tables
       :columns="columns"
       :rows="academicLoad"

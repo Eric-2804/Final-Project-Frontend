@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../store/authStore'
+import MainLayout from '../layouts/MainLayout.vue'
 
 // vistas generales
 import login from '../views/login.vue'
 import Home from '../views/home.vue'
 
-// vistas de materias
-import subjects from "../views/subjectsViews/subjects.vue"
+// vista de materias 
+import SubjectsView from '../views/subjectsViews/subjects.vue'
 
-// vistas del acudiente 
+// vistas del acudiente
 import ProfileViews from '../views/guardianViews/profileViews.vue'
 import AttendancePage from '../views/guardianViews/AttendancePage.vue'
 import DashboardGuardian from '../views/guardianViews/DashboardGuardianView.vue'
@@ -19,6 +19,7 @@ import EnrollmentsView from '../views/guardianViews/EnrollmentsView.vue'
 import GradesView from '../views/guardianViews/GradesView.vue'
 import TeacherView from '../views/guardianViews/TeacherView.vue'
 import StudentInfoView from '../views/guardianViews/StudentInfoView.vue'
+import AcademicLoad from '../views/guardianViews/AcademicLoad.vue'
 
 // vistas del coordinador
 import dashboard from '../views/coordinatorViews/dashboardView.vue'
@@ -39,51 +40,70 @@ import PerformanceIndicatorsView from '@/views/teacher/PerformanceIndicatorsView
 import GroupReportsView from '@/views/teacher/GroupReportsView.vue'
 import CommunicationsView from '@/views/teacher/CommunicationsView.vue'
 
+// vistas del estudiante
+import DashboardStudent from '../views/students/dashboardStudent.vue'
+import PerfilStudent from '../views/students/perfilStudent.vue'
+
+// vistas de la secretaria
+import SedesSecretaria from '../views/secretaria/headquartersSecretariat.vue'
 
 const routes = [
-  // rutas generales
+  // rutas públicas → sin layout
   { path: '/', name: 'login', component: login },
   { path: '/home', name: 'home', component: Home },
 
+  // rutas internas → con MainLayout
+  {
+    path: '/',
+    component: MainLayout,
+    children: [
 
-// rutas de materias
-  { path: '/subjects', name: 'Subjects', component: subjects },
-  
-// rutas del acudiente
-  { path: '/guardianProfile', name: 'GuardianProfile', component: ProfileViews },
-  { path: '/DashboardGuardian', name: 'DashboardGuardian', component: DashboardGuardian },
-  { path: '/DashboardPage', name: 'DashboardPage', component: DashboardPage},
-  { path: '/AttendancePage', name: 'AttendancePage', component: AttendancePage},
-  { path: '/EnrollmentsDetailsView', name: 'EnrollmentsDetailsView', component: EnrollmentsDetailsView},
-  { path: '/EnrollmentsFormView', name: 'EnrollmentsFormView', component: EnrollmentsFormView},
-  { path: '/EnrollmentsView', name: 'EnrollmentsView', component: EnrollmentsView},
-  { path: '/GradesView', name: 'GradesView', component: GradesView},
-  { path: '/TeacherView', name: 'TeacherView', component: TeacherView},
-  { path: '/StudentInfoView', name: 'StudentInfoView', component: StudentInfoView},
-
-// rutas del coordinador
-  { path: '/dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard },
-  { path: '/generalAcademicCoordinator', name: 'GeneralAcademic', component: generalAcademic },
-  { path: '/groupManagementCoordinator', name: 'GroupManagement', component: groupManagement },
-  { path: '/indicatorsCoordinator', name: 'IndicatorsCoordinator', component: indicatorsCoordinator },
-  { path: '/institutionalReportsCoordinator', name: 'InstitutionalReports', component: institutionalReports },
-  { path: '/pressReleasesCoordinator', name: 'PressReleases', component: pressReleases },
-  { path: '/registrationsCoordinator', name: 'Registrations', component: registrations },
-  { path: '/teacherMonitoringCoordinator', name: 'TeacherMonitoring', component: teacherMonitoring },
+      // materias
+      { path: 'subjects', name: 'Subjects', component: SubjectsView },
+      
 
 
+      // acudiente
+      { path: 'guardianProfile', name: 'GuardianProfile', component: ProfileViews },
+      { path: 'DashboardGuardian', name: 'DashboardGuardian', component: DashboardGuardian },
+      { path: 'DashboardPage', name: 'DashboardPage', component: DashboardPage },
+      { path: 'AttendancePage', name: 'AttendancePage', component: AttendancePage },
+      { path: 'EnrollmentsDetailsView', name: 'EnrollmentsDetailsView', component: EnrollmentsDetailsView },
+      { path: 'EnrollmentsFormView', name: 'EnrollmentsFormView', component: EnrollmentsFormView },
+      { path: 'EnrollmentsView', name: 'EnrollmentsView', component: EnrollmentsView },
+      { path: 'GradesView', name: 'GradesView', component: GradesView },
+      { path: 'TeacherView', name: 'TeacherView', component: TeacherView },
+      { path: 'StudentInfoView', name: 'StudentInfoView', component: StudentInfoView },
+      { path: 'AcademicLoad', name: 'AcademicLoad', component: AcademicLoad },
 
-  // rutas del profesor
-  { path: '/teacherDashboard', name: 'TeacherDashboard', component: TeacherDashboardView },
-  { path: '/teacherProfile', name: 'TeacherProfile', component: TeacherProfileView },
-  { path: '/teacherGroups', name: 'TeacherGroupsAndSubjects', component: TeacherGroupsAndSubjectsView },
-  { path: '/teacherAcademicManagement', name: 'AcademicManagement', component: AcademicManagementView },
-  { path: '/teacherPerformanceIndicators', name: 'PerformanceIndicators', component: PerformanceIndicatorsView },
-  { path: '/teacherGroupReports', name: 'GroupReports', component: GroupReportsView },
-  { path: '/teacherCommunications', name: 'TeacherCommunications', component: CommunicationsView },
+      // coordinador
+      { path: 'dashboardCoordinator', name: 'DashboardCoordinador', component: dashboard },
+      { path: 'generalAcademicCoordinator', name: 'GeneralAcademic', component: generalAcademic },
+      { path: 'groupManagementCoordinator', name: 'GroupManagement', component: groupManagement },
+      { path: 'indicatorsCoordinator', name: 'IndicatorsCoordinator', component: indicatorsCoordinator },
+      { path: 'institutionalReportsCoordinator', name: 'InstitutionalReports', component: institutionalReports },
+      { path: 'pressReleasesCoordinator', name: 'PressReleases', component: pressReleases },
+      { path: 'registrationsCoordinator', name: 'Registrations', component: registrations },
+      { path: 'teacherMonitoringCoordinator', name: 'TeacherMonitoring', component: teacherMonitoring },
+
+      // profesor
+      { path: 'teacherDashboard', name: 'TeacherDashboard', component: TeacherDashboardView },
+      { path: 'teacherProfile/:id', name: 'TeacherProfile', component: TeacherProfileView },
+      { path: 'teacherGroups', name: 'TeacherGroupsAndSubjects', component: TeacherGroupsAndSubjectsView },
+      { path: 'teacherAcademicManagement', name: 'AcademicManagement', component: AcademicManagementView },
+      { path: 'teacherPerformanceIndicators', name: 'PerformanceIndicators', component: PerformanceIndicatorsView },
+      { path: 'teacherGroupReports', name: 'GroupReports', component: GroupReportsView },
+      { path: 'teacherCommunications', name: 'TeacherCommunications', component: CommunicationsView },
+
+      // estudiante
+      { path: 'dashboard', name: 'dashboardStudents', component: DashboardStudent },
+      { path: 'perfil-Student', name: 'perfilStudents', component: PerfilStudent },
+
+      // secretaria
+      { path: 'sedesSecretaria', name: 'sedes_Secretaria', component: SedesSecretaria }
+    ]
+  }
 ]
-
-
 
 const router = createRouter({
   history: createWebHistory(),

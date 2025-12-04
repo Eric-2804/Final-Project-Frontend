@@ -1,27 +1,27 @@
  import { useQuasar } from 'quasar'; 
  
- export function useNotify() { 
-   const $q = useQuasar(); 
- 
-   const showNotify = (message, color = 'positive', icon = 'check') => { 
-     $q.notify({ 
-       message, 
-       color, 
-       icon, 
-       position: 'top', 
-     }); 
-   }; 
- 
-   const showErrorNotify = (message = 'Error') => { 
-     $q.notify({ 
-       message, 
-       color: 'negative', 
-       icon: 'report_problem', 
-       position: 'top', 
-     }); 
-   }; 
- 
-   return { 
+export function useNotify() {
+  const $q = useQuasar();
+
+  const showNotify = (options) => {
+    $q.notify({
+      color: 'positive',
+      icon: 'check',
+      position: 'top',
+      ...options,
+    });
+  };
+
+  const showErrorNotify = (options) => {
+    $q.notify({
+      color: 'negative',
+      icon: 'report_problem',
+      position: 'top',
+      ...options,
+    });
+  };
+
+  return {
      showNotify, 
      showErrorNotify, 
    }; 

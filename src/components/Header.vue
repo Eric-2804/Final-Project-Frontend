@@ -11,7 +11,7 @@
       <q-space />
 
       <div class="q-gutter-sm row items-center no-wrap">
-        <q-btn round dense flat color="white" icon="notifications" to="/notifications">
+        <q-btn round dense flat color="white" icon="notifications" to="/teacherCommunications">
           <q-badge color="red" text-color="white" floating>
             2
           </q-badge>
@@ -24,7 +24,7 @@
               <q-avatar size="26px" class="q-mr-sm">
                 <img src="https://cdn.quasar.dev/img/boy-avatar.png">
               </q-avatar>
-              <span>Administrador</span>
+              <span>{{ user.name }} ({{ user.role }})</span>
             </div>
           </template>
 
@@ -34,21 +34,21 @@
                 <q-avatar size="72px" class="q-mb-sm">
                   <img src="https://cdn.quasar.dev/img/boy-avatar.png">
                 </q-avatar>
-                <div class="text-subtitle1">Juan Pérez</div>
-                <div class="text-caption text-grey">juan.perez@example.com</div>
+                <div class="text-subtitle1">{{user.name}} {{ user.lastName }}</div>
+                <div class="text-caption text-grey">{{user.email}}</div>
               </q-item-section>
             </q-item>
 
             <q-separator />
 
-            <q-item clickable v-close-popup to="/teacher/profile">
-  <q-item-section avatar>
-    <q-icon name="person" />
-  </q-item-section>
-  <q-item-section>
-    <q-item-label>Mi Perfil</q-item-label>
-  </q-item-section>
-</q-item>
+            <q-item clickable v-close-popup to="/teacherProfile/6917ec45ac5ef097ac96abd1">
+              <q-item-section avatar>
+                <q-icon name="person" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Mi Perfil (Test)</q-item-label>
+              </q-item-section>
+            </q-item>
 
 
             <q-item clickable v-close-popup>
@@ -67,6 +67,11 @@
 </template>
 
 <script setup>
+import { useAuthStore } from "../store/authStore";
+import { storeToRefs } from "pinia";
+
+const auth = useAuthStore();
+const { user } = storeToRefs(auth);
 </script>
 
 <style scoped>

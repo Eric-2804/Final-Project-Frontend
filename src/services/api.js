@@ -1,10 +1,9 @@
+// src/services/api.js
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://proyecto-final-ptwh.onrender.com/", // tu backend
-  headers: {
-    "Content-Type": "application/json"
-  }
+  baseURL: "http://localhost:3000/api",
+  headers: { "Content-Type": "application/json" }
 });
 
-export default api;
+export default api; 
