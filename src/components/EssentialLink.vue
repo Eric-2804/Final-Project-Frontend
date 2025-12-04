@@ -1,7 +1,6 @@
 <template>
   <q-item
     clickable
-    tag="a"
     :to="link"
     active-class="my-menu-link"
   >

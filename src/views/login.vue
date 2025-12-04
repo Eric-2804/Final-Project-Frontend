@@ -7,11 +7,11 @@
       <q-form @submit.prevent="handleLogin" class="form">
         <h2>Selecciona tu rol</h2>
         <q-select outlined v-model="role"
-          :options="['Administrador', 'Rector', 'Coordinador', 'Acudiente', 'Estudiante', 'Profesor']" label="Opciones"
+          :options="['Administrador', 'Rector', 'Coordinador', 'Secretaria', 'Acudiente', 'Estudiante', 'Profesor']" label="Opciones"
           class="input" :rules="[val => !!val || 'Debe seleccionar un rol']" lazy-rules />
 
-        <h2>Correo electrónico</h2>
-        <q-input outlined v-model="email" label="usuario@gmail.com" class="input" type="email" :rules="emailRules"
+        <h2>Número de Identificación</h2>
+        <q-input outlined v-model="identificationNumber" label="Número de Identificación" class="input" type="text" :rules="identificationNumberRules"
           lazy-rules />
 
         <h2>Contraseña</h2>
@@ -22,20 +22,20 @@
         <q-select outlined v-model="year" :options="['2023', '2024', '2025']" label="Seleccione el año" class="input"
           :rules="[val => !!val || 'Debe seleccionar un año']" lazy-rules />
 
-        <a href="#" class="recover">Recuperar Contraseña</a>
+        <a href="#" @click.prevent="openRecoverModal" class="recover">Recuperar Contraseña</a>
 
         <q-dialog v-model="isRecoverModalOpen">
           <q-card class="modalRegister">
             <q-btn icon="close" flat round dense v-close-popup class="closeBtn" />
             <h2>Recuperar Contraseña</h2>
-            <p>Ingresa tu correo para recibir un enlace de recuperación.</p>
-            <q-input outlined v-model="recoverEmail" label="Correo electrónico" type="email" class="input" />
-            <Button :loading="loadingRecover" color="primary" label="Enviar enlace" @click="handleRecoverPassword" />
+            <p>Ingresa tu número de identificación para recibir un enlace de recuperación.</p>
+            <q-input outlined v-model="recoverIdentificationNumber" label="Número de Identificación" type="text" class="input" />
+            <q-btn :loading="loadingRecover" color="primary" label="Enviar enlace" @click="handleRecoverPassword" />
             <p v-if="recoverMsg" class="success-msg">{{ recoverMsg }}</p>
           </q-card>
         </q-dialog>
 
-        <Button :loading="loading" color="primary" label="Iniciar Sesión" type="submit"
+        <q-btn :loading="loading" color="primary" label="Iniciar Sesión" type="submit"
           style="width: 100%; border-radius: 5px; margin-top: 10px; margin-bottom: 10px;" />
 
         <router-link to="/register" class="register">¿No tienes una cuenta? Regístrate</router-link>
@@ -48,107 +48,133 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 import { useAuthStore } from '../stores/auth.js'
-import Button from '../components/Button.vue'
 import { login, recoverPassword } from '../services/authService';
 
 const router = useRouter()
 const authStore = useAuthStore()
+const $q = useQuasar()
 
 // 🔥 variables reactivas
 const role = ref('Estudiante')
-const email = ref('')
+const identificationNumber = ref('')
 const password = ref('')
 const year = ref('2024')
 const loginErrorMsg = ref('')
 const loading = ref(false)
 
-
-
 // variables para el modal de recuperación
 const isRecoverModalOpen = ref(false)
-const recoverEmail = ref('')
+const recoverIdentificationNumber = ref('') // 🔹 Cambiado de recoverEmail
 const recoverMsg = ref('')
 const loadingRecover = ref(false)
 
+const openRecoverModal = () => {
+  isRecoverModalOpen.value = true;
+  recoverMsg.value = '';
+  recoverIdentificationNumber.value = '';
+}
+
 // 🔥 Reglas de validación
-const emailRules = [
-  (val) => !!val || 'El correo es obligatorio',
-  (val) => /.+@.+\..+/.test(val) || 'Ingrese un correo electrónico válido'
+const identificationNumberRules = [
+  (val) => !!val || 'El número de identificación es obligatorio'
 ]
 const passwordRules = [
   (val) => !!val || 'La contraseña es obligatoria',
   (val) => val.length >= 8 || 'Debe tener al menos 8 caracteres'
 ]
+
 // 🔥 Lógica para el login
- const handleLogin = async () => { 
-   loading.value = true 
-   loginErrorMsg.value = '' 
-   
-   try { 
-     // El endpoint correcto es /api/usuarios-colegio/login 
-     const response = await login({ 
-       email: email.value, 
-       password: password.value 
-     }) 
-     
-     const { token, user } = response 
-     authStore.login(token, user) 
-     
-     // Redirigir según el rol del usuario 
-     switch (user.roles[0]) { 
-       case 'Administrador': 
-         router.push('/management') 
-         break 
-       case 'Rector': 
-         router.push('/rector') 
-         break 
-       case 'Coordinador': 
-         router.push('/dashboardCoordinator') 
-         break 
-       case 'Acudiente': 
-         router.push('/DashboardGuardian') 
-         break 
-       case 'Estudiante': 
-         router.push('/dashboard') 
-         break 
-       case 'Profesor': 
-         router.push('/teacherDashboard') 
-         break 
-       default: 
-         router.push('/home') 
-     } 
-   } catch (error) { 
-     if (error.response) { 
-       loginErrorMsg.value = error.response.data.message || 'Error al iniciar sesión' 
-     } else { 
-       loginErrorMsg.value = 'Error de red o el servidor no responde.' 
-     } 
-   } finally { 
-     loading.value = false 
-   } 
- } 
- 
- // Agrega la función de recuperación de contraseña: 
- const handleRecoverPassword = async () => { 
-   if (!recoverEmail.value) { 
-     recoverMsg.value = 'Por favor ingresa tu correo electrónico' 
-     return 
-   } 
-   
-   loadingRecover.value = true 
-   recoverMsg.value = '' 
-   
-   try { 
-     await recoverPassword(recoverEmail.value) 
-     recoverMsg.value = 'Se ha enviado un enlace de recuperación a tu correo' 
-   } catch (error) { 
-     recoverMsg.value = error.response?.data?.message || 'Error al enviar el enlace' 
-   } finally { 
-     loadingRecover.value = false 
-   } 
+ const handleLogin = async () => {
+   loading.value = true
+   loginErrorMsg.value = ''
+
+   try {
+     const response = await login({
+       numberDocument: identificationNumber.value,
+       password: password.value,
+       role: role.value,
+       year: year.value
+     })
+
+     const { token, user } = response;
+
+     if (!token || !user) {
+        loginErrorMsg.value = 'Respuesta inválida del servidor. Faltan datos de autenticación.';
+        return;
+     }
+
+     await authStore.login(token, user)
+
+     const userRole = authStore.user?.rol;
+
+     // ✨ Nueva validación de rol
+     if (role.value.toLowerCase() !== userRole.toLowerCase()) {
+        $q.notify({ type: 'negative', message: 'El rol seleccionado no coincide con el rol del usuario.' });
+        authStore.logout(); // Limpiamos cualquier estado de autenticación parcial
+        return;
+     }
+
+     if (!userRole) {
+        loginErrorMsg.value = 'Respuesta inválida: el usuario no tiene un rol asignado en el sistema.';
+        authStore.logout();
+        return;
+     }
+
+     // ✅ Redirección corregida con las rutas correctas
+     const roleRoutes = {
+        administrador: '/management',
+        rector: '/rector/dashboard',
+        coordinador: '/dashboardCoordinator',
+        secretaria: '/secretaria/dashboard',
+        profesor: '/teacher/dashboard',
+        acudiente: '/DashboardGuardian',
+        estudiante: '/student/dashboard'
+     };
+
+     const redirectPath = roleRoutes[userRole] || '/home';
+     router.push(redirectPath);
+
+   } catch (error) {
+     console.error('Error durante el login:', error);
+     if (error.response && error.response.data && error.response.data.message) {
+       loginErrorMsg.value = error.response.data.message;
+     } else if (error.response) {
+       loginErrorMsg.value = 'Error al iniciar sesión. Verifique sus credenciales y permisos.';
+     }
+     else {
+       loginErrorMsg.value = 'Error de red o el servidor no responde.'
+     }
+   } finally {
+     loading.value = false
+   }
+ }
+
+ // 🔹 Lógica de recuperación de contraseña actualizada
+ const handleRecoverPassword = async () => {
+   if (!recoverIdentificationNumber.value) {
+     recoverMsg.value = 'Por favor ingresa tu número de identificación'
+     return
+   }
+
+   loadingRecover.value = true
+   recoverMsg.value = ''
+
+   try {
+     // Se asume que el servicio espera el número de documento
+     await recoverPassword({ numberDocument: recoverIdentificationNumber.value })
+     // Mensaje genérico por seguridad para no confirmar si el usuario existe
+     recoverMsg.value = 'Si los datos son correctos, se ha enviado un enlace de recuperación al correo asociado a tu cuenta.'
+   } catch (error) {
+     console.error('Error en recuperación:', error);
+     // Se muestra el mismo mensaje en caso de error para evitar enumeración de usuarios
+     recoverMsg.value = 'Si los datos son correctos, se ha enviado un enlace de recuperación al correo asociado a tu cuenta.'
+   } finally {
+     loadingRecover.value = false
+   }
  }
 </script>
 
@@ -164,7 +190,7 @@ const passwordRules = [
  justify-content: center;
  align-items: center;
  background-color: #E5E7EB;
- height: auto;
+ height: 100vh;
 }
 
 .modalRegister {
@@ -188,7 +214,6 @@ const passwordRules = [
  border: 2px solid #3b82f6;
  text-align: center;
  box-shadow: 1px 1px 1px 0px #3b82f6;
- margin-bottom: 15px;
 }
 
 .modalRegister h1,
@@ -241,12 +266,19 @@ const passwordRules = [
  color: #2563eb;
  text-decoration: none;
  text-align: right;
+ cursor: pointer;
 }
 
 .error-msg {
  color: red;
  text-align: center;
  margin-top: 1px;
+}
+
+.success-msg {
+  color: green;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .closeBtn {

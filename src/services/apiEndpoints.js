@@ -1,62 +1,30 @@
 export const API_ENDPOINTS = {
   MATRICULAS: {
-    CREATE: '/matriculas',
-    GET_ALL: '/matriculas',
-    GET_BY_ID: '/matriculas',
-    UPDATE: '/matriculas',
-    DELETE: '/matriculas'
+    BASE: '/registration'
   },
   PARAMETROS: {
-    CREATE: '/parametros',
-    GET_ALL: '/parametros',
-    GET_BY_ID: '/parametros',
-    UPDATE: '/parametros',
-    DELETE: '/parametros',
+    BASE: '/parametros'
   },
   INDICADORES: {
-    CREATE: '/indicadores',
-    GET_ALL: '/indicadores',
-    GET_BY_ID: '/indicadores',
-    UPDATE: '/indicadores',
-    DELETE: '/indicadores',
+    BASE: '/indicadores'
   },
   CALIFICACIONES: {
-    CREATE: '/calificaciones',
-    GET_ALL: '/calificaciones',
-    GET_BY_ID: '/calificaciones',
-    UPDATE: '/calificaciones',
-    DELETE: '/calificaciones',
+    BASE: '/calificaciones'
   },
-  CARGA_ACADEMICA: {
-    CREATE: '/carga-academica',
-    GET_ALL: '/carga-academica',
-    GET_BY_ID: '/carga-academica',
-    UPDATE: '/carga-academica',
-    DELETE: '/carga-academica',
+    CARGA_ACADEMICA: {
+    BASE: '/carga-academica'
   },
   MATERIAS_AREAS: {
-    CREATE: '/materias-areas',
-    GET_ALL: '/materias-areas',
-    GET_BY_ID: '/materias-areas',
-    UPDATE: '/materias-areas',
-    DELETE: '/materias-areas',
+    BASE: '/subjects'
   },
   GRUPOS: {
-    CREATE: '/grupos',
-    GET_ALL: '/grupos',
-    GET_BY_ID: '/grupos',
-    UPDATE: '/grupos',
-    DELETE: '/grupos',
+    BASE: '/groups'
   },
   USUARIOS_COLEGIO: {
-    CREATE: '/usuarios-colegio',
-    GET_ALL: '/usuarios-colegio',
-    GET_BY_ID: '/usuarios-colegio',
-    UPDATE: '/usuarios-colegio',
-    DELETE: '/usuarios-colegio',
+    BASE: '/users'
   },
   AUTH: {
-    LOGIN: '/usuarios-colegio/login',
+    LOGIN: '/users',
     RENEW_TOKEN: '/usuarios-colegio/renovar-token',
     LOGOUT: '/usuarios-colegio/logout',
     RECOVER_PASSWORD: '/usuarios-colegio/recuperar-contraseña',
@@ -68,14 +36,14 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: (id) => `/direcciones-nucleo/${id}/cambiar-password`,
   },
   COLEGIOS: {
-    BASE: '/colegios',
+    BASE: '/schools',
     BY_DIRECCION_NUCLEO: (id) => `/direcciones-nucleo/${id}/colegios`,
   },
   SEDES: {
-    BASE: '/sedes',
-    BY_COLEGIO: (id) => `/colegios/${id}/sedes`,
-    ACTIVATE: (id) => `/sedes/${id}/activo`,
-    DEACTIVATE: (id) => `/sedes/${id}/desactiva`,
+    BASE: '/headquarters',
+    BY_COLEGIO: (id) => `/colegios/${id}/headquarters`,
+    ACTIVATE: (id) => `/headquarters/${id}/activo`,
+    DEACTIVATE: (id) => `/headquarters/${id}/desactiva`,
   },
   VIGENCIAS: {
     BY_YEAR: '/vigencias/año',

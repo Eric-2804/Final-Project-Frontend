@@ -103,7 +103,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useAuthStore } from '../../store/authStore'; 
+import { useAuthStore } from '../../stores/auth.js'; 
 import { useNotify } from '../../composables/useNotify'; 
 import api from '../../services/api'; 
 import HeaderComponent from '../../components/Header.vue';

@@ -1,14 +1,9 @@
-// src/services/authService.js
-import axios from 'axios'
-
-const API_URL = 'http://localhost:3000/api'
+import api from './api'
+import { API_ENDPOINTS } from './apiEndpoints'
 
 export const login = async (credentials) => {
   try {
-    const response = await axios.post(`${API_URL}/usuarios-colegio/login`, {
-      email: credentials.email,
-      password: credentials.password
-    })
+    const response = await api.post(API_ENDPOINTS.AUTH.LOGIN, credentials)
     return response.data
   } catch (error) {
     throw error
@@ -17,18 +12,16 @@ export const login = async (credentials) => {
 
 export const register = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/usuarios-colegio`, userData)
+    const response = await api.post(API_ENDPOINTS.USUARIOS_COLEGIO.CREATE, userData)
     return response.data
   } catch (error) {
     throw error
   }
 }
 
-export const recoverPassword = async (email) => {
+export const recoverPassword = async (payload) => {
   try {
-    const response = await axios.post(`${API_URL}/usuarios-colegio/recuperar-contraseña`, {
-      email
-    })
+    const response = await api.post(API_ENDPOINTS.AUTH.RECOVER_PASSWORD, payload)
     return response.data
   } catch (error) {
     throw error
@@ -37,7 +30,7 @@ export const recoverPassword = async (email) => {
 
 export const resetPassword = async (token, newPassword) => {
   try {
-    const response = await axios.post(`${API_URL}/usuarios-colegio/restablecer-contraseña`, {
+    const response = await api.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
       token,
       newPassword
     })
@@ -49,7 +42,7 @@ export const resetPassword = async (token, newPassword) => {
 
 export const renewToken = async () => {
   try {
-    const response = await axios.post(`${API_URL}/usuarios-colegio/renovar-token`)
+    const response = await api.post(API_ENDPOINTS.AUTH.RENEW_TOKEN)
     return response.data
   } catch (error) {
     throw error
@@ -58,7 +51,7 @@ export const renewToken = async () => {
 
 export const logout = async () => {
   try {
-    const response = await axios.post(`${API_URL}/usuarios-colegio/logout`)
+    const response = await api.post(API_ENDPOINTS.AUTH.LOGOUT)
     return response.data
   } catch (error) {
     throw error

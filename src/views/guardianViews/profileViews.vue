@@ -1,5 +1,5 @@
 <template>
-  <div class="guardian-profile q-pa-lg">
+  <div v-if="auth.user" class="guardian-profile q-pa-lg">
     <!-- Título principal -->
     <div class="text-h5 text-bold q-mb-lg">My Profile</div>
 
@@ -86,7 +86,7 @@
 <script setup>
 import { reactive } from 'vue'
 import { useAuthStore } from '../../stores/auth.js'
-import axios from 'axios'
+import api from '../../services/api'
 
 const auth = useAuthStore()
 
@@ -103,22 +103,18 @@ async function saveChanges() {
   }
 
   try {
-    await axios.put(
-      `http://localhost:3000/api/users/change-password/${auth.user._id}`,
+    await api.put(
+      `/users/change-password/${auth.user._id}`,
       {
         currentPassword: form.currentPassword,
         newPassword: form.newPassword
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${auth.token}`
-        }
       }
     )
     // Manejar éxito
     cancel()
   } catch (error) {
     // Manejar error
+    console.error('Error al cambiar la contraseña:', error)
   }
 }
 

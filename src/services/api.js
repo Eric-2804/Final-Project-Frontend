@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  baseURL: 'https://proyecto-final-ptwh.onrender.com/api',
   timeout: 15000,
-  headers: { 'Content-Type': 'application/json' },
 });
 
 api.interceptors.request.use((config) => {
@@ -15,7 +14,7 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use((res) => res, (err) => {
-  console.error('API Error:', err.response?.data || err.message);
+  console.error('API Error:', JSON.stringify(err.response?.data, null, 2) || err.message);
   return Promise.reject(err);
 });
 

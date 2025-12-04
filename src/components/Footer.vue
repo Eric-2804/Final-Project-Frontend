@@ -1,5 +1,5 @@
 <template>
-  <footer class="custom-footer">
+  <div class="bg-primary text-white custom-footer">
     <div class="footer-content">
       <div class="footer-grid">
         <!-- Soporte -->
@@ -81,7 +81,8 @@
         © 2025 Colegio Unido El Saber - Todos los derechos reservados
       </div>
     </div>
-  </footer>
+  </div>
+  
 </template>
 
 <script>
@@ -94,16 +95,12 @@ export default defineComponent({
 
 <style scoped>
 .custom-footer {
-  background-color: #1E40AF;
-  color: white;
-  width: 100%;
-  margin-top: auto;
-  padding: 16px 0; /* 🔹 antes era más grande */
+  /* Se eliminan los estilos de ancho y margen que causaban problemas */
 }
 
 .footer-content {
-  padding: 16px 24px 8px; /* 🔹 reduce el alto del área de contenido */
-  max-width: 1200px;
+  padding: 24px 32px; /* Padding unificado */
+  max-width: 1400px;
   margin: 0 auto;
 }
 

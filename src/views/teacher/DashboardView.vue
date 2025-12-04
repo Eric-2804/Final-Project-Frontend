@@ -257,7 +257,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import { useAuthStore } from '../../store/authStore.js';
+import { useAuthStore } from '../../stores/auth.js';
 import axios from 'axios';
 import TablesComponent from '../../components/tables.vue';
 import { useNotify } from "../../composables/useNotify.js";

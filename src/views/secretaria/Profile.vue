@@ -42,17 +42,13 @@
           </q-card-section>
         </q-card>
 
-        <!-- Academic Load -->
+        <!-- Management Actions -->
         <q-card class="grid-card">
           <q-card-section>
-            <h5 class="section-header">Carga Académica</h5>
-            <div class="academic-load">
-              <q-chip v-for="item in academicLoad" :key="item.id" color="primary" text-color="white" icon="school">
-                {{ item.subject }} - {{ item.grade }}
-              </q-chip>
-              <div v-if="academicLoad.length === 0" class="no-data">
-                No hay carga académica asignada.
-              </div>
+            <h5 class="section-header">Acciones de Gestión</h5>
+            <div class="management-actions">
+              <q-btn to="/secretaria/headquarters" label="Gestión de Sedes" color="primary" icon="business" class="q-mr-md q-mb-md" />
+              <q-btn to="/secretaria/matriculas" label="Gestión de Matrículas" color="secondary" icon="assignment" class="q-mb-md" />
             </div>
           </q-card-section>
         </q-card>
@@ -113,14 +109,13 @@ import { useAuthStore } from '@/stores/auth';
 import { getData, postData } from '@/services/httpService';
 
 export default {
-  name: 'TeacherProfile',
+  name: 'SecretariaProfile',
   setup() {
     const route = useRoute();
     const $q = useQuasar();
     const authStore = useAuthStore();
 
     const profile = ref({});
-    const academicLoad = ref([]);
     const password = ref({ new: '', confirm: '' });
     const showPasswordTips = ref(false);
     const loading = ref(true);
@@ -173,7 +168,7 @@ export default {
 
     const uploadPhoto = async (photo) => {
       try {
-        const response = await postData(`/users/${route.params.id}/photo`, { photo });
+        const response = await postData(`/users/${authStore.user.id}/photo`, { photo });
         profile.value.profilePhoto = photo;
         $q.notify({ type: 'positive', message: response.message || 'Foto de perfil actualizada.' });
       } catch (err) {
@@ -203,7 +198,7 @@ export default {
 
     const uploadSignature = async (signature) => {
       try {
-        const response = await postData(`/users/${route.params.id}/signature`, { signature });
+        const response = await postData(`/users/${authStore.user.id}/signature`, { signature });
         profile.value.signDigital = signature;
         $q.notify({ type: 'positive', message: response.message || 'Firma actualizada correctamente.' });
       } catch (err) {
@@ -224,7 +219,7 @@ export default {
         return $q.notify({ type: 'negative', message: 'La contraseña debe tener al menos 8 caracteres.' });
       }
       try {
-        const response = await postData(`/users/${route.params.id}/change-password`, { newPassword: password.value.new });
+        const response = await postData(`/users/${authStore.user.id}/change-password`, { newPassword: password.value.new });
         $q.notify({ type: 'positive', message: response.message || 'Contraseña actualizada' });
         resetPasswordForm();
       } catch (err) {
@@ -232,11 +227,11 @@ export default {
       }
     };
 
-    const fetchProfileData = async (teacherId) => {
+    const fetchProfileData = async () => {
       loading.value = true;
       error.value = null;
       try {
-        const response = await getData(`/users/${teacherId}`);
+        const response = await getData(`/users/${authStore.user.id}`);
         profile.value = response;
         authStore.updateUser(response); // Actualiza el store con los nuevos datos
       } catch (err) {
@@ -248,17 +243,16 @@ export default {
     };
 
     onMounted(() => {
-      fetchProfileData(route.params.id);
-    });
-
-    watch(() => route.params.id, (newId, oldId) => {
-      if (newId && newId !== oldId) {
-        fetchProfileData(newId);
+      if (authStore.user && authStore.user.id) {
+        fetchProfileData();
+      } else {
+        error.value = "No se ha encontrado el ID del usuario.";
+        loading.value = false;
       }
     });
 
     return {
-      profile, academicLoad, password, showPasswordTips, loading, error,
+      profile, password, showPasswordTips, loading, error,
       passwordStrengthClass, passwordStrengthText,
       changePhoto, changeSignature, changePassword,
     };
@@ -346,7 +340,7 @@ export default {
   font-size: 0.95rem;
 }
 
-.academic-load {
+.management-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;

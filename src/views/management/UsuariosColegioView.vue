@@ -32,7 +32,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { createUser } from '@/services/usuariosColegioService';
-import { getColegios } from '@/services/colegiosService';
+import { getAllColegios } from '@/services/colegiosService';
 
 const form = ref({
   nombres: '',
@@ -63,7 +63,7 @@ const colegios = ref([]);
 
 onMounted(async () => {
   try {
-    const res = await getColegios();
+    const res = await getAllColegios();
     colegios.value = res.data.map(c => ({ label: c.nombre, value: c._id }));
   } catch (error) {
     console.error('Error fetching colegios:', error);

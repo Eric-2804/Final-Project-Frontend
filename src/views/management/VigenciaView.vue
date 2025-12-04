@@ -68,6 +68,7 @@ const rectores = ref([]); // This will be populated from users
 const secretarias = ref([]); // This will be populated from users
 const sedes = ref([]);
 const coordinadores = ref([]); // This will be populated from users
+const vigencias = ref([]);
 
 onMounted(async () => {
   try {

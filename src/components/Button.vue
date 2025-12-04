@@ -1,39 +1,35 @@
-<template> 
-  <button 
-    :class="['base-btn', color, size]" 
-    @click="handleClick" 
-    :disabled="loading" 
-  > 
-    <Spinner v-if="loading" size="1.5em" color="white" /> 
-    <span v-else> 
-      <span v-if="icon" class="material-icons">{{ icon }}</span> 
-      {{ label }} 
-    </span> 
-  </button> 
-</template> 
+<template>
+  <button
+    :type="type"
+    :class="['base-btn', color, size]"
+    @click="handleClick"
+    :disabled="loading"
+  >
+    <Spinner v-if="loading" size="1.5em" color="white" />
+    <span v-else>
+      <span v-if="icon" class="material-icons">{{ icon }}</span>
+      {{ label }}
+    </span>
+  </button>
+</template>
 
-<script setup> 
-import { ref } from 'vue'; 
-import Spinner from './Spinner.vue'; 
+<script setup>
+import Spinner from './Spinner.vue';
 
-defineProps({ 
-  color: { type: String, default: 'primary' }, 
-  size: { type: String, default: 'md' }, 
-  icon: { type: String, default: null }, 
-  label: { type: String, default: '' } 
-}); 
+defineProps({
+  color: { type: String, default: 'primary' },
+  size: { type: String, default: 'md' },
+  icon: { type: String, default: null },
+  label: { type: String, default: '' },
+  loading: { type: Boolean, default: false },
+  type: { type: String, default: 'button' },
+});
 
-const emit = defineEmits(['click']); 
+const emit = defineEmits(['click']);
 
-const loading = ref(false); 
-
-const handleClick = () => { 
-  loading.value = true; 
-  emit('click'); 
-  setTimeout(() => { 
-    loading.value = false; 
-  }, 3000); 
-}; 
+const handleClick = () => {
+  emit('click');
+};
 </script> 
 
 <style scoped> 
