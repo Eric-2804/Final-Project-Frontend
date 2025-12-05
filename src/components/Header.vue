@@ -98,6 +98,12 @@ const profilePhotoUrl = computed(() => {
 });
 
 const title = computed(() => {
+  if (user.value && user.value.college && user.value.college.nameSchool) {
+    return user.value.college.nameSchool;
+  }
+  if (user.value && user.value.school && user.value.school.nameSchool) {
+    return user.value.school.nameSchool;
+  }
   if (!userRole.value) return 'Institución Educativa';
   const role = userRole.value.toLowerCase();
   switch (role) {

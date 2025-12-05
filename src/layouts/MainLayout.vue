@@ -5,22 +5,26 @@
 
     <!-- SIDEBAR ÚNICO -->
     <q-drawer
-      v-if="authStore.isAuthReady"
       v-model="drawerOpen"
       :mini="mini"
       :width="220"
       :mini-width="80"
       side="left"
       bordered
-      overlay
+      :overlay="!mini"
       elevated
+      :breakpoint="0"
       class="bg-primary text-white"
+      style="background-color: #1E40AF; color: white;"
     >
       <main-sidebar :mini="mini" />
     </q-drawer>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <q-page-container class="page-container">
+    <q-page-container 
+      class="page-container"
+      :class="{ 'with-mini-drawer': drawerOpen && $q.screen.gt.sm }"
+    >
       <router-view />
       <main-footer />
     </q-page-container>
@@ -29,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
@@ -41,37 +45,74 @@ const $q = useQuasar();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const drawerOpen = ref($q.screen.gt.sm);
-const mini = ref($q.screen.gt.sm);
+// Estado del drawer
+const drawerOpen = ref(true);
+const mini = ref(true);
 
 function toggleDrawer() {
   if ($q.screen.lt.md) {
-    // On mobile, just toggle the drawer
+    // En móvil, toggle completo del drawer
     drawerOpen.value = !drawerOpen.value;
-    mini.value = false; // ensure not in mini mode
+    if (drawerOpen.value) {
+      mini.value = false; // Siempre expandido en móvil
+    }
   } else {
-    // On desktop, toggle the mini state
-    mini.value = !mini.value;
+    // En desktop, toggle entre mini y expandido
+    if (drawerOpen.value) {
+      mini.value = !mini.value;
+    } else {
+      drawerOpen.value = true;
+      mini.value = false;
+    }
   }
 }
 
-// Cierra el menú lateral en pantallas de móvil al cambiar de ruta
+// Cierra el drawer en móvil al cambiar de ruta
 router.afterEach(() => {
   if ($q.screen.lt.md) {
     drawerOpen.value = false;
+    mini.value = false;
+  } else {
+    // En desktop, vuelve a mini después de navegar
+    mini.value = true;
   }
 });
+
+// Maneja cambios de tamaño de pantalla
+watch(() => $q.screen.gt.sm, (isDesktop) => {
+  if (isDesktop) {
+    drawerOpen.value = true;
+    mini.value = true;
+  } else {
+    drawerOpen.value = false;
+    mini.value = false;
+  }
+}, { immediate: true });
 </script>
 
 <style lang="scss" scoped>
+.main-layout {
+  min-height: 100vh;
+}
+
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 50px); /* 50px es la altura del header por defecto */
-  padding-left: 80px; /* Espacio reservado para el menú mini */
+  min-height: calc(100vh - 50px);
+  transition: padding-left 0.3s ease;
+  
+  // Padding solo cuando el drawer está en modo mini (empuja el contenido)
+  &.with-mini-drawer {
+    padding-left: 80px;
+  }
 }
 
 .q-page {
   flex-grow: 1;
+}
+
+// Transiciones suaves
+:deep(.q-drawer) {
+  transition: all 0.3s ease;
 }
 </style>
