@@ -1,4 +1,4 @@
-import api from "../api.js";  
+import api from "../api.js";
 
 export default {
   // Obtener todas las cargas académicas
@@ -26,7 +26,7 @@ export default {
     return api.delete(`/academicload/${id}`);
   },
 
-  // Filtros 
+  // Filtros
   getByInstructor(instructorId) {
     return api.get(`/academicload/instructor/${instructorId}`);
   },

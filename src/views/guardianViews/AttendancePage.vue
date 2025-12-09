@@ -1,67 +1,18 @@
 <template>
   <div class="q-pa-md responsive-page">
-    <!-- Filtros superiores -->
-    <div class="row q-col-gutter-md q-mb-md filters-row">
-      <div class="col-12 col-md-4">
-        <q-select
-          v-model="selectedClass"
-          :options="classOptions"
-          label="Seleccionar curso"
-          outlined
-          dense
-        />
-      </div>
-
-      <div class="col-12 col-md-4">
-        <q-input
-          v-model="date"
-          label="Fecha"
-          outlined
-          dense
-          type="date"
-        />
-      </div>
-
-      <div class="col-12 col-md-4">
-        <q-btn
-          color="primary"
-          icon="search"
-          label="Buscar"
-          class="full-width"
-          @click="filterAttendance"
-        />
-      </div>
-    </div>
-
-    <!-- Tabla de asistencia -->
+    <!-- Tabla de estudiantes -->
     <q-card class="card-table">
       <q-table
-        title="Registro de Asistencia"
-        :rows="filteredStudents"
+        title="Mis Estudiantes"
+        :rows="students"
         :columns="columns"
-        row-key="id"
+        row-key="_id"
         flat
         bordered
         :pagination.sync="pagination"
         :rows-per-page-options="[5, 10, 20]"
         :grid="$q.screen.lt.md"
       >
-        <template v-slot:body-cell-status="props">
-          <q-td :props="props">
-            <q-chip
-              :color="props.row.status === 'Presente' ? 'green' : 'red'"
-              text-color="white"
-              class="status-chip"
-            >
-              {{ props.row.status }}
-            </q-chip>
-          </q-td>
-        </template>
-
-        <template v-slot:top-right>
-          <q-btn color="positive" label="Guardar Cambios" icon="save" flat dense />
-        </template>
-
         <template v-slot:bottom="props">
           <div class="row justify-between items-center q-pa-sm summary-actions">
             <div class="text-caption">
@@ -82,25 +33,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useAuthStore } from '../../stores/auth.js'
+import axios from 'axios'
 
-const classOptions = ['1°A', '2°B', '3°C', '4°D', '5°E']
-const selectedClass = ref(null)
-const date = ref('')
-const search = ref('')
+const auth = useAuthStore()
+const students = ref([])
 
-const students = ref([
-  { id: 1, name: 'Juan Pérez', status: 'Presente' },
-  { id: 2, name: 'María López', status: 'Ausente' },
-  { id: 3, name: 'Carlos Díaz', status: 'Presente' },
-  { id: 4, name: 'Ana Gómez', status: 'Presente' },
-  { id: 5, name: 'Luis Torres', status: 'Ausente' }
-])
- 
 const columns = [
-  { name: 'id', label: 'ID', field: 'id', align: 'center' },
-  { name: 'name', label: 'Estudiante', field: 'name', align: 'left' },
-  { name: 'status', label: 'Estado', field: 'status', align: 'center' }
+  { name: 'name', label: 'Estudiante', field: (row) => `${row.names} ${row.lastNames}`, align: 'left' },
 ]
 
 const pagination = ref({
@@ -108,29 +49,27 @@ const pagination = ref({
   rowsPerPage: 5
 })
 
-const filteredStudents = computed(() => {
-  return students.value.filter(s =>
-    s.name.toLowerCase().includes(search.value.toLowerCase())
-  )
-})
+onMounted(async () => {
+  if (auth.user && auth.user.id) {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/registration/students-by-attendant/${auth.user.id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      });
+      students.value = response.data.data;
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  }
+});
 
-function filterAttendance() {
-  console.log('Filtrando asistencia de', selectedClass.value, 'para la fecha', date.value)
-}
 </script>
 
 <style scoped>
 .card-table {
   border-radius: 12px;
   overflow: hidden;
-}
-
-.status-chip {
-  font-weight: bold;
-}
-
-.filters-row {
-  flex-wrap: wrap;
 }
 
 /* RESPONSIVIDAD */
@@ -140,28 +79,10 @@ function filterAttendance() {
   .responsive-page {
     padding: 8px !important;
   }
-
-  .q-btn.full-width {
-    width: 100%;
-  }
 }
 
 /* Celulares */
 @media (max-width: 600px) {
-  .filters-row {
-    flex-direction: column !important;
-  }
-
-  .q-select,
-  .q-input,
-  .q-btn {
-    width: 100%;
-  }
-
-  .status-chip {
-    font-size: 0.8rem;
-  }
-
   .summary-actions {
     flex-direction: column !important;
     align-items: flex-start;

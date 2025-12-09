@@ -1,129 +1,117 @@
 <template>
-  <q-layout view="lHh LpR fFf">
+  <q-page class="q-pa-md">
+    <div class="row q-col-gutter-md">
+      <section class="col-12">
+        <q-card class="shadow1">
+          <q-card-section>
 
-    <q-header bordered class="bgPrimary textWhite">
-      <HeaderComponent />
-    </q-header>
+            <div v-if="isLoading" class="text-center q-pa-xl">
+              <q-spinner size="50px" color="primary" />
+              <div class="loadingMessage">Cargando sedes...</div>
+            </div>
 
-    <q-page-container>
-      <q-page class="q-pa-md">
-        <div class="row q-col-gutter-md">
-          <section class="col-12">
-            <q-card class="shadow1">
-              <q-card-section>
-
-                <div v-if="isLoading" class="text-center q-pa-xl">
-                  <q-spinner size="50px" color="primary" />
-                  <div class="loadingMessage">Cargando sedes...</div>
+            <div class="row items-center q-mb-lg">
+              <q-card-section class="pageHeaderInfo">
+                <div class="pageTitle">
+                  Gestión de Sedes
                 </div>
-
-                <div class="row items-center q-mb-lg">
-                  <q-card-section class="pageHeaderInfo">
-                    <div class="pageTitle">
-                      Gestión de Sedes
-                    </div>
-                    <div class="text-caption text-grey-7 q-mt-xs">
-                      Crear y gestionar las sedes de la institución
-                    </div>
-                  </q-card-section>
-
-                  <q-space />
-                  <div class="actionButtonContainer">
-                    <q-btn color="primary" icon="add" label="AGREGAR SEDE" @click="openCreateDialog" />
-                  </div>
+                <div class="text-caption text-grey-7 q-mt-xs">
+                  Crear y gestionar las sedes de la institución
                 </div>
-
-                <Table v-if="!isLoading" :rows="filteredRows" :columns="columns" :actions="true"
-                  @edit="handleEditHeadquarters" @toggleState="toggleStatus" />
-
-                <q-dialog v-model="showDialog" persistent>
-                  <q-card style="min-width: 520px; max-width: 90vw;">
-                    <q-card-section class="row items-center q-pb-none dialogHeader">
-                      <div class="text-h6">{{ isEditMode ? 'Editar Sede' : 'Crear Sede' }}</div>
-                      <q-space />
-                      <q-btn icon="close" flat round dense @click="closeDialog" />
-                    </q-card-section>
-
-                    <q-separator />
-
-                    <q-card-section>
-                      <q-form @submit.prevent="submitForm">
-
-                        <div class="row q-col-gutter-md">
-                          <div class="col-12">
-                            <q-select
-                              v-model="formData.school"
-                              :options="schoolOptions"
-                              label="Colegio"
-                              outlined
-                              emit-value
-                              map-options
-                              :rules="[val => !!val || 'El colegio es requerido']"
-                            />
-                          </div>
-
-                          <div class="col-12 col-md-6">
-                            <q-input v-model="formData.name" label="Nombre" outlined
-                              :rules="[val => !!val || 'Nombre requerido']" />
-                          </div>
-                          <div class="col-12 col-md-6">
-                            <q-input v-model="formData.abbreviation" label="Abreviatura" outlined
-                              :rules="[val => !!val || 'Abreviatura requerida']" />
-                          </div>
-
-                          <div class="col-12 col-md-6">
-                            <q-input v-model="formData.code" label="Código" outlined
-                              :rules="[val => !!val || 'Código requerido']" />
-                          </div>
-
-                          <div class="col-12 col-md-6">
-                            <q-input v-model="formData.phone" label="Teléfono" outlined
-                              :rules="[val => !!val || 'Teléfono requerido']" />
-                          </div>
-
-                          <div class="col-12">
-                            <q-input v-model="formData.address" label="Dirección" outlined autogrow
-                              :rules="[val => !!val || 'Dirección requerida']" />
-                          </div>
-                        </div>
-
-                        <div class="row q-mt-md">
-                          <div class="col-12">
-                            <q-toggle v-model="formData.isActive" label="Sede activa" />
-                          </div>
-                        </div>
-
-                        <div class="row q-mt-md justify-end">
-                          <q-btn flat label="Cancelar" color="grey-7" class="q-mr-sm" @click="closeDialog" />
-                          <q-btn type="submit" color="primary" :label="isEditMode ? 'Guardar cambios' : 'Crear sede'" />
-                        </div>
-                      </q-form>
-                    </q-card-section>
-                  </q-card>
-                </q-dialog>
               </q-card-section>
-            </q-card>
 
-          </section>
-        </div>
+              <q-space />
+              <div class="actionButtonContainer">
+                <q-btn color="primary" icon="add" label="AGREGAR SEDE" @click="openCreateDialog" />
+              </div>
+            </div>
 
-        <FooterComponent />
+            <Table v-if="!isLoading" :rows="filteredRows" :columns="columns" :actions="true"
+              @edit="handleEditHeadquarters" @toggleState="toggleStatus" />
 
-      </q-page>
-    </q-page-container>
+            <q-dialog v-model="showDialog" persistent>
+              <q-card style="min-width: 520px; max-width: 90vw;">
+                <q-card-section class="row items-center q-pb-none dialogHeader">
+                  <div class="text-h6">{{ isEditMode ? 'Editar Sede' : 'Crear Sede' }}</div>
+                  <q-space />
+                  <q-btn icon="close" flat round dense @click="closeDialog" />
+                </q-card-section>
 
-  </q-layout>
+                <q-separator />
+
+                <q-card-section>
+                  <q-form @submit.prevent="submitForm">
+
+                    <div class="row q-col-gutter-md">
+                      <div class="col-12">
+                        <q-select
+                          v-model="formData.school"
+                          :options="schoolOptions"
+                          label="Colegio"
+                          outlined
+                          emit-value
+                          map-options
+                          :rules="[val => !!val || 'El colegio es requerido']"
+                        />
+                      </div>
+
+                      <div class="col-12 col-md-6">
+                        <q-input v-model="formData.name" label="Nombre" outlined
+                          :rules="[val => !!val || 'Nombre requerido']" />
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <q-input v-model="formData.abbreviation" label="Abreviatura" outlined
+                          :rules="[val => !!val || 'Abreviatura requerida']" />
+                      </div>
+
+                      <div class="col-12 col-md-6">
+                        <q-input v-model="formData.code" label="Código" outlined
+                          :rules="[val => !!val || 'Código requerido']" />
+                      </div>
+
+                      <div class="col-12 col-md-6">
+                        <q-input v-model="formData.phone" label="Teléfono" outlined
+                          :rules="[val => !!val || 'Teléfono requerido']" />
+                      </div>
+
+                      <div class="col-12">
+                        <q-input v-model="formData.address" label="Dirección" outlined autogrow
+                          :rules="[val => !!val || 'Dirección requerida']" />
+                      </div>
+                    </div>
+
+                    <div class="row q-mt-md">
+                      <div class="col-12">
+                        <q-toggle v-model="formData.isActive" label="Sede activa" />
+                      </div>
+                    </div>
+
+                    <div class="row q-mt-md justify-end">
+                      <q-btn flat label="Cancelar" color="grey-7" class="q-mr-sm" @click="closeDialog" />
+                      <q-btn type="submit" color="primary" :label="isEditMode ? 'Guardar cambios' : 'Crear sede'" />
+                    </div>
+                  </q-form>
+                </q-card-section>
+              </q-card>
+            </q-dialog>
+          </q-card-section>
+        </q-card>
+
+      </section>
+    </div>
+
+  </q-page>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
+import api from '../../services/api.js';
+import { useAuthStore } from '../../stores/auth';
+
 
 import Table from "../../components/tables.vue"
-import api from "../../services/api.js"
 import { useNotify } from "../../composables/useNotify.js"
 const { showNotify: info, showErrorNotify: error } = useNotify()
-import HeaderComponent from '../../components/Header.vue'
-import FooterComponent from '../../components/Footer.vue'
 
 const isLoading = ref(false)
 const headquartersList = ref([])
@@ -131,6 +119,7 @@ const searchText = ref("")
 const showDialog = ref(false)
 const isEditMode = ref(false)
 const editingItem = ref(null)
+const authStore = useAuthStore();
 
 const formData = ref({
   school: "",
@@ -148,7 +137,12 @@ const schoolOptions = ref([])
 // Carga la lista de colegios.
 const fetchSchools = async () => {
   try {
-    const response = await api.get('/school');
+    const direccionId = authStore.user.direccion_nucleo;
+    if (!direccionId) {
+      error('No se pudo encontrar la dirección núcleo del usuario.');
+      return;
+    }
+    const response = await api.get(`/direcciones-nucleo/${direccionId}/colegios`);
     const res = response.data;
     
     // Normalización de la respuesta del API para obtener la lista de items
@@ -166,7 +160,7 @@ const fetchSchools = async () => {
 const fetchHeadquarters = async () => {
   try {
     isLoading.value = true
-    const response = await api.get("/sedes");
+    const response = await api.get("/headquarters");
     const res = response.data;
 
     // Normalización de la respuesta del API (basado en el controlador: busca 'headquarters', 'data' o el array directo)
@@ -191,7 +185,7 @@ const fetchHeadquarters = async () => {
 // crear una nueva sede.
 const createHeadquarters = async () => {
   try {
-    await api.post("/sedes", formData.value)
+    await api.post("/headquarters", formData.value)
     await fetchHeadquarters()
     info("Sede registrada correctamente")
     closeDialog()
@@ -205,7 +199,7 @@ const createHeadquarters = async () => {
 const updateHeadquarters = async () => {
   try {
     // La ruta usa el _id del item que se está editando
-    await api.put(`/sedes/${editingItem.value._id}`, {
+    await api.put(`/headquarters/${editingItem.value._id}`, {
       school: formData.value.school,
       name: formData.value.name,
       abbreviation: formData.value.abbreviation,
@@ -226,7 +220,7 @@ const updateHeadquarters = async () => {
 const toggleStatus = async (headquartersItem) => {
   try {
     // Determina el endpoint basado en el estado actual (si está activa, se llama a inactivar)
-    const endpoint = headquartersItem.isActive ? `/sedes/${headquartersItem._id}/inactivar` : `/sedes/${headquartersItem._id}/activar`
+    const endpoint = headquartersItem.isActive ? `/headquarters/${headquartersItem._id}/inactivar` : `/headquarters/${headquartersItem._id}/activar`
     await api.put(endpoint, {}) // PUT a la ruta de activación/inactivación
     
     info(`Sede ${headquartersItem.isActive ? 'inactivada' : 'activada'} correctamente`)

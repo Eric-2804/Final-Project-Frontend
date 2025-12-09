@@ -33,7 +33,7 @@
         <q-card bordered class="info-card">
           <q-card-section>
             <div class="text-subtitle1 text-bold">Promedio General:</div>
-            <div class="text-h5 text-primary q-mt-sm">{{ average }} / 5.0</div>
+            <div class="text-h5 text-primary q-mt-sm">{{ typeof average === 'number' ? average.toFixed(1) : 'N/A' }} / 5.0</div>
             <q-linear-progress
               :value="average / 5"
               color="primary"
@@ -85,16 +85,59 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useAuthStore } from '../../stores/auth.js'
+import axios from 'axios'
 
-const studentName = ref('Juan Sebastián López')
-const enrollmentStatus = ref('Activo')
-const average = ref(4.3)
-const alerts = ref(['Bajo rendimiento en Matemáticas'])
-const notices = ref([
-  { title: 'Reunión general de padres de familia', date: '2025-11-08' },
-  { title: 'Entrega de boletines del segundo periodo', date: '2025-10-25' }
-])
+const auth = useAuthStore()
+const studentName = ref('Cargando...')
+const enrollmentStatus = ref('Cargando...')
+const average = ref(0)
+const alerts = ref([])
+const notices = ref([])
+
+onMounted(async () => {
+  if (auth.user && auth.user.id) {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/registration/students-by-attendant/${auth.user.id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      });
+      const registrations = response.data.data;
+      if (registrations && registrations.length > 0) {
+        const studentRegistration = registrations[0]; // Assuming one student per guardian for now
+        if (studentRegistration.student) {
+          studentName.value = `${studentRegistration.student.names} ${studentRegistration.student.lastNames}`;
+        }
+        enrollmentStatus.value = studentRegistration.state || 'No disponible';
+        average.value = studentRegistration.finalAverage || 0;
+
+        // Fetch grades to generate alerts
+        if (studentRegistration.student && studentRegistration.student._id) {
+          const gradesResponse = await axios.get(`http://localhost:3000/api/calificaciones/estudiantes/${studentRegistration.student._id}/calificaciones`, {
+            headers: {
+              Authorization: `Bearer ${auth.token}`
+            }
+          });
+          const grades = gradesResponse.data.data;
+          if (grades && Array.isArray(grades)) {
+            const lowGrades = grades.filter(grade => grade.final_grade < 3.0);
+            alerts.value = lowGrades.map(grade => `Bajo rendimiento en ${grade.subject ? grade.subject.name : 'materia desconocida'}`);
+          }
+        }
+      } else {
+        studentName.value = "No se encontraron estudiantes";
+        enrollmentStatus.value = "N/A";
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      studentName.value = "Error al cargar";
+      enrollmentStatus.value = "Error al cargar";
+    }
+  }
+});
+
 </script>
 
 <style scoped>

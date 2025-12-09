@@ -1,747 +1,427 @@
 <template>
-  <div class="profile-page">
-    <div class="profile-container">
-      <h1 class="page-title">Mi Perfil</h1>
+  <q-page class="page-container">
+    <div v-if="loading" class="loading-spinner">
+      <q-spinner-dots color="primary" size="50px" />
+      <p>Cargando perfil...</p>
+    </div>
+    <div v-if="error" class="error-message">
+      <q-icon name="warning" color="negative" size="50px" />
+      <p>Error al cargar el perfil: {{ error }}</p>
+    </div>
 
-      <div class="row q-col-gutter-lg">
-        <!-- Columna Izquierda: Foto y Datos Personales -->
-        <div class="col-12 col-md-5">
-          <!-- Card de Foto de Perfil -->
-          <q-card flat bordered class="profile-card">
-            <q-card-section class="text-center profile-header">
-              <div class="avatar-wrapper">
-                <q-avatar size="130px" class="profile-avatar">
-                  <img :src="profile.photo || 'https://cdn.quasar.dev/img/boy-avatar.png'">
-                </q-avatar>
-                <q-btn 
-                  round
-                  dense
-                  size="sm"
-                  color="primary" 
-                  icon="photo_camera"
-                  class="avatar-edit-btn"
-                  @click="changePhoto"
-                >
-                  <q-tooltip>Cambiar foto</q-tooltip>
-                </q-btn>
-              </div>
-              <h2 class="profile-name q-mt-md">{{ profile.name }}</h2>
-              <q-chip 
-                color="primary" 
-                text-color="white" 
-                size="md"
-                class="profile-role-chip"
-              >
-                {{ profile.role }}
+    <div v-if="!loading && !error" class="profile-container">
+      <!-- Profile Header -->
+      <q-card class="profile-header-card">
+        <q-card-section class="profile-header">
+          <q-avatar size="120px">
+            <img :src="profile.profilePhoto || 'https://cdn.quasar.dev/img/boy-avatar.png'" alt="Foto de Perfil">
+          </q-avatar>
+          <div class="profile-info">
+            <h4 class="profile-name">{{ profile.names }} {{ profile.lastNames }}</h4>
+            <p class="profile-role">{{ profile.roles }}</p>
+            <p class="profile-email">{{ profile.email }}</p>
+          </div>
+          <q-btn flat round icon="photo_camera" @click="changePhoto" class="change-photo-btn" />
+        </q-card-section>
+      </q-card>
+
+      <!-- Main Content Grid -->
+      <div class="profile-grid">
+        <!-- Personal Information -->
+        <q-card class="grid-card">
+          <q-card-section>
+            <h5 class="section-header">Información Personal</h5>
+            <div class="info-grid">
+              <div><strong>Documento:</strong> {{ profile.typeDocument }} {{ profile.numberDocument }}</div>
+              <div><strong>Teléfono:</strong> {{ profile.cellphone }}</div>
+              <div><strong>Dirección:</strong> {{ profile.direction }}</div>
+              <div><strong>Fecha de Nacimiento:</strong> {{ profile.dateBorn }}</div>
+              <div><strong>Género:</strong> {{ profile.gender }}</div>
+              <div><strong>Estrato:</strong> {{ profile.stratum }}</div>
+            </div>
+          </q-card-section>
+        </q-card>
+
+        <!-- Academic Load -->
+        <q-card class="grid-card">
+          <q-card-section>
+            <h5 class="section-header">Carga Académica</h5>
+            <div class="academic-load">
+              <q-chip v-for="item in academicLoad" :key="item.id" color="primary" text-color="white" icon="school">
+                {{ item.subject }} - {{ item.grade }}
               </q-chip>
-            </q-card-section>
-          </q-card>
-
-          <!-- Card de Información Personal -->
-          <q-card flat bordered class="info-card q-mt-lg">
-            <q-card-section>
-              <div class="section-header">
-                <q-icon name="person" size="24px" color="primary" />
-                <h3 class="section-title">Información Personal</h3>
+              <div v-if="academicLoad.length === 0" class="no-data">
+                No hay carga académica asignada.
               </div>
-              <q-separator class="q-my-md" />
-              <div class="info-grid">
-                <div class="info-item">
-                  <div class="info-label">
-                    <q-icon name="email" size="18px" color="grey-7" />
-                    <span>Email</span>
-                  </div>
-                  <span class="info-value">{{ profile.email }}</span>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">
-                    <q-icon name="badge" size="18px" color="grey-7" />
-                    <span>Documento</span>
-                  </div>
-                  <span class="info-value">{{ profile.document }}</span>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">
-                    <q-icon name="phone" size="18px" color="grey-7" />
-                    <span>Teléfono</span>
-                  </div>
-                  <span class="info-value">{{ profile.phone }}</span>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">
-                    <q-icon name="location_on" size="18px" color="grey-7" />
-                    <span>Dirección</span>
-                  </div>
-                  <span class="info-value">{{ profile.address }}</span>
-                </div>
-              </div>
-            </q-card-section>
-          </q-card>
+            </div>
+          </q-card-section>
+        </q-card>
 
-          <!-- Card de Carga Académica -->
-          <q-card flat bordered class="info-card q-mt-lg">
-            <q-card-section>
-              <div class="section-header">
-                <q-icon name="school" size="24px" color="primary" />
-                <h3 class="section-title">Carga Académica</h3>
-              </div>
-              <q-separator class="q-my-md" />
-              <div class="academic-list">
-                <div v-for="item in academicLoad" :key="item.id" class="academic-item">
-                  <div class="academic-info">
-                    <q-icon name="class" size="20px" color="primary" class="q-mr-sm" />
-                    <div>
-                      <div class="academic-group">{{ item.group }}</div>
-                      <div class="academic-subject">{{ item.subject }}</div>
-                    </div>
-                  </div>
-                  <q-icon name="chevron_right" size="20px" color="grey-5" />
-                </div>
-              </div>
-            </q-card-section>
-          </q-card>
-
-        </div>
-
-        <!-- Columna Derecha: Cambiar Contraseña y Firma -->
-        <div class="col-12 col-md-7">
-          <q-card flat bordered class="password-card">
-            <q-card-section>
-              <div class="section-header">
-                <q-icon name="lock" size="24px" color="primary" />
-                <h3 class="section-title">Cambiar Contraseña</h3>
-              </div>
-              <p class="section-subtitle">Actualiza tu contraseña para mantener tu cuenta segura.</p>
-              <q-separator class="q-my-md" />
-
-              <q-form @submit.prevent="changePassword" class="password-form">
-                <div class="form-group">
-                  <label class="form-label">Contraseña Actual</label>
-                  <q-input 
-                    v-model="password.current"
-                    type="password"
-                    outlined
-                    dense
-                    placeholder="Ingresa tu contraseña actual"
-                    :rules="[val => !!val || 'Campo requerido']"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="lock_open" />
-                    </template>
-                  </q-input>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Nueva Contraseña</label>
-                  <q-input 
-                    v-model="password.new"
-                    type="password"
-                    outlined
-                    dense
-                    placeholder="Ingresa tu nueva contraseña"
-                    :rules="[
-                      val => !!val || 'Campo requerido',
-                      val => val.length >= 6 || 'Mínimo 6 caracteres'
-                    ]"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="lock" />
-                    </template>
-                  </q-input>
-                  <div class="password-strength q-mt-sm">
-                    <div class="strength-bar">
-                      <div 
-                        class="strength-fill" 
-                        :class="passwordStrengthClass"
-                        :style="{ width: passwordStrength + '%' }"
-                      ></div>
-                    </div>
-                    <span class="strength-text" :class="passwordStrengthClass">
-                      {{ passwordStrengthText }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Confirmar Nueva Contraseña</label>
-                  <q-input 
-                    v-model="password.confirm"
-                    type="password"
-                    outlined
-                    dense
-                    placeholder="Confirma tu nueva contraseña"
-                    :rules="[
-                      val => !!val || 'Campo requerido',
-                      val => val === password.new || 'Las contraseñas no coinciden'
-                    ]"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="lock" />
-                    </template>
-                  </q-input>
-                </div>
-
-                <q-banner v-if="showPasswordTips" dense rounded class="bg-blue-1 text-grey-8 q-mt-md">
-                  <template v-slot:avatar>
-                    <q-icon name="info" color="primary" />
-                  </template>
-                  <div class="text-caption">
-                    <strong>Recomendaciones:</strong>
-                    <ul class="q-pl-md q-mt-xs q-mb-none">
-                      <li>Usa al menos 8 caracteres</li>
-                      <li>Combina letras, números y símbolos</li>
-                      <li>No uses información personal</li>
-                    </ul>
-                  </div>
-                </q-banner>
-
-                <div class="form-actions">
-                  <q-btn 
-                    flat
-                    label="Cancelar" 
-                    color="grey-7"
-                    size="md"
-                    @click="resetPasswordForm"
-                  />
-                  <q-btn 
-                    type="submit"
-                    unelevated
-                    label="Guardar Cambios" 
-                    color="primary"
-                    size="md"
-                    icon-right="check"
-                  />
-                </div>
-              </q-form>
-            </q-card-section>
-          </q-card>
-
-          <!-- Card de Seguridad Adicional -->
-          <q-card flat bordered class="info-card q-mt-lg">
-            <q-card-section>
-              <div class="section-header">
-                <q-icon name="security" size="24px" color="primary" />
-                <h3 class="section-title">Seguridad de la Cuenta</h3>
-              </div>
-              <q-separator class="q-my-md" />
-              <div class="security-options">
-                <div class="security-item">
-                  <div class="security-info">
-                    <q-icon name="history" size="22px" color="grey-7" />
-                    <div>
-                      <div class="security-label">Última sesión</div>
-                      <div class="security-value">Hace 2 horas</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="security-item">
-                  <div class="security-info">
-                    <q-icon name="devices" size="22px" color="grey-7" />
-                    <div>
-                      <div class="security-label">Dispositivos activos</div>
-                      <div class="security-value">2 dispositivos</div>
-                    </div>
-                  </div>
-                  <q-btn flat dense color="primary" label="Ver" size="sm" />
-                </div>
-              </div>
-            </q-card-section>
-          </q-card>
-
-          <!-- Card de Firma Digital -->
-          <q-card flat bordered class="info-card q-mt-lg">
-            <q-card-section>
-              <div class="section-header">
-                <q-icon name="draw" size="24px" color="primary" />
-                <h3 class="section-title">Firma Digital</h3>
-              </div>
-              <q-separator class="q-my-md" />
-              <div class="text-center">
-                <div v-if="profile.signature" class="signature-preview">
-                  <img :src="profile.signature" alt="Firma" />
-                </div>
+        <!-- Digital Signature -->
+        <q-card class="grid-card">
+          <q-card-section>
+            <h5 class="section-header">Firma Digital</h5>
+            <div class="signature-section">
+              <div class="signature-preview">
+                <img v-if="profile.signDigital" :src="profile.signDigital" alt="Firma Digital">
                 <div v-else class="signature-placeholder">
-                  <q-icon name="gesture" size="48px" color="grey-5" />
-                  <p class="text-grey-6 q-mt-sm">No hay firma registrada</p>
+                  <q-icon name="image" size="40px" />
+                  <p>No hay firma digital</p>
                 </div>
-                <q-btn 
-                  unelevated
-                  color="primary" 
-                  :label="profile.signature ? 'Cambiar Firma' : 'Subir Firma'" 
-                  size="md"
-                  class="q-mt-md"
-                  icon="upload"
-                  @click="changeSignature" 
-                />
               </div>
-            </q-card-section>
-          </q-card>
-        </div>
+              <q-btn label="Cambiar Firma" color="secondary" @click="changeSignature" class="q-mt-md" />
+            </div>
+          </q-card-section>
+        </q-card>
+
+        <!-- Change Password -->
+        <q-card class="grid-card">
+          <q-card-section>
+            <h5 class="section-header">Cambiar Contraseña</h5>
+            <div class="password-form">
+              <q-input v-model="password.new" type="password" label="Nueva Contraseña" outlined dense />
+              <q-input v-model="password.confirm" type="password" label="Confirmar Contraseña" outlined dense />
+
+              <div class="password-strength-indicator">
+                <div class="strength-bar" :class="passwordStrengthClass"></div>
+                <span class="strength-text">{{ passwordStrengthText }}</span>
+              </div>
+
+              <q-btn label="Actualizar Contraseña" color="primary" @click="changePassword" class="q-mt-md" />
+
+              <div class="password-tips" v-if="showPasswordTips">
+                <p><strong>Consejos para una contraseña segura:</strong></p>
+                <ul>
+                  <li>Usa al menos 8 caracteres.</li>
+                  <li>Combina letras mayúsculas, minúsculas, números y símbolos.</li>
+                  <li>No uses información personal fácil de adivinar.</li>
+                </ul>
+              </div>
+              <q-btn flat dense label="Mostrar consejos" @click="showPasswordTips = !showPasswordTips" size="sm" class="tips-toggle" />
+            </div>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
-  </div>
+  </q-page>
 </template>
-
-
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useNotify } from '../../composables/useNotify.js';
-import api from '../../services/api';
+import { useQuasar } from 'quasar';
+import { useAuthStore } from '@/stores/auth';
+import { getData, postData } from '@/services/httpService';
 
 export default {
   name: 'TeacherProfile',
   setup() {
     const route = useRoute();
-    const teacherId = '6917ec45ac5ef097ac96abd1';
-    const { showNotify, showErrorNotify } = useNotify();
+    const $q = useQuasar();
+    const authStore = useAuthStore();
 
-    const profile = ref({
-      name: '',
-      role: '',
-      document: '',
-      email: '',
-      phone: '',
-      address: '',
-      photo: null,
-      signature: null,
-    });
-
+    const profile = ref({});
     const academicLoad = ref([]);
-
-    const password = ref({
-      current: '',
-      new: '',
-      confirm: '',
-    });
-
+    const password = ref({ new: '', confirm: '' });
     const showPasswordTips = ref(false);
     const loading = ref(true);
     const error = ref(null);
 
     const passwordStrength = computed(() => {
-      const pwd = password.value.new;
-      if (!pwd) return 0;
-      let strength = 0;
-      if (pwd.length >= 6) strength += 25;
-      if (pwd.length >= 8) strength += 25;
-      if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength += 25;
-      if (/\d/.test(pwd)) strength += 15;
-      if (/[^a-zA-Z\d]/.test(pwd)) strength += 10;
-      return Math.min(strength, 100);
+      const p = password.value.new;
+      let score = 0;
+      if (!p) return 0;
+      if (p.length >= 8) score++;
+      if (/[a-z]/.test(p) && /[A-Z]/.test(p)) score++;
+      if (/\d/.test(p)) score++;
+      if (/[^a-zA-Z0-9]/.test(p)) score++;
+      return score;
     });
 
     const passwordStrengthText = computed(() => {
-      const strength = passwordStrength.value;
-      if (strength === 0) return '';
-      if (strength < 40) return 'Débil';
-      if (strength < 70) return 'Media';
+      const score = passwordStrength.value;
+      if (score <= 1) return 'Débil';
+      if (score <= 3) return 'Media';
       return 'Fuerte';
     });
 
     const passwordStrengthClass = computed(() => {
-      const strength = passwordStrength.value;
-      if (strength < 40) return 'strength-weak';
-      if (strength < 70) return 'strength-medium';
+      const score = passwordStrength.value;
+      if (score <= 1) return 'strength-weak';
+      if (score <= 3) return 'strength-medium';
       return 'strength-strong';
     });
 
     const changePhoto = () => {
-      showNotify({ message: 'Función para cambiar foto' });
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = handlePhotoChange;
+      input.click();
+    };
+
+    const handlePhotoChange = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target.result;
+        uploadPhoto(base64String);
+      };
+      reader.readAsDataURL(file);
+    };
+
+    const uploadPhoto = async (photo) => {
+      try {
+        const response = await postData(`/users/${route.params.id}/photo`, { photo });
+        profile.value.profilePhoto = photo;
+        $q.notify({ type: 'positive', message: response.message || 'Foto de perfil actualizada.' });
+      } catch (err) {
+        $q.notify({ type: 'negative', message: `Error al actualizar la foto: ${err.message}` });
+      }
     };
 
     const changeSignature = () => {
-      showNotify({ message: 'Función para cambiar firma' });
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = handleFileChange;
+      input.click();
     };
 
-    const changePassword = async () => {
-      if (password.value.new !== password.value.confirm) {
-        showErrorNotify({ message: 'Las contraseñas no coinciden' });
-        return;
-      }
-      
-      if (password.value.new.length < 6) {
-        showErrorNotify({ message: 'La contraseña debe tener al menos 6 caracteres' });
-        return;
-      }
+    const handleFileChange = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
 
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target.result;
+        uploadSignature(base64String);
+      };
+      reader.readAsDataURL(file);
+    };
+
+    const uploadSignature = async (signature) => {
       try {
-        await api.put(`/api/usuarios-colegio/password/${teacherId}`, {
-          currentPassword: password.value.current,
-          newPassword: password.value.new,
-        });
-
-        showNotify({
-          message: 'Contraseña cambiada exitosamente',
-        });
-        
-        resetPasswordForm();
+        const response = await postData(`/users/${route.params.id}/signature`, { signature });
+        profile.value.signDigital = signature;
+        $q.notify({ type: 'positive', message: response.message || 'Firma actualizada correctamente.' });
       } catch (err) {
-        const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Error al cambiar la contraseña. Verifique su contraseña actual.';
-        showErrorNotify({ message: errorMessage });
+        $q.notify({ type: 'negative', message: `Error al actualizar la firma: ${err.message}` });
       }
     };
 
     const resetPasswordForm = () => {
-      password.value = {
-        current: '',
-        new: '',
-        confirm: '',
-      };
-      showPasswordTips.value = false;
+      password.value.new = '';
+      password.value.confirm = '';
     };
 
-    onMounted(async () => {
+    const changePassword = async () => {
+      if (password.value.new !== password.value.confirm) {
+        return $q.notify({ type: 'negative', message: 'Las contraseñas no coinciden.' });
+      }
+      if (password.value.new.length < 8) {
+        return $q.notify({ type: 'negative', message: 'La contraseña debe tener al menos 8 caracteres.' });
+      }
       try {
-        const response = await api.get(`/api/usuarios-colegio/${teacherId}`);
-        const teacherData = response.data;
-        profile.value = {
-          name: `${teacherData.names} ${teacherData.lastNames}`,
-          role: teacherData.roles.join(', '),
-          document: teacherData.numberDocument,
-          email: teacherData.email,
-          phone: teacherData.cellphone,
-          address: teacherData.direction,
-          photo: teacherData.profilePhoto,
-          signature: teacherData.signDigital,
-        };
+        const response = await postData(`/users/${route.params.id}/change-password`, { newPassword: password.value.new });
+        $q.notify({ type: 'positive', message: response.message || 'Contraseña actualizada' });
+        resetPasswordForm();
       } catch (err) {
-        error.value = 'Error al cargar el perfil del profesor. Por favor, inténtelo de nuevo más tarde.';
-        showErrorNotify({ message: error.value });
+        $q.notify({ type: 'negative', message: `Error: ${err.message}` });
+      }
+    };
+
+    const fetchProfileData = async (teacherId) => {
+      loading.value = true;
+      error.value = null;
+      try {
+        const response = await getData(`/users/${teacherId}`);
+        profile.value = response;
+        authStore.updateUser(response); // Actualiza el store con los nuevos datos
+      } catch (err) {
+        error.value = err.message;
+        $q.notify({ type: 'negative', message: `No se pudo cargar el perfil: ${err.message}` });
       } finally {
         loading.value = false;
+      }
+    };
+
+    onMounted(() => {
+      fetchProfileData(route.params.id);
+    });
+
+    watch(() => route.params.id, (newId, oldId) => {
+      if (newId && newId !== oldId) {
+        fetchProfileData(newId);
       }
     });
 
     return {
-      profile,
-      academicLoad,
-      password,
-      showPasswordTips,
-      passwordStrength,
-      passwordStrengthText,
-      passwordStrengthClass,
-      changePhoto,
-      changeSignature,
-      changePassword,
-      resetPasswordForm,
-      loading,
-      error,
+      profile, academicLoad, password, showPasswordTips, loading, error,
+      passwordStrengthClass, passwordStrengthText,
+      changePhoto, changeSignature, changePassword,
     };
-  },
+  }
 };
 </script>
 
-<style scoped>
-.profile-page {
-  background: #f8f9fa;
+<style lang="scss" scoped>
+.page-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+}
+
+.loading-spinner,
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  gap: 16px;
 }
 
 .profile-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
 }
 
-.page-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 32px 0;
-  letter-spacing: -0.5px;
+.profile-header-card {
+  margin-bottom: 24px;
 }
 
-/* Cards */
-.profile-card,
-.info-card,
-.password-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.profile-card:hover,
-.info-card:hover,
-.password-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-/* Profile Header */
 .profile-header {
-  padding: 32px 24px;
-}
-
-.avatar-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.profile-avatar {
-  border: 4px solid #ffffff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.avatar-edit-btn {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.profile-name {
-  font-size: 26px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 16px 0 8px 0;
-  letter-spacing: -0.3px;
-}
-
-.profile-role-chip {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-/* Section Headers */
-.section-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 24px;
+  padding: 24px;
+  position: relative;
 }
 
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
-  letter-spacing: -0.2px;
+.profile-info {
+  .profile-name {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  .profile-role, .profile-email {
+    font-size: 1rem;
+    color: #555;
+    margin: 4px 0 0;
+  }
 }
 
-.section-subtitle {
-  font-size: 14px;
-  color: #666;
-  margin: 8px 0 0 0;
-  line-height: 1.5;
+.change-photo-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }
 
-/* Info Grid */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.grid-card {
+  transition: box-shadow 0.3s;
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+}
+
+.section-header {
+  font-size: 1.4rem;
+  font-weight: 500;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
 .info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  font-size: 0.95rem;
+}
+
+.academic-load {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.signature-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signature-preview {
+  width: 100%;
+  max-width: 300px;
+  height: 150px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+.signature-placeholder {
+  text-align: center;
+  color: #888;
+}
+
+.password-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.info-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 14px;
-  color: #1a1a1a;
-  font-weight: 500;
-  text-align: right;
-}
-
-/* Academic Load */
-.academic-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.academic-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.academic-item:hover {
-  background: #e8f4f8;
-  transform: translateX(4px);
-}
-
-.academic-info {
-  display: flex;
-  align-items: center;
-}
-
-.academic-group {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 2px;
-}
-
-.academic-subject {
-  font-size: 13px;
-  color: #666;
-}
-
-/* Signature */
-.signature-preview {
-  background: #f8f9fa;
-  border: 2px dashed #d0d0d0;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 16px;
-  display: inline-block;
-}
-
-.signature-preview img {
-  max-width: 250px;
-  height: auto;
-  display: block;
-}
-
-.signature-placeholder {
-  background: #f8f9fa;
-  border: 2px dashed #d0d0d0;
-  border-radius: 12px;
-  padding: 48px 24px;
-  margin-bottom: 16px;
-}
-
-/* Password Form */
-.password-form {
-  max-width: 100%;
-}
-
-.form-group {
-  margin-bottom: 24px;
-}
-
-.form-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 8px;
-}
-
-.password-strength {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.strength-bar {
-  flex: 1;
-  height: 6px;
-  background: #e0e0e0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.strength-fill {
-  height: 100%;
-  transition: all 0.3s ease;
-  border-radius: 3px;
-}
-
-.strength-weak {
-  background: #ef5350;
-  color: #ef5350;
-}
-
-.strength-medium {
-  background: #ffa726;
-  color: #ffa726;
-}
-
-.strength-strong {
-  background: #66bb6a;
-  color: #66bb6a;
-}
-
-.strength-text {
-  font-size: 12px;
-  font-weight: 600;
-  min-width: 60px;
-  text-align: right;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #f0f0f0;
-}
-
-/* Security Options */
-.security-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.security-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 12px;
-}
-
-.security-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.security-label {
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 2px;
-}
-
-.security-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .profile-container {
-    padding: 16px;
+.password-strength-indicator {
+  width: 100%;
+  .strength-bar {
+    height: 8px;
+    border-radius: 4px;
+    transition: all 0.3s;
+    background-color: #eee;
   }
-
-  .page-title {
-    font-size: 26px;
-    margin-bottom: 24px;
+  .strength-weak { width: 25%; background-color: #e74c3c; }
+  .strength-medium { width: 60%; background-color: #f39c12; }
+  .strength-strong { width: 100%; background-color: #2ecc71; }
+  .strength-text {
+    font-size: 0.8rem;
+    text-align: right;
+    margin-top: 4px;
+    color: #555;
   }
+}
 
-  .profile-name {
-    font-size: 22px;
-  }
+.password-tips {
+  font-size: 0.85rem;
+  color: #666;
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  padding: 12px;
+  border-radius: 4px;
+}
 
-  .section-title {
-    font-size: 16px;
+.tips-toggle {
+  align-self: flex-start;
+}
+
+@media (min-width: 768px) {
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>

@@ -20,7 +20,7 @@ const form = reactive({
 /* Métodos */
 function saveChanges() {
   console.log('Data sent:', form)
-  // Aquí luego harás el fetch o axios.post al backend
+  // Aquí luego harás el fetch o postData al backend
 }
 
 function cancel() {

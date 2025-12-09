@@ -1,5 +1,5 @@
 <template>
-  <div class="guardian-profile q-pa-lg">
+  <div v-if="auth.user" class="guardian-profile q-pa-lg">
     <!-- Título principal -->
     <div class="text-h5 text-bold q-mb-lg">My Profile</div>
 
@@ -13,7 +13,7 @@
             <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Profile photo" />
           </q-avatar>
           <div class="text-subtitle1 text-bold">
-            {{ user.firstName }} {{ user.lastName }}
+            {{ auth.user?.firstName }} {{ auth.user?.lastName }}
           </div>
         </q-card>
 
@@ -25,15 +25,11 @@
           <div class="q-mt-md">
             <div class="row items-center q-mb-sm">
               <div class="col-4 text-grey">Email:</div>
-              <div class="col">{{ user.email }}</div>
+              <div class="col">{{ auth.user?.email }}</div>
             </div>
             <div class="row items-center q-mb-sm">
               <div class="col-4 text-grey">Role:</div>
-              <div class="col">{{ user.role }}</div>
-            </div>
-            <div class="row items-center">
-              <div class="col-4 text-grey">Nucleus:</div>
-              <div class="col">{{ user.nucleus }}</div>
+              <div class="col">{{ auth.userRole }}</div>
             </div>
           </div>
         </q-card>
@@ -89,27 +85,37 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { useAuthStore } from '../../stores/auth.js'
+import api from '../../services/api'
 
-/* Datos temporales (quemados) para pruebas */
-const user = reactive({
-  firstName: 'Maria',
-  lastName: 'Gonzalez',
-  email: 'maria.gonzalez@gmail.com',
-  role: 'Guardian',
-  nucleus: 'Central Educational Nucleus'
-})
+const auth = useAuthStore()
 
-/* Formulario reactivo */
 const form = reactive({
   currentPassword: '',
   newPassword: '',
   confirmPassword: ''
 })
 
-/* Métodos */
-function saveChanges() {
-  console.log('Data sent:', form)
-  // Aquí luego harás el fetch o axios.post al backend
+async function saveChanges() {
+  if (form.newPassword !== form.confirmPassword) {
+    // Manejar error de contraseñas no coincidentes
+    return
+  }
+
+  try {
+    await api.put(
+      `/users/change-password/${auth.user._id}`,
+      {
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword
+      }
+    )
+    // Manejar éxito
+    cancel()
+  } catch (error) {
+    // Manejar error
+    console.error('Error al cambiar la contraseña:', error)
+  }
 }
 
 function cancel() {

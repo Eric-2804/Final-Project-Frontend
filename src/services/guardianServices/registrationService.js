@@ -11,6 +11,11 @@ export default {
     return api.get(`/registration/${id}`);
   },
 
+  // Obtener matrículas por acudiente
+  getByAttendant(attendantId) {
+    return api.get(`/registration/students-by-attendant/${attendantId}`);
+  },
+
   // Crear matrícula
   create(data) {
     return api.post(`/registration`, data);
