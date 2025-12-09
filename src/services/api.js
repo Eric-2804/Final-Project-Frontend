@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://proyecto-final-ptwh.onrender.com/api',
+  baseURL: 'https://proyecto-final-ptwh.onrender.com/',
   timeout: 30000,
 });
 

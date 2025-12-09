@@ -276,7 +276,7 @@ export default {
 
     const uploadPhoto = async (photo) => {
       try {
-        await postData(`/users/${authStore.user.id}/photo`, { photo });
+        await postData(`/api/users/${authStore.user.id}/photo`, { photo });
         $q.notify({ type: 'positive', message: 'Foto de perfil actualizada.' });
         await authStore.refreshUserData();
         if (authStore.user && authStore.user.profilePhoto) {
@@ -349,7 +349,7 @@ export default {
       loading.value = true;
       error.value = null;
       try {
-        const response = await getData(`/users/${authStore.user.id}`);
+        const response = await getData(`/api/users/${authStore.user.id}`);
         profile.value = response;
       } catch (err) {
         error.value = err.message;

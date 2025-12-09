@@ -21,12 +21,12 @@ export const API_ENDPOINTS = {
     BASE: '/groups'
   },
   USUARIOS_COLEGIO: {
-    BASE: '/usuarios-colegio',
+    BASE: 'api/users',
     DELETE: '/usuarios-colegio/delete'
   },
 
   AUTH: {
-    LOGIN: '/users',
+    LOGIN: 'api/users',
     RENEW_TOKEN: '/usuarios-colegio/renovar-token',
     LOGOUT: '/usuarios-colegio/logout',
     RECOVER_PASSWORD: '/usuarios-colegio/recuperar-contraseña',
