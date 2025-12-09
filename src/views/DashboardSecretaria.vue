@@ -101,8 +101,8 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import api from '@/services/api'; // Asumiendo que tienes un servicio api configurado
+import { useAuthStore } from '../stores/auth';
+import api from '../services/api'; // Asumiendo que tienes un servicio api configurado
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();

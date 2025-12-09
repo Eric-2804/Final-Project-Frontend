@@ -32,10 +32,10 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { useNotify } from '../../composables/useNotify.js';
-import tables from '../../components/tables.vue';
-import Spinner from '../../components/Spinner.vue';
-import Button from '../../components/Button.vue';
+import { useNotify } from '../composables/useNotify';
+import tables from '../components/tables.vue';
+import Spinner from '../components/Spinner.vue';
+import Button from '../components/Button.vue';
 
 export default {
   name: 'AcademicManagement',

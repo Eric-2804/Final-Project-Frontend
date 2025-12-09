@@ -105,12 +105,12 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
-import api from '../../services/api.js';
-import { useAuthStore } from '../../stores/auth';
+import api from '../services/api.js';
+import { useAuthStore } from '../stores/auth.js';
 
 
-import Table from "../../components/tables.vue"
-import { useNotify } from "../../composables/useNotify.js"
+import Table from "../components/tables.vue"
+import { useNotify } from "../composables/useNotify.js"
 const { showNotify: info, showErrorNotify: error } = useNotify()
 
 const isLoading = ref(false)

@@ -215,8 +215,8 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
-import { useAuthStore } from '@/stores/auth';
-import { getData, postData } from '@/services/httpService';
+import { useAuthStore } from '../stores/auth';
+import { getData, postData } from '../services/httpService';
 
 export default {
   name: 'SecretariaProfile',

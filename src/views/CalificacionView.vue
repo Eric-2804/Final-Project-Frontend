@@ -21,12 +21,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { createCalificacion } from '@/services/calificacionesService';
-import { getAllColegios } from '@/services/colegiosService';
-import { getAllUsers } from '@/services/usuariosColegioService';
-import { getAllMateriasAreas } from '@/services/materiaAreaService';
-import { getAllGrupos } from '@/services/gruposService';
-import { getAllPeriodos } from '@/services/periodosService';
+
+import { getAllPeriodos } from '../services/periodService';
 
 const form = ref({
   Colegio: null,

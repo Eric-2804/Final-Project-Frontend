@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '../layouts/MainLayout.vue'
-import RegisterView from '../views/RegisterView.vue'
 
 // vistas generales
 import login from '../views/login.vue'
@@ -11,7 +10,14 @@ import Home from '../views/home.vue'
 // vistas de la secretaria
 import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
-
+import AcademicManagementView from "../views/AcademicManagementView.vue"
+import CalificacionView from "../views/CalificacionView.vue"
+import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
+import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
+import EnrollmentsView from "../views/EnrollmentsView.vue"
+import PeriodoView from "../views/PeriodoView.vue"
+import Profile from "../views/Profile.vue"
+import RegisterView from '../views/RegisterView.vue'
 const routes = [
   // rutas públicas → sin layout
   { path: '/', name: 'login', component: login },
@@ -28,10 +34,16 @@ const routes = [
       // secretaria
       { path: 'secretaria/dashboard', name: 'SecretariaDashboard', component: DashboardSecretaria },
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
-      { path: 'secretaria/profile', name: 'SecretariaProfile', component: () => import('../views/secretaria/Profile.vue') },
-      { path: 'secretaria/matriculas', name: 'SecretariaMatriculas', component: () => import('../views/secretaria/Matriculas.vue') },
-
-    
+      { path: 'secretaria/academicManagement', name: "Gestion_Academica", component: AcademicManagementView },
+      { path: 'secretaria/calificacion', name: "Gestion_Calificaciones", component: CalificacionView },
+      { path: 'secretaria/enrollmentsDetails', name: "Detalles_Matrícula", component: EnrollmentsDetailsView},
+      { path: 'secretaria/enrollmentsForm', name: "Formulario_Matrícula", component: EnrollmentsFormView},
+      { path: 'secretaria/enrollments', name: "Mis_Matrícula", component: EnrollmentsView},
+      { path: 'secretaria/periodo', name: "Gestion_Periodos", component: PeriodoView},
+      { path: 'secretaria/profile', name: "Perfil", component: Profile},
+      { path: 'secretaria/register', name: "Registro", component: RegisterView},
+    ]
+  }
 ]
 
 import { useAuthStore } from '../stores/auth';

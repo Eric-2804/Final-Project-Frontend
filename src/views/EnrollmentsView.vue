@@ -69,10 +69,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import Spinner from "@/components/Spinner.vue";
-import { useNotify } from "@/composables/useNotify";
-import registrationService from '@/services/guardianServices/registrationService';
-import { useAuthStore } from '../../stores/auth.js';
+import Spinner from "../components/Spinner.vue";
+import { useNotify } from "../composables/useNotify.js";
+import { useAuthStore } from '../stores/auth.js';
 
 const router = useRouter();
 const { showNotify, showErrorNotify } = useNotify();

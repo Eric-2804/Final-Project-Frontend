@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useNotify } from '@/composables/useNotify'
+import { useNotify } from '../composables/useNotify'
 
 const { showNotify, showErrorNotify } = useNotify()
 

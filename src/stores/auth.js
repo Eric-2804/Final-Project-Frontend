@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import { getUserById } from '@/services/usuariosColegioService';
-import { getColegioById } from '@/services/colegiosService';
+import { getUserById } from '../services/schoolUserService'
+import { getSedeById } from '../services/headquarterService'   // <- CORRECTO
+
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -21,6 +22,7 @@ export const useAuthStore = defineStore('auth', {
 
       let finalUser = user;
 
+      // Obtener datos completos del usuario si faltan roles
       if ((!user.roles || user.roles.length === 0) && !user.rol && user.id) {
         try {
           const fullUserData = await getUserById(user.id);
@@ -34,15 +36,17 @@ export const useAuthStore = defineStore('auth', {
         }
       }
 
+      // Obtener SEDE (no colegio) por ID
       if (finalUser.college && typeof finalUser.college === 'string') {
         try {
-          const collegeData = await getColegioById(finalUser.college);
-          finalUser.college = collegeData;
+          const sedeData = await getSedeById(finalUser.college);
+          finalUser.college = sedeData;
         } catch (error) {
-          console.error("Error al buscar los datos del colegio:", error);
+          console.error("Error al buscar los datos de la sede:", error);
         }
       }
 
+      // Normalizar rol
       let roleToUse = null;
       if (finalUser?.roles && Array.isArray(finalUser.roles) && finalUser.roles.length > 0) {
         roleToUse = finalUser.roles[0];
@@ -53,7 +57,7 @@ export const useAuthStore = defineStore('auth', {
       }
 
       const normalizedRole = roleToUse ? String(roleToUse).trim().toLowerCase() : null;
-      
+
       const userData = { ...finalUser, rol: normalizedRole };
 
       this.user = userData;
@@ -68,7 +72,6 @@ export const useAuthStore = defineStore('auth', {
     },
 
     setUser(user) {
-      // This action should handle the full user object and normalize it
       let roleToUse = null;
       if (user?.roles && Array.isArray(user.roles) && user.roles.length > 0) {
         roleToUse = user.roles[0];
@@ -79,7 +82,7 @@ export const useAuthStore = defineStore('auth', {
       }
 
       const normalizedRole = roleToUse ? String(roleToUse).trim().toLowerCase() : null;
-      
+
       const userData = { ...user, rol: normalizedRole };
 
       this.user = userData;
@@ -91,19 +94,20 @@ export const useAuthStore = defineStore('auth', {
         try {
           const fullUserData = await getUserById(this.user.id);
           if (fullUserData) {
+
             if (fullUserData.college && typeof fullUserData.college === 'string') {
               try {
-                const collegeData = await getColegioById(fullUserData.college);
-                fullUserData.college = collegeData;
+                const sedeData = await getSedeById(fullUserData.college);
+                fullUserData.college = sedeData;
               } catch (error) {
-                console.error("Error al refrescar los datos del colegio:", error);
+                console.error("Error al refrescar los datos de la sede:", error);
               }
             }
+
             this.setUser(fullUserData);
           }
         } catch (error) {
           console.error("Error refreshing user data:", error);
-          // Optional: handle error, maybe logout user if token is invalid
         }
       }
     },
@@ -123,7 +127,7 @@ export const useAuthStore = defineStore('auth', {
       } else {
         this.logout();
       }
-      
+
       this.isAuthReady = true;
     },
   }

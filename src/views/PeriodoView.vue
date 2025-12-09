@@ -18,8 +18,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { createPeriodo } from '@/services/periodosService';
-import { getAllColegios } from '@/services/colegiosService';
+import { createPeriodo } from '../services/periodService';
 
 const form = ref({
   colegio: null,
