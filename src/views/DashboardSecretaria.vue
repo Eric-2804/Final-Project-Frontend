@@ -88,11 +88,22 @@
         </q-card-section>
         <q-separator />
         <q-card-section class="q-pa-none">
-          <!-- Aquí iría una tabla con los últimos usuarios, similar a la de grupos del profesor -->
-          <div class="q-pa-md text-center text-grey-6">
-            <q-icon name="info" size="2em" />
-            <div>Componente de tabla de usuarios pendientes de implementación.</div>
-          </div>
+          <q-table
+            :rows="dashboardData?.ultimosUsuarios || []"
+            :columns="userColumns"
+            row-key="id"
+            flat
+            dense
+            :rows-per-page-options="[5, 10]"
+            no-data-label="No se encontraron usuarios recientes."
+          >
+            <template v-slot:no-data>
+              <div class="full-width row flex-center text-grey-7 q-gutter-sm q-pa-lg">
+                <q-icon size="2em" name="sentiment_dissatisfied" />
+                <span>No se encontraron usuarios recientes.</span>
+              </div>
+            </template>
+          </q-table>
         </q-card-section>
       </q-card>
     </div>
@@ -111,6 +122,12 @@ const authStore = useAuthStore();
 const loading = ref(true);
 const error = ref(null);
 const dashboardData = ref(null);
+
+const userColumns = [
+  { name: 'fullName', label: 'Nombre Completo', align: 'left', field: row => `${row.name} ${row.lastName}`, sortable: true },
+  { name: 'email', label: 'Email', align: 'left', field: 'email', sortable: true },
+  { name: 'registrationDate', label: 'Fecha de Registro', align: 'left', field: 'registrationDate', sortable: true },
+];
 
 const getRoleName = (role) => {
   if (!role) return '';
