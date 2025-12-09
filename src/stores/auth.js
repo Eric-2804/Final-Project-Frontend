@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { getUserById } from '@/services/usuariosColegioService';
+import { getColegioById } from '@/services/colegiosService';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -30,6 +31,15 @@ export const useAuthStore = defineStore('auth', {
           console.error("Error al buscar los datos completos del usuario:", error);
           this.logout();
           return;
+        }
+      }
+
+      if (finalUser.college && typeof finalUser.college === 'string') {
+        try {
+          const collegeData = await getColegioById(finalUser.college);
+          finalUser.college = collegeData;
+        } catch (error) {
+          console.error("Error al buscar los datos del colegio:", error);
         }
       }
 
@@ -81,7 +91,14 @@ export const useAuthStore = defineStore('auth', {
         try {
           const fullUserData = await getUserById(this.user.id);
           if (fullUserData) {
-            // We have the full, fresh user data. Use setUser to update the state.
+            if (fullUserData.college && typeof fullUserData.college === 'string') {
+              try {
+                const collegeData = await getColegioById(fullUserData.college);
+                fullUserData.college = collegeData;
+              } catch (error) {
+                console.error("Error al refrescar los datos del colegio:", error);
+              }
+            }
             this.setUser(fullUserData);
           }
         } catch (error) {

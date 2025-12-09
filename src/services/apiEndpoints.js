@@ -21,8 +21,10 @@ export const API_ENDPOINTS = {
     BASE: '/groups'
   },
   USUARIOS_COLEGIO: {
-    BASE: '/users'
+    BASE: '/usuarios-colegio',
+    DELETE: '/usuarios-colegio/delete'
   },
+
   AUTH: {
     LOGIN: '/users',
     RENEW_TOKEN: '/usuarios-colegio/renovar-token',

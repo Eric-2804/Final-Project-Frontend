@@ -1,5 +1,5 @@
 <template>
-  <q-scroll-area class="fit">
+  <q-scroll-area class="fit custom-sidebar">
     <q-list>
       <EssentialLink
         v-for="link in links"
@@ -78,4 +78,8 @@ const links = computed(() => {
 </script>
 
 <style scoped>
+.custom-sidebar {
+  background-color: #1E40AF;
+  color: white;
+}
 </style>

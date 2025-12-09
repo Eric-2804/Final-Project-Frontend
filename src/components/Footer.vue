@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-primary text-white custom-footer">
+ <div class="text-white custom-footer" style="background-color: #1E40AF;">
     <div class="footer-content">
       <div class="footer-grid">
         <!-- Soporte -->
