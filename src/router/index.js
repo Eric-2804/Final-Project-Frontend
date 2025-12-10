@@ -19,6 +19,8 @@ import EnrollmentsView from "../views/EnrollmentsView.vue"
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
 import RegisterView from '../views/RegisterView.vue'
+import NotificationsView from '../views/NotificationsView.vue'
+
 const routes = [
   // rutas públicas → sin layout
   { path: '/', name: 'login', component: login },
@@ -49,6 +51,7 @@ const routes = [
       { path: 'secretaria/periodo', name: "Gestion_Periodos", component: PeriodoView},
       { path: 'secretaria/profile', name: "Perfil", component: Profile},
       { path: 'secretaria/register', name: "Registro", component: RegisterView},
+      { path: 'secretaria/notifications', name: "Notificaciones", component: NotificationsView},
     ]
   }
 ]
