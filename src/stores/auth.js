@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', {
         }
       }
 
-      // Obtener SEDE (no colegio) por ID
+      // Obtener SEDE por ID
       if (finalUser.college && typeof finalUser.college === 'string') {
         try {
           const sedeData = await getSedeById(finalUser.college);

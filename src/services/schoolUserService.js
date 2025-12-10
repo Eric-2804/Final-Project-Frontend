@@ -10,7 +10,7 @@ export const getAllUsers = () => {
 };
 
 export const getUserById = (id) => {
-  return getData(`${API_ENDPOINTS.USUARIOS_COLEGIO.BASE}/${id}`);
+  return getData(`${API_ENDPOINTS.USUARIOS_COLEGIO.GET_BY_ID}/${id}`);
 };
 
 export const updateUser = (id, userData) => {
