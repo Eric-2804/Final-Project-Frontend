@@ -17,7 +17,7 @@
 <script setup>
 import { ref } from 'vue';
 //import qualificationService from '@/services/qualificationService.js';
-import { notifyPositive, notifyNegative } from '@/composables/useNotify.js';
+//import { notifyPositive, notifyNegative } from '@/composables/useNotify.js';
 
 const schoolId = ref('');
 const year = ref(new Date().getFullYear());

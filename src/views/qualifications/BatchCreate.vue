@@ -12,7 +12,7 @@
 <script setup>
 import BatchForm from '@/components/qualifications/BatchForm.vue';
 //import qualificationService from '@/services/qualificationService.js';
-import { notifyPositive, notifyNegative } from '@/composables/useNotify.js';
+//import { notifyPositive, notifyNegative } from '@/composables/useNotify.js';
 
 async function submitBatch(arr) {
   try {

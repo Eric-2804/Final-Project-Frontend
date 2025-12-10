@@ -13,7 +13,7 @@
 import { useRouter } from 'vue-router';
 //import qualificationService from '@/services/qualificationService.js';
 import QualificationForm from '@/components/qualifications/QualificationForm.vue';
-import { notifyPositive, notifyNegative } from '@/composables/useNotify.js';
+//import { notifyPositive, notifyNegative } from '@/composables/useNotify.js';
 
 const router = useRouter();
 function goBack() { router.back(); }
