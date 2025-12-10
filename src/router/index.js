@@ -11,7 +11,8 @@ import Home from '../views/home.vue'
 import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
-import CalificacionView from "../views/CalificacionView.vue"
+ import CalificacionView from "../views/CalificacionView.vue"
+
 import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
 import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
 import EnrollmentsView from "../views/EnrollmentsView.vue"
@@ -29,6 +30,12 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
+      {
+        path: '/configuracion/sistema',
+        name: 'SystemConfiguration',
+        component: () => import('../views/SystemConfiguration.vue'),
+        meta: { requiresAuth: true, roles: ['rector', 'secretaria'] }
+      },
 
 
       // secretaria

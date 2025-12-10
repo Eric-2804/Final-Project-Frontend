@@ -41,11 +41,12 @@ export const API_ENDPOINTS = {
     BASE: '/schools',
     BY_DIRECCION_NUCLEO: (id) => `/direcciones-nucleo/${id}/colegios`,
   },
-  SEDES: {
-    BASE: '/headquarters',
-    BY_COLEGIO: (id) => `/colegios/${id}/headquarters`,
-    ACTIVATE: (id) => `/headquarters/${id}/activo`,
-    DEACTIVATE: (id) => `/headquarters/${id}/desactiva`,
+ SEDES: {
+    BASE: '/api/headquarters', 
+    UPDATE: (id) => `/api/headquarters/${id}`,
+    BY_COLEGIO: (id) => `/api/headquarters/colegios/${id}/sedes`,
+    ACTIVATE: (id) => `/api/headquarters/${id}/activar`,
+    DEACTIVATE: (id) => `/api/headquarters/${id}/inactivar`,
   },
   VIGENCIAS: {
     BY_YEAR: '/vigencias/año',

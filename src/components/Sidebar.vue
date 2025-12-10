@@ -1,11 +1,42 @@
 <template>
   <q-scroll-area class="fit custom-sidebar">
     <q-list>
-      <EssentialLink
-        v-for="link in links"
-        :key="link.title"
-        v-bind="link"
-      />
+      <template v-for="link in links" :key="link.title">
+        <!-- Renderiza un menú desplegable si el enlace tiene hijos -->
+        <q-expansion-item
+          v-if="link.children && link.children.length > 0"
+          :icon="link.icon"
+          :label="link.title"
+          class="text-white"
+          header-class="text-white"
+          expand-separator
+        >
+          <!-- Los elementos hijos van dentro de su propia q-list para un manejo correcto -->
+          <q-list class="q-pl-md">
+            <q-item
+              v-for="child in link.children"
+              :key="child.title"
+              clickable
+              :to="child.link"
+              active-class="my-menu-link"
+              class="text-white"
+            >
+              <q-item-section v-if="child.icon" avatar>
+                <q-icon :name="child.icon" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ child.title }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-expansion-item>
+
+        <!-- Renderiza un enlace normal si no tiene hijos -->
+        <EssentialLink
+          v-else
+          v-bind="link"
+        />
+      </template>
     </q-list>
   </q-scroll-area>
 </template>
@@ -59,14 +90,21 @@ const linksByRole = {
   secretaria: [
     { title: 'Dashboard', icon: 'dashboard', link: '/secretaria/dashboard' },
     { title: 'Sedes', icon: 'business', link: '/secretaria/headquarters' },
-    { title: 'Matrículas', icon: 'assignment', link: '/secretaria/matriculas' },
-    { title: 'Carga Académica', icon: 'work', link: '/management/carga-academica' },
+    { title: 'Matrículas', icon: 'assignment', link: '/secretaria/enrollments' },
+    { title: 'Gestión Académica', icon: 'work', link: '/secretaria/academicManagement' },
     { title: 'Grupos', icon: 'group', link: '/management/grupo' },
     { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
     { title: 'Áreas y Materias', icon: 'class', link: '/management/materia-area' },
-    { title: 'Periodos', icon: 'event', link: '/management/periodo' },
+    { title: 'Periodos', icon: 'event', link: '/secretaria/periodo' },
     { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
     { title: 'Usuarios', icon: 'people', link: '/management/usuarios-colegio' },
+    {
+      title: 'Configuraciones',
+      icon: 'settings',
+      children: [
+        { title: 'Configurar Sistema', icon: 'settings_applications', link: '/configuracion/sistema' },
+      ],
+    },
   ],
 };
 
@@ -77,9 +115,26 @@ const links = computed(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss">
 .custom-sidebar {
   background-color: #1E40AF;
   color: white;
+}
+
+/* Estilos para el enlace activo */
+.my-menu-link {
+  background-color: transparent !important;
+  position: relative;
+  color: #60a5fa !important; /* Color de texto azul claro para el enlace activo */
+}
+
+.my-menu-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 3px;
+  background-color: #3B82F6;
 }
 </style>
