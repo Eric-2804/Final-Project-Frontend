@@ -64,4 +64,18 @@ export const API_ENDPOINTS = {
     ACTIVATE: (id) => `/periodos/${id}/activar`,
     DEACTIVATE: (id) => `/periodos/${id}/desactivar`,
   },
+  USERS: {
+    BASE: '/api/users',
+    GET_BY_ID: (id) => `/api/users/${id}`,
+    GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
+    CHANGE_PASSWORD: (id) => `/api/users/${id}/change-password`,
+    REFRESH_TOKEN: '/api/users/refreshToken',
+    ACTIVATE: (id) => `/api/users/${id}/activate`,
+    DESACTIVATE: (id) => `/api/users/${id}/desactivate`,
+    UPDATE_PASSWORD: '/api/users/passwordRecovered',
+    UPDATE: (id) => `/api/users/${id}`,
+    DELETE: (id) => `/api/users/${id}`
+  }
+  
+  
 };

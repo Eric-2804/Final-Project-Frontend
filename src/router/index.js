@@ -20,6 +20,7 @@ import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
 import RegisterView from '../views/RegisterView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
+import teacher from '../views/teacher.vue'
 
 const routes = [
   // rutas públicas → sin layout
@@ -32,12 +33,12 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      {
-        path: '/configuracion/sistema',
-        name: 'SystemConfiguration',
-        component: () => import('../views/SystemConfiguration.vue'),
-        meta: { requiresAuth: true, roles: ['rector', 'secretaria'] }
-      },
+      // {
+      //   path: '/configuracion/sistema',
+      //   name: 'SystemConfiguration',
+      //   component: () => import('../views/SystemConfiguration.vue'),
+      //   meta: { requiresAuth: true, roles: ['rector', 'secretaria'] }
+      // },
 
 
       // secretaria
@@ -52,6 +53,7 @@ const routes = [
       { path: 'secretaria/profile', name: "Perfil", component: Profile},
       { path: 'secretaria/register', name: "Registro", component: RegisterView},
       { path: 'secretaria/notifications', name: "Notificaciones", component: NotificationsView},
+      { path: 'secretaria/teacher', name: "profesores", component: teacher}
     ]
   }
 ]
