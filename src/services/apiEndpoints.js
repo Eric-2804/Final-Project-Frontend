@@ -14,6 +14,9 @@ export const API_ENDPOINTS = {
     CARGA_ACADEMICA: {
     BASE: '/carga-academica'
   },
+  NOTIFICATIONS: {
+    BASE: '/notifications'
+  },
   MATERIAS_AREAS: {
     BASE: '/subjects'
   },

@@ -18,11 +18,33 @@
       <q-space />
 
       <div v-if="isAuthReady && user" class="q-gutter-sm row items-center no-wrap">
-        <q-btn round dense flat color="white" icon="notifications" :to="communicationsLink">
-          <q-badge color="red" text-color="white" floating>
-            2
+        <q-btn round dense flat color="white" icon="notifications">
+          <q-badge v-if="unreadCount > 0" color="red" text-color="white" floating>
+            {{ unreadCount }}
           </q-badge>
           <q-tooltip>Notificaciones</q-tooltip>
+          <q-menu anchor="top right" self="top left">
+            <q-list style="min-width: 300px; max-width: 400px;">
+              <q-item-label header>Notificaciones</q-item-label>
+              <q-item
+                v-for="notif in notifications"
+                :key="notif.id"
+                clickable
+                v-close-popup
+                @click="navigateTo(notif.link)"
+                :class="{ 'font-weight-bold': !notif.read }"
+              >
+                <q-item-section>
+                  <q-item-label lines="2">{{ notif.title }}</q-item-label>
+                  <q-item-label caption>{{ formatTimeAgo(notif.date) }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable v-close-popup class="text-center" :to="communicationsLink">
+                <q-item-section>Ver todas</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
         </q-btn>
 
         <q-btn-dropdown flat no-caps>
@@ -74,17 +96,58 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useAuthStore } from "../stores/auth.js";
 import { storeToRefs } from "pinia";
 import { useRouter } from 'vue-router';
-import api from '../services/api'; // Importa la instancia de api
+import api from '../services/api';
+import { getUserNotifications } from '../services/notificationsService';
 
 const auth = useAuthStore();
 const router = useRouter();
 
 const { isAuthReady, userRole } = storeToRefs(auth);
 const user = computed(() => auth.user);
+
+const notifications = ref([]);
+const unreadCount = computed(() => {
+  if (!Array.isArray(notifications.value)) return 0;
+  return notifications.value.filter(n => !n.read).length;
+});
+
+onMounted(async () => {
+  if (user.value) {
+    try {
+      notifications.value = await getUserNotifications();
+    } catch (error) {
+      console.error("Error fetching user notifications:", error);
+      notifications.value = [];
+    }
+  }
+});
+
+function navigateTo(link) {
+  if (link && link !== '#') {
+    router.push(link);
+  }
+}
+
+function formatTimeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + " años";
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + " meses";
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + " días";
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + " horas";
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + " minutos";
+  return Math.floor(seconds) + " segundos";
+}
 
 const profilePhotoUrl = computed(() => {
   const defaultAvatar = 'https://cdn.quasar.dev/img/boy-avatar.png';
@@ -157,6 +220,8 @@ const communicationsLink = computed(() => {
       return '/coordinator/communications';
     case 'guardian':
       return '/guardian/communications';
+    case 'secretaria':
+      return '/secretaria/notifications';
     default:
       return '/';
   }
