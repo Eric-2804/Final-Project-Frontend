@@ -1,79 +1,60 @@
 <template>
     <div class="q-pa-md">
   
-      <q-card flat bordered class="my-card">
-        <q-card-section>
-          <div class="text-h6">Gestión de Profesores</div>
-          <div class="text-caption text-grey">Listado de docentes registrados</div>
-        </q-card-section>
-      </q-card>
+      <h2 class="text-h5 q-mb-md">Listado de Profesores</h2>
   
-      <q-separator spaced />
+      <div v-if="loading" class="flex flex-center">
+        <q-spinner-cube color="primary" size="4em" />
+      </div>
   
-      <TemplateTable
-        :columns="columns"
-        :rows="teachers"
-        row-key="_id"
-        enable-sorting
-      >
-        <!-- Columna personalizada para estado -->
-        <template #body-isActive="{ row }">
-          <q-badge :color="row.isActive ? 'green' : 'red'">
-            {{ row.isActive ? 'Activo' : 'Inactivo' }}
-          </q-badge>
-        </template>
-      </TemplateTable>
-  
-      <!-- Loader -->
-      <div v-if="loading" class="flex flex-center q-mt-xl">
-        <q-spinner-cube color="primary" size="60px" />
+      <div v-else>
+        <q-table
+          :rows="teachers"
+          :columns="columns"
+          row-key="_id"
+          flat
+          bordered
+        />
       </div>
   
     </div>
   </template>
   
-  <script setup>
+  <script>
   import { ref, onMounted } from "vue";
-  import TemplateTable from "../components/tables.vue"; // tu tabla
-  import { getUsersByRol } from "../services/apiteacher";  // servicio que ya tienes
+  import { getUsersByRol } from "@/services/apiteacher";
   
-  const loading = ref(true);
-  const teachers = ref([]);
+  export default {
+    setup() {
+      const teachers = ref([]);
+      const loading = ref(true);
   
-  const columns = [
-    { name: "names", label: "Nombres", field: "names", align: "left", sortable: true },
-    { name: "lastNames", label: "Apellidos", field: "lastNames", align: "left", sortable: true },
-    { name: "email", label: "Correo", field: "email", align: "left" },
-    { name: "numberDocument", label: "Documento", field: "numberDocument", align: "left" },
-    { name: "cellphone", label: "Teléfono", field: "cellphone", align: "left" },
-    { name: "isActive", label: "Estado", field: "isActive", align: "center" },
-  ];
+      const columns = [
+        { name: "nombre", label: "Nombre", field: "lastNames", align: "left" },
+        { name: "email", label: "Correo", field: "email", align: "left" },
+        { name: "rol", label: "Rol", field: "roles", align: "left" },
+        { name: "estado", label: "Estado", field: "estado", align: "left" }
+      ];
   
-  async function loadTeachers() {
-    try {
-      loading.value = true;
+      const loadTeachers = async () => {
+        try {
+          loading.value = true;
   
-      // 👇 OJO: AQUI AJUSTA EXACTAMENTE COMO SE LLAMA EL ROL EN TU BD
-      const response = await getUsersByRol("profesor");
+          const resp = await getUsersByRol("profesor");
+          console.log("DOCENTES:", resp);
   
-      teachers.value = response?.data || [];
+          teachers.value = resp.users || resp || [];
+        } catch (error) {
+          console.error("Error cargando docentes", error);
+        } finally {
+          loading.value = false;
+        }
+      };
   
-    } catch (error) {
-      console.error("Error cargando docentes", error);
-    } finally {
-      loading.value = false;
-    }
-  }
+      onMounted(loadTeachers);
   
-  onMounted(() => {
-    loadTeachers();
-  });
+      return { teachers, loading, columns };
+    },
+  };
   </script>
-  
-  <style scoped>
-  .my-card {
-    border-radius: 12px;
-    padding: 10px;
-  }
-  </style>
   

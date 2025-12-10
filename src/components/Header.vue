@@ -101,7 +101,7 @@ import { useAuthStore } from "../stores/auth.js";
 import { storeToRefs } from "pinia";
 import { useRouter } from 'vue-router';
 import api from '../services/api';
-import { getUserNotifications } from '../services/notificationsService';
+// import { getUserNotifications } from '../services/notificationsService';
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -115,16 +115,16 @@ const unreadCount = computed(() => {
   return notifications.value.filter(n => !n.read).length;
 });
 
-onMounted(async () => {
-  if (user.value) {
-    try {
-      notifications.value = await getUserNotifications();
-    } catch (error) {
-      console.error("Error fetching user notifications:", error);
-      notifications.value = [];
-    }
-  }
-});
+// onMounted(async () => {
+//   if (user.value) {
+//     try {
+//       notifications.value = await getUserNotifications();
+//     } catch (error) {
+//       console.error("Error fetching user notifications:", error);
+//       notifications.value = [];
+//     }
+//   }
+// });
 
 function navigateTo(link) {
   if (link && link !== '#') {
