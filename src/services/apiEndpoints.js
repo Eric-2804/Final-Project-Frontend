@@ -99,12 +99,13 @@ export const API_ENDPOINTS = {
     DEACTIVATE: (id) => `/${id}/deactivate`,                       // PUT /api/AcademicLoad/:id/deactivate
     DELETE: (id) => `/${id}`,                                      // DELETE /api/AcademicLoad/:id
   },
+
   USUARIOS_COLEGIO: {
-    BASE: 'api/users',
+    BASE: '/api/users',
     DELETE: '/usuarios-colegio/delete'
   },
   AUTH: {
-    LOGIN: 'api/users',
+    LOGIN: '/api/users',
     RENEW_TOKEN: '/usuarios-colegio/renovar-token',
     LOGOUT: '/usuarios-colegio/logout',
     RECOVER_PASSWORD: '/usuarios-colegio/recuperar-contraseña',
