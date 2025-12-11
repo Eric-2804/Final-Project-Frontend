@@ -45,11 +45,15 @@ export const API_ENDPOINTS = {
     BY_DIRECCION_NUCLEO: (id) => `/direcciones-nucleo/${id}/colegios`,
   },
  SEDES: {
-    BASE: '/api/headquarters', 
+    BASE: '/api/headquarters',                                                       
     UPDATE: (id) => `/api/headquarters/${id}`,
     BY_COLEGIO: (id) => `/api/headquarters/colegios/${id}/sedes`,
     ACTIVATE: (id) => `/api/headquarters/${id}/activar`,
     DEACTIVATE: (id) => `/api/headquarters/${id}/inactivar`,
+  },
+  CONFIGURATIONS: {
+    GET_BY_SCHOOL: (schoolId) => `/api/configurations/${schoolId}`,
+    CREATE_OR_UPDATE: (schoolId) => `/api/configurations/${schoolId}`,
   },
   VIGENCIAS: {
     BY_YEAR: '/vigencias/año',

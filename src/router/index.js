@@ -35,8 +35,8 @@ const routes = [
       {
         path: '/configuracion/sistema',
         name: 'SystemConfiguration',
-        component: () => import('../views/SystemConfiguration.vue'),
-        meta: { requiresAuth: true, roles: ['rector', 'secretaria'] }
+        component: () => import('../views/systemConfiguration.vue'),
+        meta: { requiresAuth: true, roles: ['secretaria'] }
       },
 
 

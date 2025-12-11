@@ -24,9 +24,9 @@ export const updateSede = (id, data) => {
 };
 
 export const activateSede = (id) => {
-  return putData(SEDES.ACTIVATE(id));
+  return putData(SEDES.ACTIVATE(id), {});
 };
 
 export const deactivateSede = (id) => {
-  return putData(SEDES.DEACTIVATE(id));
+  return putData(SEDES.DEACTIVATE(id), {});
 };

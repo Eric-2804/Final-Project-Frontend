@@ -147,7 +147,7 @@
 import { ref, onMounted, computed } from "vue"
 import api from '../services/api.js'; // Usado para `fetchSchools` y `fetchHeadquarters` directo
 import { useAuthStore } from '../stores/auth';
-import { getAllSedes, createSede, updateSede } from '../services/headquarterService'; // Importar el service
+import { getAllSedes, createSede, updateSede, activateSede, deactivateSede} from '../services/headquarterService'; // Importar el service
 import Table from "../components/tables.vue"
 import { useNotify } from "../composables/useNotify.js"
 const { showNotify: info, showErrorNotify: error } = useNotify()
@@ -202,37 +202,19 @@ const fetchSchools = async () => {
 // Cambia el estado de una sede (Activar/Desactivar).
 const toggleStatus = async (headquartersItem) => {
   try {
-    const schoolId = headquartersItem.school?._id || headquartersItem.school;
-    if (!schoolId) {
-      error("No se puede cambiar el estado de una sede sin un colegio asignado. Por favor, edite la sede y asigne un colegio.");
-      return;
+    const token = localStorage.getItem('token');
+    console.log('Auth Token for toggle status:', token);
+
+    const newStatus = !headquartersItem.isActive;
+    if (newStatus) {
+      await activateSede(headquartersItem._id);
+    } else {
+      await deactivateSede(headquartersItem._id);
     }
-    // Invertimos el estado actual
-    const newIsActiveState = !headquartersItem.isActive;
-
-    // Creamos el objeto completo para enviar, como en la función de editar
-    const dataToUpdate = {
-      school: schoolId,
-      name: headquartersItem.name,
-      abbreviation: headquartersItem.abbreviation,
-      code: headquartersItem.code,
-      address: headquartersItem.address,
-      phone: headquartersItem.phone,
-      isActive: newIsActiveState, // Usamos el nuevo estado
-    };
-
-    // Usamos la función updateSede, que hace un PUT a /api/headquarters/:id
-    await updateSede(headquartersItem._id, dataToUpdate);
-
-    info(`Sede ${newIsActiveState ? 'activada' : 'inactivada'} correctamente`);
-    const index = headquartersList.value.findIndex(h => h._id === headquartersItem._id);
-    if (index !== -1) {
-      headquartersList.value[index].isActive = newIsActiveState;
-    }
-  } catch (err) {
-    console.error("Error al cambiar estado de sede:", err);
-    const errorMsg = err.response?.data?.errors?.[0]?.msg || err.response?.data?.msg || "Error al cambiar estado de sede";
-    error(errorMsg);
+    headquartersItem.isActive = newStatus;
+    await fetchHeadquarters();
+  } catch (error) {
+    console.error('Error al cambiar estado de sede:', error);
   }
 };
 
@@ -353,6 +335,3 @@ onMounted(() => {
   margin-left: 800px;
 }
 </style>
-
-
-
