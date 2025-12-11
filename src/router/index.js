@@ -11,7 +11,7 @@ import Home from '../views/home.vue'
 import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
- import CalificacionView from "../views/CalificacionView.vue"
+import CalificacionView from "../views/CalificacionView.vue"
 
 import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
 import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
@@ -20,6 +20,7 @@ import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
 import RegisterView from '../views/RegisterView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
+import teacher from '../views/teacher.vue'
 
 const routes = [
   // rutas públicas → sin layout
@@ -52,6 +53,7 @@ const routes = [
       { path: 'secretaria/profile', name: "Perfil", component: Profile},
       { path: 'secretaria/register', name: "Registro", component: RegisterView},
       { path: 'secretaria/notifications', name: "Notificaciones", component: NotificationsView},
+      { path: 'secretaria/teacher', name: "profesores", component: teacher}
     ]
   }
 ]

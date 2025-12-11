@@ -6,16 +6,22 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  try {
-    const token = localStorage.getItem('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-  } catch (e) {}
+  const token = localStorage.getItem('token');
+  console.log("TOKEN ENVIADO:", token);
+
+  if (token) {
+    config.headers['x-token'] = token; 
+  }
+
   return config;
 });
 
-api.interceptors.response.use((res) => res, (err) => {
-  console.error('API Error:', JSON.stringify(err.response?.data, null, 2) || err.message);
-  return Promise.reject(err);
-});
+api.interceptors.response.use(
+  res => res,
+  err => {
+    console.error('API Error:', err.response?.data || err.message);
+    return Promise.reject(err);
+  }
+);
 
 export default api;

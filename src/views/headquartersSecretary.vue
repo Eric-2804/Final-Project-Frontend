@@ -202,9 +202,7 @@ const fetchSchools = async () => {
 // Cambia el estado de una sede (Activar/Desactivar).
 const toggleStatus = async (headquartersItem) => {
   try {
-    const token = localStorage.getItem('token');
-    console.log('Auth Token for toggle status:', token);
-
+   
     const newStatus = !headquartersItem.isActive;
     if (newStatus) {
       await activateSede(headquartersItem._id);
