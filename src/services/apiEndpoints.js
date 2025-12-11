@@ -21,7 +21,7 @@ export const API_ENDPOINTS = {
     BASE: '/subjects'
   },
   GRUPOS: {
-    BASE: '/groups'
+    BASE: '/api/groups'
   },
 
   USUARIOS_COLEGIO: {
@@ -65,10 +65,10 @@ export const API_ENDPOINTS = {
   },
 
   PERIODOS: {
-    BASE: '/periodos',
-    BY_YEAR: (year) => `/periodos/año/${year}`,
-    ACTIVATE: (id) => `/periodos/${id}/activar`,
-    DEACTIVATE: (id) => `/periodos/${id}/desactivar`,
+    BASE: '/api/periods',
+    BY_YEAR: (year) => `/api/periods/year/${year}`,
+    ACTIVATE: (id) => `/api/periods/${id}/activate`,
+    DEACTIVATE: (id) => `/api/periods/${id}/deactivate`,
   },
 
   USERS: {
