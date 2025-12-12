@@ -56,8 +56,45 @@ export default {
     return api.put(`${BASE}${API_ENDPOINTS.REGISTRATIONS.GRADUATED(id)}`);
   },
 
+  // Retirar estudiante por ID de estudiante
+  withdrawStudent(studentId) {
+    return api.put(`${BASE}/${studentId}/withdraw`);
+  },
+
   // Eliminar matrícula
   delete(id) {
     return api.delete(`${BASE}${API_ENDPOINTS.REGISTRATIONS.DELETE(id)}`);
+  },
+
+  // ============ MÉTODOS PARA ACUDIENTES ============
+  
+  // Obtener acudiente por ID
+  getAttendantById(attendantId) {
+    return api.get(`${BASE}/attendant/${attendantId}/registration`);
+  },
+
+  // Crear acudiente
+  createAttendant(data) {
+    return api.post(`${BASE}/attendant/registration`, data);
+  },
+
+  // Actualizar acudiente
+  updateAttendant(attendantId, data) {
+    return api.put(`${BASE}/attendant/${attendantId}/registration`, data);
+  },
+
+  // Activar acudiente
+  activateAttendant(attendantId) {
+    return api.put(`${BASE}/attendant/${attendantId}/activate/registration`);
+  },
+
+  // Desactivar acudiente
+  desactivateAttendant(attendantId) {
+    return api.put(`${BASE}/attendant/${attendantId}/desactivate/registration`);
+  },
+
+  // Eliminar acudiente
+  deleteAttendant(attendantId) {
+    return api.delete(`${BASE}/attendant/${attendantId}/registration`);
   }
 };

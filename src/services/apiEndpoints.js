@@ -1,6 +1,6 @@
 export const API_ENDPOINTS = {
   REGISTRATIONS: {
-    BASE: '/api/matriculas',
+    BASE: '/api/registration',  // ⚠️ CORREGIDO: era /api/matriculas
     CREATE: '/',	// Crear 
     GET_BY_YEAR: (year) => `/year/${year}`,  // Obtener matriculas por año
     GET_BY_ID: (id) => `/${id}`, // Obtener por ID
@@ -61,6 +61,17 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/${id}`,                     // PUT /api/qualifications/:id - Actualizar calificación de período
     UPDATE_FINAL: (id) => `/finales/${id}`,       // PUT /api/qualifications/finales/:id - Actualizar calificación final
     DELETE: (id) => `/${id}`,                     // DELETE /api/qualifications/:id
+  },
+  COLEGIOS: {
+    BASE: '/api/schools',
+    CREATE: '/',
+    GET_ALL: '/',
+    GET_BY_ID: (id) => `/${id}`,
+    BY_DIRECCION_NUCLEO: (direccionId) => `/core-direction/${direccionId}/schools`,
+    UPDATE: (id) => `/${id}`,
+    ACTIVATE: (id) => `/${id}/activate`,
+    DISABLE: (id) => `/${id}/deactivate`,
+    DELETE: (id) => `/${id}`
   },
   SUBJECTS: {
     BASE: '/api/subjects',
