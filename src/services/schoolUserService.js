@@ -2,11 +2,11 @@ import { postData, getData, putData, deleteData } from './httpService';
 import { API_ENDPOINTS } from './apiEndpoints';
 
 export const createUser = (userData) => {
-  return postData(API_ENDPOINTS.USUARIOS_COLEGIO.CREATE, userData);
+  return postData(API_ENDPOINTS.USERS.BASE, userData);
 };
 
 export const getAllUsers = () => {
-  return getData(API_ENDPOINTS.USUARIOS_COLEGIO.GET_ALL);
+  return getData(API_ENDPOINTS.USERS.BASE);
 };
 
 export const getUserById = (id) => {
