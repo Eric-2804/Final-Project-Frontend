@@ -1,18 +1,16 @@
 <template>
   <div class="q-pa-lg">
-
+    <!-- Spinner mientras carga -->
     <div v-if="loading" class="loading-container">
       <q-spinner-cube color="primary" size="90px" />
       <div class="loading-text">Cargando datos...</div>
     </div>
 
     <div v-else>
-
-
       <div class="text-h4 text-bold q-mb-lg title">Gestión de Profesores</div>
 
+      
       <div class="cards-container">
-
         <q-card class="stat-card card-blue">
           <div class="label">Total</div>
           <div class="value">{{ teachers.length }}</div>
@@ -27,9 +25,9 @@
           <div class="label">Inactivos</div>
           <div class="value">{{ inactiveTeachers }}</div>
         </q-card>
-
       </div>
 
+      <!-- TABLA -->
       <TableComponent
         :columns="columns"
         :rows="teachers"
@@ -47,62 +45,58 @@
           </q-chip>
         </template>
       </TableComponent>
-
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
-import TableComponent from "../components/tables.vue"
-import { getUsersByRol } from "../services/apiteacher"
-import { useNotify } from "../composables/useNotify"  
+import { ref, computed, onMounted } from "vue";
+import TableComponent from "../components/tables.vue";
+import { getUsersByRol } from "../services/apiteacher";
+import { useNotify } from "../composables/useNotify";
 
-const { showNotify, showErrorNotify } = useNotify() 
+const { showNotify, showErrorNotify } = useNotify();
 
-const teachers = ref([])
-const loading = ref(true)
+const teachers = ref([]);
+const loading = ref(true);
 
 const columns = [
   { name: "names", label: "Nombres", field: "names", align: "left" },
   { name: "lastNames", label: "Apellidos", field: "lastNames", align: "left" },
   { name: "email", label: "Correo", field: "email", align: "left" },
   { name: "roles", label: "Rol", field: "roles", align: "left" },
-  { name: "isActive", label: "Estado", field: "isActive", align: "center" }
-]
+  { name: "isActive", label: "Estado", field: "isActive", align: "center" },
+];
 
 const activeTeachers = computed(() =>
-  teachers.value.filter(t => t.isActive).length
-)
+  teachers.value.filter((t) => t.isActive).length
+);
 
 const inactiveTeachers = computed(() =>
-  teachers.value.filter(t => !t.isActive).length
-)
+  teachers.value.filter((t) => !t.isActive).length
+);
 
 const loadTeachers = async () => {
   try {
-    const res = await getUsersByRol("profesor")
-    teachers.value = res.users || res || []
+    const res = await getUsersByRol("profesor");
+    teachers.value = res.users || res || [];
 
     showNotify({
-      message: "Profesores cargados correctamente"
-    })
-
+      message: "Profesores cargados correctamente",
+    });
   } catch (err) {
     showErrorNotify({
-      message: "Error cargando profesores"
-    })
+      message: "Error cargando profesores",
+    });
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-onMounted(loadTeachers)
+onMounted(loadTeachers);
 </script>
 
 <style scoped>
-
 .loading-container {
   margin-top: 120px;
   display: flex;
@@ -117,13 +111,11 @@ onMounted(loadTeachers)
   color: #1a237e;
 }
 
-
 .title {
   text-align: left;
   margin-bottom: 30px;
   margin-left: 30px;
 }
-
 
 .cards-container {
   display: flex;
@@ -131,18 +123,18 @@ onMounted(loadTeachers)
   justify-content: left;
   margin-bottom: 40px;
   flex-wrap: wrap;
-  margin-left: 80px;
+  margin-left: 130px;
 }
 
 .stat-card {
-  width: 300px;
+  width: 250px;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 10px;
   text-align: center;
   color: white;
   box-shadow: 0 4px 14px rgb(90, 87, 87);
   transition: 0.2s ease-in-out;
-  margin-right: 60px;
+  margin-right: 80px;
 }
 
 .stat-card:hover {
