@@ -25,7 +25,7 @@
 import { ref, reactive, onMounted } from 'vue'
 // import api from "@/services/api.js"
 import Tables from '@/components/tables.vue'
-import Spinner from '@/components/spinner.vue'
+import Spinner from '@/components/Spinner.vue'
 import Modal from '@/components/modal.vue'
 import { useNotify } from '@/composables/useNotify'
 import { createGroup, getGroupById, getAllGroupByYear, getGuardiansByGroup, getGroupsByHeadquarters, getStudentsByGroup, updateGroup, activateGroup, disableGroup, deleteGroup } from '../services/groupsService'
