@@ -5,27 +5,26 @@ import MainLayout from '../layouts/MainLayout.vue'
 import login from '../views/login.vue'
 import Home from '../views/home.vue'
 
-
-
 // vistas de la secretaria
 import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
 import CalificacionView from "../views/CalificacionView.vue"
-
+import teacher from "../views/teacher.vue"
 import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
 import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
 import EnrollmentsView from "../views/EnrollmentsView.vue"
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
-import RegisterView from '../views/RegisterView.vue'
-import NotificationsView from '../views/NotificationsView.vue'
-import teacher from '../views/teacher.vue'
+import Register from '../views/Register.vue'
+import Notifications from '../views/notifications.vue'
+import Groups from '../views/groups.vue'
+import { useAuthStore } from '../stores/auth';
 
 const routes = [
   // rutas públicas → sin layout
   { path: '/', name: 'login', component: login },
-  { path: '/register', name: 'register', component: RegisterView },
+  { path: '/register', name: 'register', component: Register },
   { path: '/home', name: 'home', component: Home },
 
   // rutas internas → con MainLayout
@@ -51,14 +50,12 @@ const routes = [
       { path: 'secretaria/enrollments', name: "Mis_Matrícula", component: EnrollmentsView},
       { path: 'secretaria/periodo', name: "Gestion_Periodos", component: PeriodoView},
       { path: 'secretaria/profile', name: "Perfil", component: Profile},
-      { path: 'secretaria/register', name: "Registro", component: RegisterView},
-      { path: 'secretaria/notifications', name: "Notificaciones", component: NotificationsView},
-      { path: 'secretaria/teacher', name: "profesores", component: teacher}
+      { path: 'secretaria/register', name: "Registro", component: Register},
+      { path: 'secretaria/notifications', name: "Notificaciones", component: Notifications},
+      { path: 'secretary/group', name: 'Groups', component: Groups}
     ]
   }
 ]
-
-import { useAuthStore } from '../stores/auth';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -81,13 +78,7 @@ router.beforeEach(async (to, from, next) => {
     if (userRole) {
       // ✅ Lógica de redirección consistente
       const roleRoutes = {
-        administrador: '/management',
-        rector: '/rector/dashboard',
-        coordinador: '/dashboardCoordinator',
         secretaria: '/secretaria/dashboard',
-        profesor: '/teacher/dashboard',
-        acudiente: '/DashboardGuardian',
-        estudiante: '/student/dashboard'
       };
       const redirectPath = roleRoutes[userRole] || '/';
       return next(redirectPath);
