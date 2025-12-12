@@ -5,12 +5,13 @@
         <!-- Input del buscador -->
         <q-input
           v-model="filter"
-          label="buscar..."
+          label="Buscar por nombre, código, ID, tipo..."
           dense
           clearable
           rounded
           class="seeker"
           :debounce="200"
+          hint="Busca en todos los campos"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -33,7 +34,7 @@
       <q-table
         :rows="processedRows"
         :columns="columns"
-        :filter="filter"
+        :filter="customFilter"
         :row-key="rowKey"
         color="primary"
         class="board"
@@ -70,10 +71,14 @@ function toggleSortOrder() {
   sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc';
 }
 
+const customFilter = computed(() => filter.value);
+
 const processedRows = computed(() => {
+  let rows = props.rows;
+  
+  // Aplicar ordenamiento si está habilitado
   if (props.enableSorting) {
-    // Asegurarse de que las filas sean un array antes de ordenar
-    const rowsArray = Array.isArray(props.rows) ? [...props.rows] : [];
+    const rowsArray = Array.isArray(rows) ? [...rows] : [];
     return rowsArray.sort((a, b) => {
       const dateA = new Date(a.lastChange);
       const dateB = new Date(b.lastChange);
@@ -84,7 +89,8 @@ const processedRows = computed(() => {
       return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB;
     });
   }
-  return props.rows;
+  
+  return rows;
 });
 </script>
 
