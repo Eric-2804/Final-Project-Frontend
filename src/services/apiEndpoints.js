@@ -199,17 +199,22 @@ export const API_ENDPOINTS = {
   },
 
  
-    USERS: {
-      GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
-      GET_BY_ID: (id) => `/api/users/${id}`,
-      CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
-      UPDATE_PASSWORD: `/api/users/update-password`,
-      ACTIVATE: (id) => `/api/users/activate/${id}`,
-      DESACTIVATE: (id) => `/api/users/desactivate/${id}`,
-      UPDATE: (id) => `/api/users/${id}`,
-      DELETE: (id) => `/api/users/${id}`,
-      REFRESH_TOKEN: `/api/users/refresh-token`
-    }
+  USERS: {
+    GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
+    GET_BY_ID: (id) => `/api/users/${id}`,
+  
+    CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
+    UPDATE_PASSWORD: `/api/users/update-password`,
+  
+    ACTIVATE: (id) => `/api/users/${id}/activate`,
+    DESACTIVATE: (id) => `/api/users/${id}/desactivate`,
     
+    UPDATE: (id) => `/api/users/${id}`,
+    DELETE: (id) => `/api/users/${id}`,
+  
+    REFRESH_TOKEN: `/api/users/refresh-token`
+  }
+  
+
   
 };
