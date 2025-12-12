@@ -44,16 +44,16 @@ export const API_ENDPOINTS = {
   },
 
   COLEGIOS: {
-    BASE: '/schools',
+    BASE: '/api/school',
     BY_DIRECCION_NUCLEO: (id) => `/direcciones-nucleo/${id}/colegios`,
   },
 
-  SEDES: {
+    SEDES: {
     BASE: '/api/headquarters', 
     UPDATE: (id) => `/api/headquarters/${id}`,
-    BY_COLEGIO: (id) => `/api/headquarters/colegios/${id}/sedes`,
-    ACTIVATE: (id) => `/api/headquarters/${id}/activar`,
-    DEACTIVATE: (id) => `/api/headquarters/${id}/inactivar`,
+    BY_COLEGIO: (id) => `/colegios/${id}/headquarters`,
+    ACTIVATE: (id) => `/api/headquarters/activar/${id}`,
+    DEACTIVATE: (id) => `/api/headquarters/desactivar/${id}`
   },
 
   VIGENCIAS: {

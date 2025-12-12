@@ -23,10 +23,10 @@ export const updateSede = (id, data) => {
   return putData(`${SEDES.BASE}/${id}`, data);
 };
 
-export const activateSede = (id) => {
-  return putData(SEDES.ACTIVATE(id), {});
-};
+// export const activateSede = (id) => {
+//   return putData(SEDES.ACTIVATE(id), {});
+// };
 
-export const deactivateSede = (id) => {
-  return putData(SEDES.DEACTIVATE(id), {});
-};
+// export const deactivateSede = (id) => {
+//   return putData(SEDES.DEACTIVATE(id), {});
+// };
