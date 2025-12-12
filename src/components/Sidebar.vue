@@ -56,7 +56,7 @@ const linksByRole = {
     { title: 'Sedes', icon: 'business', link: '/secretaria/headquarters' },
     { title: 'Matrículas', icon: 'app_registration', link: '/secretaria/registrations' },
     { title: 'Gestión Académica', icon: 'work', link: '/secretaria/academicManagement' },
-    { title: 'Profesores', icon: 'school', link: '/secretary/teacher' },
+    { title: 'Profesores', icon: 'school', link: '/secretaria/teacher' },
     { title: 'Grupos', icon: 'group', link: '/secretary/group' },
     { title: 'Áreas y Materias', icon: 'class', link: '/management/materia-area' },
     { title: 'Periodos', icon: 'event', link: '/secretaria/periodo' },
