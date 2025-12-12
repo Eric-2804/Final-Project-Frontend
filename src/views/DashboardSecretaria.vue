@@ -220,7 +220,7 @@ import { useAuthStore } from '../stores/auth.js';
 import { useQuasar } from 'quasar';
 import TablesComponent from '../components/tables.vue';
 import { getActivePeriod } from '../services/periodService.js';
-import { getGroupsByYear, getStudentsByGroup, getGradesByGroup, updateGroup } from '../services/groupService.js';
+import { getAllGroupByYear, getStudentsByGroup, updateGroup } from '../services/groupsService.js';
 import EditGroupDialog from '../components/EditGroupDialog.vue';
 
 const $q = useQuasar();
@@ -359,7 +359,7 @@ const loadDashboard = async () => {
 
     // 3. Obtener los grupos del año actual.
     console.log(`📚 Obteniendo grupos para el año ${currentYear}...`);
-    const response = await getGroupsByYear(currentYear);
+    const response = await getAllGroupByYear(currentYear);
     console.log('✅ Grupos asignados al usuario:', response);
     const assignedGroups = response.data;
 

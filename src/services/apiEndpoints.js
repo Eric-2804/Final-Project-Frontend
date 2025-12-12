@@ -187,18 +187,15 @@ export const API_ENDPOINTS = {
     DEACTIVATE: (id) => `/${id}/deactivate`,
   },
 
-  USERS: {
-    BASE: '/api/users',
-    GET_BY_ROL: (rol) => `/rol/${rol}`,
-    GET_BY_ID: (id) => `/${id}`,
-    UPDATE: (id) => `/${id}`,
-    DELETE: (id) => `/${id}`,
-    ACTIVATE: (id) => `/activate/${id}`,
-    DESACTIVATE: (id) => `/desactivate/${id}`,
-    CHANGE_PASSWORD: (id) => `/change-password/${id}`,
-    UPDATE_PASSWORD: "/update-password",
-    REFRESH_TOKEN: "/refresh-token"
-  }
-
-
+ USERS: {
+    GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
+    GET_BY_ID: (id) => `/api/users/${id}`,
+    UPDATE: (id) => `/api/users/${id}`,
+    DELETE: (id) => `/api/users/${id}`,
+    ACTIVATE: (id) => `/api/users/activate/${id}`,
+    DESACTIVATE: (id) => `/api/users/desactivate/${id}`,
+    CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
+    UPDATE_PASSWORD: "/api/users/update-password",
+    REFRESH_TOKEN: "/api/users/refresh-token",
+  },
 };
