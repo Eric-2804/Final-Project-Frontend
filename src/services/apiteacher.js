@@ -19,3 +19,6 @@ export const updateUser = (id, data) => putData(USERS.UPDATE(id), data);
 export const deleteUser = (id) => deleteData(USERS.DELETE(id));
 
 export const refreshToken = () => postData(USERS.REFRESH_TOKEN);
+
+// 📌 AGREGADO: Crear usuario/profesor
+export const createUser = (data) => postData(USERS.CREATE, data);
