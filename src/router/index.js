@@ -10,17 +10,10 @@ import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
 import CalificacionView from "../views/CalificacionView.vue"
-<<<<<<< HEAD
-
+import teacher from "../views/teacher.vue"
 import EnrollmentsDetailsView from "../views/RegistrationDetailView.vue"
 import EnrollmentsFormView from "../views/RegistrationFormView.vue"
 import EnrollmentsView from "../views/RegistrationView.vue"
-=======
-import teacher from "../views/teacher.vue"
-import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
-import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
-import EnrollmentsView from "../views/EnrollmentsView.vue"
->>>>>>> 4101f53de56d870e18a184c884d6cae76831dc11
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
 import Register from '../views/RegisterView.vue'
