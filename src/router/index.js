@@ -16,6 +16,7 @@ import EnrollmentsFormView from "../views/RegistrationFormView.vue"
 import EnrollmentsView from "../views/RegistrationView.vue"
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
+import SubjectView from "../views/SubjectView.vue"
 import Register from '../views/Register.vue'
 import Notifications from '../views/notifications.vue'
 import Groups from '../views/groups.vue'
@@ -43,6 +44,7 @@ const routes = [
       { path: 'secretaria/periodo', name: "Gestion_Periodos", component: PeriodoView},
       { path: 'secretaria/profile', name: "Perfil", component: Profile},
       { path: 'secretaria/register', name: "Registro", component: Register},
+      { path: 'management/materia-area', name: "Gestion_Materias_Areas", component: SubjectView},
       { path: 'secretaria/notifications', name: "Notificaciones", component: Notifications},
       { path: 'secretary/group', name: 'Groups', component: Groups}
     ]
