@@ -163,9 +163,31 @@ export const API_ENDPOINTS = {
     CUADRO_HONOR: (añoColegio, periodoId) => `/cuadro-honor/${añoColegio}/${periodoId}`, // GET /api/reportes/cuadro-honor/:añoColegio/:periodoId
     LIST_STUDENTS: (añoColegio, colegioId, grupoId) => `/listar-estudiantes/${añoColegio}/${colegioId}/${grupoId}`, // GET /api/reportes/listar-estudiantes/:añoColegio/:colegioId/:grupoId
   },
- 
 
-  USERS: {
+  SEDES: {
+    BASE: '/api/headquarters',
+    UPDATE: (id) => `/${id}`,
+    BY_COLEGIO: (id) => `/colegios/${id}/sedes`,
+    ACTIVATE: (id) => `/${id}/activar`,
+    DEACTIVATE: (id) => `/${id}/inactivar`,
+  },
+
+  VIGENCIAS: {
+    BASE: '/api/vigencias',
+    BY_YEAR: '/año',
+    ACTIVE: '/activa',
+    ACTIVATE: (id) => `/${id}/activar`,
+    DEACTIVATE: (id) => `/${id}/desactivar`,
+  },
+
+  PERIODOS: {
+    BASE: '/api/periods',
+    BY_YEAR: (year) => `/year/${year}`,
+    ACTIVATE: (id) => `/${id}/activate`,
+    DEACTIVATE: (id) => `/${id}/deactivate`,
+  },
+
+ USERS: {
     GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
     GET_BY_ID: (id) => `/api/users/${id}`,
     UPDATE: (id) => `/api/users/${id}`,
@@ -174,8 +196,6 @@ export const API_ENDPOINTS = {
     DESACTIVATE: (id) => `/api/users/desactivate/${id}`,
     CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
     UPDATE_PASSWORD: "/api/users/update-password",
-    REFRESH_TOKEN: "/api/users/refresh-token"
-  }
-
-
+    REFRESH_TOKEN: "/api/users/refresh-token",
+  },
 };

@@ -16,8 +16,8 @@ import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
 import EnrollmentsView from "../views/EnrollmentsView.vue"
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
-import Register from '../views/RegisterView.vue'
-import Notifications from '../views/NotificationsView.vue'
+import Register from '../views/Register.vue'
+import Notifications from '../views/notifications.vue'
 import Groups from '../views/groups.vue'
 import { useAuthStore } from '../stores/auth';
 
