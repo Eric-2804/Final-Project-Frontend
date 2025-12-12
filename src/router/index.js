@@ -10,14 +10,14 @@ import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
 import CalificacionView from "../views/CalificacionView.vue"
-
+import teacher from "../views/teacher.vue"
 import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
 import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
 import EnrollmentsView from "../views/EnrollmentsView.vue"
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
-import Register from '../views/Register.vue'
-import Notifications from '../views/notifications.vue'
+import Register from '../views/RegisterView.vue'
+import Notifications from '../views/NotificationsView.vue'
 import Groups from '../views/groups.vue'
 import { useAuthStore } from '../stores/auth';
 
@@ -32,7 +32,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      // secretaria
+      { path: 'secretaria/teacher', name : 'Gestion de profesores', component: teacher},
       { path: 'secretaria/dashboard', name: 'SecretariaDashboard', component: DashboardSecretaria },
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
       { path: 'secretaria/academicManagement', name: "Gestion_Academica", component: AcademicManagementView },
