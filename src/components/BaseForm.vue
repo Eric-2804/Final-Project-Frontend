@@ -1,7 +1,6 @@
 <template>
   <q-card class="q-pa-md" style="max-width: 500px; width: 100%;">
     <q-card-section>
-      <!-- Encabezado -->
       <div class="text-h6">{{ title }}</div>
       <div class="text-subtitle2 text-grey">{{ subtitle }}</div>
     </q-card-section>
@@ -11,11 +10,8 @@
     <q-card-section>
       <q-form @submit.prevent="submitForm" class="q-gutter-md">
 
-        <!-- Slot de campos -->
-        <!-- Se pasa el form reactivo para que el padre lo use -->
         <slot name="fields" :form="form"></slot>
 
-        <!-- Botones de acción -->
         <div class="row justify-end q-mt-md">
           <slot name="actions">
             <q-btn
@@ -39,26 +35,21 @@
 </template>
 
 <script setup>
-import { reactive, toRaw } from 'vue'
+import { ref, watch, reactive, toRaw } from "vue";
 
-/* Props */
 const props = defineProps({
   title: { type: String, default: 'Formulario' },
   subtitle: { type: String, default: '' },
   submitLabel: { type: String, default: 'Guardar' },
   cancelLabel: { type: String, default: 'Cancelar' },
-  modelValue: { type: Object, default: () => ({}) } // Para pasar datos iniciales (ej. al editar)
+  modelValue: { type: Object, default: () => ({}) }
 })
 
-/* Emit */
 const emit = defineEmits(['submit', 'cancel', 'update:modelValue'])
 
-/* Form reactivo */
 const form = reactive({ ...props.modelValue })
 
-/* Métodos */
 function submitForm() {
-  // Emitimos los datos al padre
   emit('submit', toRaw(form))
 }
 
