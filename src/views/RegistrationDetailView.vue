@@ -72,12 +72,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
+import registrationService from '../services/registrationService.js'
+import { useNotify } from '../composables/useNotify.js'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const { showNotify, showErrorNotify } = useNotify()
 
 const enrollment = ref(null)
 
@@ -85,20 +87,17 @@ onMounted(async () => {
   const enrollmentId = route.params.id;
   if (enrollmentId) {
     try {
-      const response = await axios.get(`http://localhost:3000/api/registration/${enrollmentId}`, {
-        headers: {
-          Authorization: `Bearer ${auth.token}`
-        }
-      });
+      const response = await registrationService.getById(enrollmentId);
       enrollment.value = response.data.data;
     } catch (error) {
       console.error("Error fetching enrollment details:", error);
+      showErrorNotify('Error al cargar los detalles de la matrícula');
     }
   }
 });
 
 const goBack = () => {
-  router.push({ name: 'EnrollmentsView' });
+  router.push({ name: 'Mis_Matrícula' });
 }
 </script>
 

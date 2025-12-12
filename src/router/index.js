@@ -11,9 +11,9 @@ import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
 import CalificacionView from "../views/CalificacionView.vue"
 
-import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
-import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
-import EnrollmentsView from "../views/EnrollmentsView.vue"
+import EnrollmentsDetailsView from "../views/RegistrationDetailView.vue"
+import EnrollmentsFormView from "../views/RegistrationFormView.vue"
+import EnrollmentsView from "../views/RegistrationView.vue"
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
 import Register from '../views/RegisterView.vue'
@@ -37,7 +37,7 @@ const routes = [
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
       { path: 'secretaria/academicManagement', name: "Gestion_Academica", component: AcademicManagementView },
       { path: 'secretaria/calificacion', name: "Gestion_Calificaciones", component: CalificacionView },
-      { path: 'secretaria/enrollmentsDetails', name: "Detalles_Matrícula", component: EnrollmentsDetailsView},
+      { path: 'secretaria/enrollmentsDetails/:id', name: "Detalles_Matrícula", component: EnrollmentsDetailsView},
       { path: 'secretaria/enrollmentsForm', name: "Formulario_Matrícula", component: EnrollmentsFormView},
       { path: 'secretaria/enrollments', name: "Mis_Matrícula", component: EnrollmentsView},
       { path: 'secretaria/periodo', name: "Gestion_Periodos", component: PeriodoView},
