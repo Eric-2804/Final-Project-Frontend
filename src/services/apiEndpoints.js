@@ -178,7 +178,7 @@ export const API_ENDPOINTS = {
   SEDES: {
     BASE: '/api/headquarters',
     UPDATE: (id) => `/${id}`,
-    BY_COLEGIO: (id) => `/colegios/${id}/sedes`,
+    BY_COLEGIO: (id) => `/api/headquarters/school/${id}/headquarters`,
     ACTIVATE: (id) => `/${id}/activar`,
     DEACTIVATE: (id) => `/${id}/inactivar`,
   },

@@ -63,10 +63,9 @@
                   <div class="col-12 col-md-6">
                     <q-input
                       v-model="form.registrationNumber"
-                      label="Número de Matrícula *"
+                      label="Número de Matrícula (opcional)"
                       filled
-                      :rules="[val => !!val || 'El número es requerido']"
-                      hint="Ej: MAT-2025-001"
+                      hint="Se generará automáticamente si se deja vacío"
                     >
                       <template v-slot:prepend>
                         <q-icon name="confirmation_number" />
@@ -181,17 +180,16 @@
                 </div>
 
                 <div class="row q-col-gutter-md">
-                  <!-- Sede -->
-                  <div class="col-12 col-md-6">
+                  <!-- Sede (opcional si no hay sedes disponibles) -->
+                  <div class="col-12 col-md-6" v-if="headquarterOptions.length > 0">
                     <q-select
                       v-model="selectedHeadquarter"
                       :options="headquarterOptions"
-                      label="Sede *"
+                      label="Sede"
                       filled
                       emit-value
                       map-options
                       @update:model-value="loadGroupsByHeadquarter"
-                      :rules="[val => !!val || 'La sede es requerida']"
                     >
                       <template v-slot:prepend>
                         <q-icon name="location_on" />
@@ -200,7 +198,7 @@
                   </div>
 
                   <!-- Grupo -->
-                  <div class="col-12 col-md-6">
+                  <div :class="headquarterOptions.length > 0 ? 'col-12 col-md-6' : 'col-12'">
                     <q-select
                       v-model="form.group"
                       :options="groupOptions"
@@ -208,9 +206,8 @@
                       filled
                       emit-value
                       map-options
-                      :disable="!selectedHeadquarter"
                       :rules="[val => !!val || 'El grupo es requerido']"
-                      hint="Seleccione primero la sede"
+                      :hint="headquarterOptions.length > 0 ? 'Seleccione primero la sede' : 'Grupos disponibles'"
                     >
                       <template v-slot:prepend>
                         <q-icon name="class" />
@@ -378,13 +375,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Spinner from '@/components/Spinner.vue'
 import { useNotify } from '@/composables/useNotify'
+import { useAuthStore } from '@/stores/auth'
 import registrationService from '@/services/registrationService'
-import { getAllColegios } from '@/services/colegiosService'
-import { getAllUsers } from '@/services/schoolUserService'
+import { getUsersByRol, getUserById } from '@/services/schoolUserService'
 import { getAllGroupByYear } from '@/services/groupsService'
 import { getHeadquartersBySchool } from '@/services/headquarterService'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const { showNotify, showErrorNotify } = useNotify()
 
 // Estado
@@ -463,34 +461,77 @@ async function loadInitialData() {
   }
   
   try {
-    // Cargar colegios
-    console.log('📚 Cargando colegios...')
-    const schoolsRes = await getAllColegios()
-    const schools = schoolsRes.data?.data || schoolsRes.data || []
-    console.log('✅ Colegios recibidos:', schools.length, schools)
+    console.log('👤 Usuario inicial:', authStore.user)
     
-    if (Array.isArray(schools) && schools.length > 0) {
-      schoolOptions.value = schools.map(s => ({
-        label: s.name,
-        value: s._id
-      }))
-      console.log('✅ schoolOptions mapeados:', schoolOptions.value.length)
+    // Si el usuario no tiene college, cargar datos completos
+    if (!authStore.user?.college) {
+      console.log('⚠️ Usuario sin college, cargando datos completos...')
+      
+      if (authStore.user?.id) {
+        try {
+          const fullUser = await getUserById(authStore.user.id)
+          console.log('✅ Datos completos del usuario obtenidos:', fullUser)
+          
+          // Actualizar el store con los datos completos
+          authStore.setUser(fullUser)
+          console.log('✅ Usuario actualizado en el store')
+        } catch (error) {
+          console.error('❌ Error al cargar datos completos del usuario:', error)
+        }
+      }
+    }
+    
+    // Intentar obtener el colegio/sede del usuario (puede tener diferentes nombres)
+    const userCollege = authStore.user?.college || authStore.user?.sede || authStore.user?.school
+    console.log('🏫 College encontrado:', userCollege)
+    
+    if (userCollege) {
+      let schoolId = null
+      
+      // Si college es un objeto poblado
+      if (typeof userCollege === 'object' && userCollege._id) {
+        schoolId = userCollege._id
+        form.value.school = schoolId
+        schoolOptions.value = [{
+          label: userCollege.name || userCollege.nameSchool || 'Mi Colegio',
+          value: schoolId
+        }]
+        console.log('✅ Colegio del usuario (objeto):', userCollege)
+      } 
+      // Si college es solo un ID string
+      else if (typeof userCollege === 'string') {
+        schoolId = userCollege
+        form.value.school = schoolId
+        schoolOptions.value = [{
+          label: 'Mi Colegio',
+          value: schoolId
+        }]
+        console.log('✅ ID del colegio del usuario:', schoolId)
+      }
+      
+      // Cargar sedes automáticamente
+      if (schoolId) {
+        console.log('📍 Cargando sedes del colegio', schoolId)
+        await onSchoolChange(schoolId)
+      }
     } else {
-      console.warn('⚠️ No hay colegios disponibles')
-      schoolOptions.value = []
+      console.error('❌ Usuario no tiene sede/colegio asignado después de cargar datos completos')
+      console.error('❌ Usuario final:', authStore.user)
+      showErrorNotify({ message: 'Tu usuario no tiene una sede asignada. Contacta al administrador.' })
+      isLoading.value = false
+      return
     }
 
-    // Cargar usuarios (estudiantes y acudientes)
-    console.log('👥 Cargando usuarios...')
-    const usersRes = await getAllUsers()
-    const users = usersRes.data || []
-    console.log('✅ Usuarios recibidos:', users.length)
+    // Cargar estudiantes por rol
+    console.log('👨‍🎓 Cargando estudiantes...')
+    const estudiantesRes = await getUsersByRol('estudiante')
+    console.log('👨‍🎓 Respuesta completa de estudiantes:', estudiantesRes)
+    
+    // La respuesta puede venir como array directamente o en .data
+    const estudiantes = Array.isArray(estudiantesRes) ? estudiantesRes : (estudiantesRes.data || [])
+    console.log('✅ Estudiantes procesados:', estudiantes.length, estudiantes)
 
-    if (Array.isArray(users) && users.length > 0) {
-      // Filtrar estudiantes
-      const estudiantes = users.filter(u => u.roles && Array.isArray(u.roles) && u.roles.includes('estudiante'))
-      console.log('👨‍🎓 Estudiantes encontrados:', estudiantes.length)
-      
+    if (Array.isArray(estudiantes) && estudiantes.length > 0) {
       studentOptions.value = estudiantes.map(u => ({
         label: `${u.names || ''} ${u.lastNames || ''}`.trim(),
         value: u._id,
@@ -500,25 +541,33 @@ async function loadInitialData() {
 
       filteredStudents.value = studentOptions.value
       console.log('✅ studentOptions configurados:', studentOptions.value.length)
+    } else {
+      console.warn('⚠️ No hay estudiantes disponibles')
+      studentOptions.value = []
+      filteredStudents.value = []
+    }
 
-      // Filtrar acudientes
-      const acudientes = users.filter(u => u.roles && Array.isArray(u.roles) && u.roles.includes('acudiente'))
-      console.log('👨‍👩‍👧 Acudientes encontrados:', acudientes.length)
-      
+    // Cargar acudientes por rol
+    console.log('👨‍👩‍👧 Cargando acudientes...')
+    const acudientesRes = await getUsersByRol('acudiente')
+    console.log('👨‍👩‍👧 Respuesta completa de acudientes:', acudientesRes)
+    
+    // La respuesta puede venir como array directamente o en .data
+    const acudientes = Array.isArray(acudientesRes) ? acudientesRes : (acudientesRes.data || [])
+    console.log('✅ Acudientes procesados:', acudientes.length, acudientes)
+    
+    if (Array.isArray(acudientes) && acudientes.length > 0) {
       attendantOptions.value = acudientes.map(u => ({
         label: `${u.names || ''} ${u.lastNames || ''}`.trim(),
         value: u._id,
         document: u.numberDocument || 'Sin documento',
         email: u.email || 'Sin email'
       }))
-
       filteredAttendants.value = attendantOptions.value
       console.log('✅ attendantOptions configurados:', attendantOptions.value.length)
     } else {
-      console.warn('⚠️ No hay usuarios disponibles')
-      studentOptions.value = []
+      console.warn('⚠️ No hay acudientes disponibles')
       attendantOptions.value = []
-      filteredStudents.value = []
       filteredAttendants.value = []
     }
     
@@ -552,20 +601,29 @@ async function loadInitialData() {
 }
 
 async function onSchoolChange(schoolId) {
-  if (!schoolId) return
+  if (!schoolId) {
+    console.warn('⚠️ onSchoolChange llamado sin schoolId')
+    return
+  }
 
+  console.log('📍 onSchoolChange - Cargando sedes para colegio:', schoolId)
+  
   try {
     // Cargar sedes del colegio
     const headquartersRes = await getHeadquartersBySchool(schoolId)
-    const headquarters = headquartersRes.data?.data || headquartersRes.data || []
+    console.log('📍 Respuesta de sedes:', headquartersRes)
     
-    if (Array.isArray(headquarters)) {
+    const headquarters = headquartersRes.data?.data || headquartersRes.data || []
+    console.log('📍 Sedes procesadas:', headquarters)
+    
+    if (Array.isArray(headquarters) && headquarters.length > 0) {
       headquarterOptions.value = headquarters.map(h => ({
         label: h.name,
         value: h._id
       }))
+      console.log('✅ Sedes configuradas:', headquarterOptions.value.length, headquarterOptions.value)
     } else {
-      console.warn('La respuesta de sedes no es un array:', headquarters)
+      console.warn('⚠️ No hay sedes disponibles o la respuesta no es un array:', headquarters)
       headquarterOptions.value = []
     }
 
@@ -576,8 +634,32 @@ async function onSchoolChange(schoolId) {
 
   } catch (error) {
     console.error('Error cargando sedes:', error)
-    const errorMsg = error.response?.data?.msg || 'Error al cargar las sedes'
-    showErrorNotify({ message: errorMsg })
+    
+    // Si es 404, el colegio no tiene sedes - cargar todos los grupos directamente
+    if (error.response?.status === 404) {
+      console.log('ℹ️ El colegio no tiene sedes registradas - cargando todos los grupos del año')
+      headquarterOptions.value = []
+      
+      // Cargar todos los grupos del año actual sin filtrar por sede
+      try {
+        const year = new Date().getFullYear()
+        const groupsRes = await getAllGroupByYear(year)
+        const allGroups = groupsRes.data?.data || groupsRes.data || []
+        
+        if (Array.isArray(allGroups) && allGroups.length > 0) {
+          groupOptions.value = allGroups.map(g => ({
+            label: `${g.name} - ${g.level || ''}`,
+            value: g._id
+          }))
+          console.log('✅ Grupos cargados sin filtro de sede:', groupOptions.value.length)
+        }
+      } catch (groupError) {
+        console.error('Error cargando grupos:', groupError)
+      }
+    } else {
+      const errorMsg = error.response?.data?.msg || 'Error al cargar las sedes'
+      showErrorNotify({ message: errorMsg })
+    }
   }
 }
 
@@ -692,6 +774,16 @@ async function submitForm() {
   }
 
   isSaving.value = true
+  
+  // 🔍 Logs de diagnóstico
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  console.log('🔍 Verificación pre-submit:');
+  console.log('  - Token presente:', !!token);
+  console.log('  - Token (primeros 30):', token?.substring(0, 30));
+  console.log('  - Usuario:', user);
+  console.log('  - Rol usuario:', user?.rol || user?.roles);
+  
   try {
     const data = {
       student: form.value.student,
@@ -703,6 +795,8 @@ async function submitForm() {
       description: form.value.description,
       school: form.value.school
     }
+    
+    console.log('📤 Enviando payload:', data);
 
     await registrationService.create(data)
     
@@ -714,9 +808,20 @@ async function submitForm() {
     }, 1000)
 
   } catch (error) {
-    console.error('Error creando matrícula:', error)
+    console.error('❌ Error al crear matrícula:', error)
+    console.error('  - Status:', error.response?.status);
+    console.error('  - Data:', error.response?.data);
+    console.error('  - Headers:', error.response?.headers);
+    
     const errorMsg = error.response?.data?.msg || 'Error al crear la matrícula'
     showErrorNotify({ message: errorMsg })
+    
+    // Si es 401, verificar token
+    if (error.response?.status === 401) {
+      console.error('🚨 Error 401 - Verificando autenticación...');
+      const currentToken = localStorage.getItem('token');
+      console.error('  - Token actual en localStorage:', currentToken ? 'Existe' : 'NO EXISTE');
+    }
   } finally {
     isSaving.value = false
   }
