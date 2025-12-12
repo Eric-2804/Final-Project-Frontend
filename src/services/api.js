@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://proyecto-final-ptwh.onrender.com/',
-  timeout: 120000,
+  baseURL: 'https://proyecto-final-ptwh.onrender.com',
+  timeout: 70000,
 });
 
 api.interceptors.request.use((config) => {

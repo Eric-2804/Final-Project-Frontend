@@ -5,7 +5,7 @@ import MainLayout from '../layouts/MainLayout.vue'
 import login from '../views/login.vue'
 import Home from '../views/home.vue'
 
-// vistas de la secretaria
+
 import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
@@ -32,6 +32,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
+      
       { path: 'secretary/teacher', name : 'Gestion de profesores', component: teacher},
       { path: 'secretaria/dashboard', name: 'SecretariaDashboard', component: DashboardSecretaria },
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
