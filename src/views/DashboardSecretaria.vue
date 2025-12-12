@@ -299,6 +299,7 @@ const tableRows = computed(() => {
 
   // `map` crea un nuevo array transformando cada elemento del array original.
   return gruposMaterias.value.map(item => {
+    const id = item._id || item.id;
     let subjectsArray = [];
 
     // Extrae los nombres de las materias. La estructura de datos puede variar.
@@ -314,7 +315,8 @@ const tableRows = computed(() => {
 
     // Devuelve un objeto con el formato que necesita la fila de la tabla.
     return {
-      _id: item._id, // ID único para el `row-key`
+      _id: id,
+      id, // ID único para el `row-key`
       name: item.name,
       grade: item.grade || 'N/A',
       level: item.level || 'N/A',
@@ -368,14 +370,14 @@ const loadDashboard = async () => {
       Array.from(assignedGroups).map(async (group) => {
         try {
           const students = await getStudentsByGroup(group._id);
-          console.log(`Respuesta de getStudentsByGroup para el grupo ${group._id}:`, students);
+          console.log(`Respuesta de getStudentsByGroup para el grupo ${group._id}:`, students.data.student);
           return {
             ...group,
             studentCount: students?.length || 0,
-            students: students || [],
+            students: students.data.student || [],
           };
         } catch (err) {
-          console.error(`❌ Error al obtener estudiantes del grupo ${group._id}:`, err);
+          console.error(`❌ Error al obtener estudiantes del grupo ${group.id}:`, err);
           return {
             ...group,
             studentCount: 0,
