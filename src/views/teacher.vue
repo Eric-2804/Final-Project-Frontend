@@ -102,7 +102,7 @@ onMounted(loadTeachers)
 </script>
 
 <style scoped>
-/* SPINNER */
+
 .loading-container {
   margin-top: 120px;
   display: flex;
