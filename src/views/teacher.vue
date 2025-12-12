@@ -50,51 +50,74 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import TableComponent from "../components/tables.vue";
-import { getUsersByRol } from "../services/apiteacher";
-import { useNotify } from "../composables/useNotify";
-
-const { showNotify, showErrorNotify } = useNotify();
-
-const teachers = ref([]);
-const loading = ref(true);
-
-const columns = [
-  { name: "names", label: "Nombres", field: "names", align: "left" },
-  { name: "lastNames", label: "Apellidos", field: "lastNames", align: "left" },
-  { name: "email", label: "Correo", field: "email", align: "left" },
-  { name: "roles", label: "Rol", field: "roles", align: "left" },
-  { name: "isActive", label: "Estado", field: "isActive", align: "center" },
-];
-
-const activeTeachers = computed(() =>
-  teachers.value.filter((t) => t.isActive).length
-);
-
-const inactiveTeachers = computed(() =>
-  teachers.value.filter((t) => !t.isActive).length
-);
-
-const loadTeachers = async () => {
-  try {
-    const res = await getUsersByRol("profesor");
-    teachers.value = res.users || res || [];
-
-    showNotify({
-      message: "Profesores cargados correctamente",
-    });
-  } catch (err) {
-    showErrorNotify({
-      message: "Error cargando profesores",
-    });
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(loadTeachers);
-</script>
+  import { ref, computed, onMounted } from "vue";
+  import TableComponent from "../components/tables.vue";
+  import { getUsersByRol } from "../services/apiteacher";
+  import { useNotify } from "../composables/useNotify";
+  
+  const { showNotify, showErrorNotify } = useNotify();
+  
+  const teachers = ref([]);
+  const loading = ref(true);
+  
+  const columns = [
+    { name: "names", label: "Nombres", field: "names", align: "left" },
+    { name: "lastNames", label: "Apellidos", field: "lastNames", align: "left" },
+    { name: "email", label: "Correo", field: "email", align: "left" },
+    { name: "roles", label: "Rol", field: "roles", align: "left" },
+    { name: "isActive", label: "Estado", field: "isActive", align: "center" },
+  ];
+  
+  const activeTeachers = computed(() =>
+    teachers.value.filter(t => t.isActive).length
+  );
+  
+  const inactiveTeachers = computed(() =>
+    teachers.value.filter(t => !t.isActive).length
+  );
+  
+  const loadTeachers = async () => {
+    try {
+      const res = await getUsersByRol("profesor");
+  
+      // Validación por si Render no devuelve usuarios
+      if (!res || !res.users) {
+        showErrorNotify({
+          message: "El servidor no devolvió datos. Puede estar dormido."
+        });
+        teachers.value = [];
+        return;
+      }
+  
+      teachers.value = res.users;
+  
+      showNotify({
+        message: "Profesores cargados correctamente"
+      });
+  
+    } catch (err) {
+      console.error("Error cargando profesores:", err);
+  
+      const msg =
+        err.response?.data?.msg ||
+        err.message ||
+        "No se pudo conectar al servidor";
+  
+      showErrorNotify({
+        message: `Error cargando profesores: ${msg}`,
+        color: "negative",
+        timeout: 4000
+      });
+  
+      teachers.value = []; 
+    } finally {
+      loading.value = false;
+    }
+  };
+  
+  onMounted(loadTeachers);
+  </script>
+  
 
 <style scoped>
 .loading-container {
