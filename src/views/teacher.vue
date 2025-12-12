@@ -68,33 +68,31 @@
   ];
   
   const activeTeachers = computed(() =>
-    teachers.value.filter(t => t.isActive).length
+    teachers.value.filter((t) => t.isActive === true).length
   );
   
   const inactiveTeachers = computed(() =>
-    teachers.value.filter(t => !t.isActive).length
+    teachers.value.filter((t) => t.isActive === false).length
   );
   
   const loadTeachers = async () => {
     try {
       const res = await getUsersByRol("profesor");
   
-      
       const data =
-        res?.users ||      
-        res?.data?.users || 
-        res?.data ||        
-        res || [];         
+        res?.users ||
+        res?.data?.users ||
+        res?.data ||
+        res ||
+        [];
   
       if (!Array.isArray(data)) {
-        throw new Error("Respuesta del servidor inválida");
+        throw new Error("El servidor no devolvió una lista válida");
       }
   
       teachers.value = data;
   
-      showNotify({
-        message: "Profesores cargados correctamente"
-      });
+      showNotify({ message: "Profesores cargados correctamente" });
   
     } catch (err) {
       console.error("Error cargando profesores:", err);
@@ -103,10 +101,10 @@
         message:
           err.response?.data?.msg ||
           err.message ||
-          "Error cargando profesores. El backend puede estar dormido."
+          "No se pudieron cargar los profesores."
       });
   
-      teachers.value = []; 
+      teachers.value = [];
     } finally {
       loading.value = false;
     }
@@ -114,6 +112,7 @@
   
   onMounted(loadTeachers);
   </script>
+  
   
 
 <style scoped>
