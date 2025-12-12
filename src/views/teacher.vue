@@ -80,7 +80,7 @@
     try {
       const res = await getUsersByRol("profesor");
   
-      // Validación por si Render no devuelve usuarios
+      
       if (!res || !res.users) {
         showErrorNotify({
           message: "El servidor no devolvió datos. Puede estar dormido."
