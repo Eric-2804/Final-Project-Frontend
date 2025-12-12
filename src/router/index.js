@@ -33,7 +33,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      { path: 'secretaria/teacher', name : 'Gestion de profesores', component: teacher},
+      { path: 'secretary/teacher', name : 'Gestion de profesores', component: teacher},
       { path: 'secretaria/dashboard', name: 'SecretariaDashboard', component: DashboardSecretaria },
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
       { path: 'secretaria/academicManagement', name: "Gestion_Academica", component: AcademicManagementView },
