@@ -464,20 +464,6 @@
                             </div>
                           </div>
   
-                          <!-- Campo incluir en estadísticas: Para materias y áreas -->
-                          <div class="col-12">
-                            <q-toggle
-                              v-model="formData.includeInStatistics"
-                              label="Incluir en Estadísticas"
-                              color="green"
-                              hint="Si está activado, esta materia/área se incluirá en los reportes estadísticos"
-                              left-label
-                            />
-                            <div class="text-caption text-grey-7 q-mt-xs q-ml-sm">
-                              <q-icon name="bar_chart" size="xs" class="q-mr-xs" />
-                              Activa esta opción para incluir esta materia/área en los reportes y estadísticas del sistema.
-                            </div>
-                          </div>
                         </div>
                       </div>
   
@@ -547,7 +533,6 @@
     type: 'materia', // materia | area
     areaCode: '',
     independent: false, // Solo para materias
-    includeInStatistics: true, // Para materias y áreas
   })
   
   const groupOptions = ref([]) // Opciones para el select de grupos
@@ -740,7 +725,6 @@
       type: formData.value.type,
       areaCode: finalAreaCode,
       independent: formData.value.type === 'materia' ? formData.value.independent : false,
-      includeInStatistics: formData.value.includeInStatistics
     };
   }
   
@@ -919,7 +903,6 @@
       type: 'materia',
       areaCode: '',
       independent: false,
-      includeInStatistics: true,
     };
     
     await Promise.all([fetchGroups(), fetchAreas()]);
@@ -953,7 +936,6 @@
       type: item.type || 'materia',
       areaCode: areaCodeValue,
       independent: item.independent !== undefined ? item.independent : false,
-      includeInStatistics: item.includeInStatistics !== undefined ? item.includeInStatistics : true,
     };
     
     showDialog.value = true;
