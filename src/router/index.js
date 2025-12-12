@@ -11,15 +11,16 @@ import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
 import CalificacionView from "../views/CalificacionView.vue"
 import teacher from "../views/teacher.vue"
-import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
-import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
-import EnrollmentsView from "../views/EnrollmentsView.vue"
 import PeriodoView from "../views/PeriodoView.vue"
 import Profile from "../views/Profile.vue"
 import SubjectView from "../views/SubjectView.vue"
 import Register from '../views/Register.vue'
 import Notifications from '../views/notifications.vue'
 import Groups from '../views/groups.vue'
+import RegistrationListView from '../views/RegistrationListView.vue'
+import RegistrationCreateView from '../views/RegistrationCreateView.vue'
+import RegistrationDetailView from '../views/RegistrationDetailView.vue'
+import RegistrationEditView from '../views/RegistrationEditView.vue'
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
@@ -39,9 +40,10 @@ const routes = [
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
       { path: 'secretaria/academicManagement', name: "Gestion_Academica", component: AcademicManagementView },
       { path: 'secretaria/calificacion', name: "Gestion_Calificaciones", component: CalificacionView },
-      { path: 'secretaria/enrollmentsDetails', name: "Detalles_Matrícula", component: EnrollmentsDetailsView},
-      { path: 'secretaria/enrollmentsForm', name: "Formulario_Matrícula", component: EnrollmentsFormView},
-      { path: 'secretaria/enrollments', name: "Mis_Matrícula", component: EnrollmentsView},
+      { path: 'secretaria/registrations', name: "Gestion_Matriculas", component: RegistrationListView},
+      { path: 'secretaria/registrations/create', name: "Crear_Matricula", component: RegistrationCreateView},
+      { path: 'secretaria/registrations/:id', name: "Detalles_Matrícula", component: RegistrationDetailView},
+      { path: 'secretaria/registrations/:id/edit', name: "Editar_Matricula", component: RegistrationEditView},
       { path: 'secretaria/periodo', name: "Gestion_Periodos", component: PeriodoView},
       { path: 'secretaria/profile', name: "Perfil", component: Profile},
       { path: 'secretaria/register', name: "Registro", component: Register},

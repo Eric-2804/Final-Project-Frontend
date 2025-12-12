@@ -107,7 +107,14 @@ const passwordRules = [
         return;
      }
 
+     console.log('✅ Login exitoso - Token recibido:', token.substring(0, 30) + '...');
+     console.log('✅ Usuario recibido:', user);
+
      await authStore.login(token, user)
+     
+     // Verificar que se guardó correctamente
+     const savedToken = localStorage.getItem('token');
+     console.log('✅ Token guardado en localStorage:', savedToken ? '✓' : '✗');
 
      const userRole = authStore.user?.rol;
 

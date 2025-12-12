@@ -9,6 +9,10 @@ export const getAllUsers = () => {
   return getData(API_ENDPOINTS.USERS.BASE);
 };
 
+export const getUsersByRol = (rol) => {
+  return getData(API_ENDPOINTS.USERS.GET_BY_ROL(rol));
+};
+
 export const getUserById = (id) => {
   return getData(`${API_ENDPOINTS.USUARIOS_COLEGIO.BASE}/${id}`);
 };

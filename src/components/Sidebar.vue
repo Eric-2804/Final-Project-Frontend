@@ -54,21 +54,23 @@ const linksByRole = {
   secretaria: [
     { title: 'Dashboard', icon: 'dashboard', link: '/secretaria/dashboard' },
     { title: 'Sedes', icon: 'business', link: '/secretaria/headquarters' },
-    { title: 'Matrículas', icon: 'assignment', link: '/secretaria/enrollments' },
+    { title: 'Matrículas', icon: 'app_registration', link: '/secretaria/registrations' },
     { title: 'Gestión Académica', icon: 'work', link: '/secretaria/academicManagement' },
     { title: 'Profesores', icon: 'school', link: '/secretary/teacher' },
-    { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
+    { title: 'Grupos', icon: 'group', link: '/secretary/group' },
     { title: 'Áreas y Materias', icon: 'class', link: '/management/materia-area' },
     { title: 'Periodos', icon: 'event', link: '/secretaria/periodo' },
-    { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
-    { title: 'Usuarios', icon: 'people', link: '/management/usuarios-colegio' },
-    {
-      title: 'Configuraciones',
-      icon: 'settings',
-      children: [
-        { title: 'Configurar Sistema', icon: 'settings_applications', link: '/configuracion/sistema' },
-      ],
-    },
+    // Comentadas temporalmente: rutas no implementadas aún
+    // { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
+    // { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
+    // { title: 'Usuarios', icon: 'people', link: '/management/usuarios-colegio' },
+    // {
+    //   title: 'Configuraciones',
+    //   icon: 'settings',
+    //   children: [
+    //     { title: 'Configurar Sistema', icon: 'settings_applications', link: '/configuracion/sistema' },
+    //   ],
+    // },
   ],
 };
 
