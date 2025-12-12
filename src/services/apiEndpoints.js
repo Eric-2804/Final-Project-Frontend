@@ -163,4 +163,19 @@ export const API_ENDPOINTS = {
     CUADRO_HONOR: (añoColegio, periodoId) => `/cuadro-honor/${añoColegio}/${periodoId}`, // GET /api/reportes/cuadro-honor/:añoColegio/:periodoId
     LIST_STUDENTS: (añoColegio, colegioId, grupoId) => `/listar-estudiantes/${añoColegio}/${colegioId}/${grupoId}`, // GET /api/reportes/listar-estudiantes/:añoColegio/:colegioId/:grupoId
   },
+ 
+
+  USERS: {
+    GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
+    GET_BY_ID: (id) => `/api/users/${id}`,
+    UPDATE: (id) => `/api/users/${id}`,
+    DELETE: (id) => `/api/users/${id}`,
+    ACTIVATE: (id) => `/api/users/activate/${id}`,
+    DESACTIVATE: (id) => `/api/users/desactivate/${id}`,
+    CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
+    UPDATE_PASSWORD: "/api/users/update-password",
+    REFRESH_TOKEN: "/api/users/refresh-token"
+  }
+
+
 };
