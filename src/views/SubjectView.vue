@@ -416,26 +416,8 @@
                                 </q-item>
                               </template>
                             </q-select>
-                            <div class="text-caption text-grey-7 q-mt-xs q-ml-sm">
-                              <q-icon name="info" size="xs" class="q-mr-xs" />
-                              El código del área seleccionada se usará como <strong>areaCode</strong> de esta materia.
-                            </div>
                           </div>
   
-                          <!-- Campo específico para Áreas -->
-                          <div class="col-12" v-else>
-                            <q-banner class="bg-blue-1 text-blue-8 q-mb-md" rounded>
-                              <template v-slot:avatar>
-                                <q-icon name="info" color="blue" />
-                              </template>
-                              <div class="text-body2">
-                                <strong>Las áreas solo tienen código (code)</strong>
-                              </div>
-                              <div class="text-caption q-mt-xs">
-                                El campo <strong>code</strong> es el que identifica esta área y será usado por las materias para asociarse a ella mediante su <strong>areaCode</strong>.
-                              </div>
-                            </q-banner>
-                          </div>
                         </div>
                       </div>
   
