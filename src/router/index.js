@@ -10,7 +10,7 @@ import SedesSecretaria from '../views/headquartersSecretary.vue'
 import DashboardSecretaria from '../views/DashboardSecretaria.vue'
 import AcademicManagementView from "../views/AcademicManagementView.vue"
 import CalificacionView from "../views/CalificacionView.vue"
-
+import teacher from "../views/teacher.vue"
 import EnrollmentsDetailsView from "../views/EnrollmentsDetailsView.vue"
 import EnrollmentsFormView from "../views/EnrollmentsFormView.vue"
 import EnrollmentsView from "../views/EnrollmentsView.vue"
@@ -32,7 +32,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      // secretaria
+      { path: 'secretaria/teacher', name : 'Gestion de profesores', component: teacher},
       { path: 'secretaria/dashboard', name: 'SecretariaDashboard', component: DashboardSecretaria },
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
       { path: 'secretaria/academicManagement', name: "Gestion_Academica", component: AcademicManagementView },
