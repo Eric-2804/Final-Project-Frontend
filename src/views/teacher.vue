@@ -7,7 +7,9 @@
     </div>
 
     <div v-else>
-      <div class="text-h4 text-bold q-mb-lg title">Gestión de Profesores</div>
+      <div class="container-card">
+      <div class="text-h4 title">Bienvenido a gestión de Profesores</div>
+      </div>
 
       <div class="cards-container">
         <q-card class="stat-card card-blue">
@@ -25,6 +27,12 @@
           <div class="value">{{ inactiveTeachers }}</div>
         </q-card>
       </div>
+
+
+
+<div class="container-card">
+
+      <div class="text-h4 text-bold q-mb-lg title">Listado de profesores</div>
 
       <!-- TABLA -->
       <TableComponent
@@ -44,6 +52,7 @@
           </q-chip>
         </template>
       </TableComponent>
+    </div>
     </div>
   </div>
 </template>
@@ -132,9 +141,19 @@
 
 .title {
   text-align: left;
-  margin-bottom: 30px;
-  margin-left: 30px;
+  font-weight: bold;  
+  margin-left: 20px;
+
 }
+
+.container-card{
+  
+padding: 20px;
+  box-shadow: 0 2px 5px rgb(90, 87, 87);
+  transition: 0.2s ease-in-out;
+
+}
+
 
 .cards-container {
   display: flex;
@@ -143,6 +162,7 @@
   margin-bottom: 40px;
   flex-wrap: wrap;
   margin-left: 130px;
+  margin-top: 30px;
 }
 
 .stat-card {
@@ -157,7 +177,7 @@
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-7px);
 }
 
 .card-blue {
