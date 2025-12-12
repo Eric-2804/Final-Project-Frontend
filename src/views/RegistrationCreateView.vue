@@ -449,78 +449,88 @@ const selectedGroup = computed(() => {
 // Funciones de carga
 async function loadInitialData() {
   isLoading.value = true
+  console.log('🔄 Iniciando carga de datos del formulario...')
+  
+  // Verificar token
+  const token = localStorage.getItem('token')
+  console.log('🔑 Token en localStorage:', token ? `${token.substring(0, 20)}...` : 'NO HAY TOKEN')
+  
+  if (!token) {
+    showErrorNotify({ message: 'No hay sesión activa. Redirigiendo al login...' })
+    setTimeout(() => router.push('/'), 1500)
+    isLoading.value = false
+    return
+  }
+  
   try {
-    // Cargar colegios con manejo de errores
-    let schools = []
-    try {
-      const schoolsRes = await getAllColegios()
-      schools = schoolsRes.data?.data || schoolsRes.data || []
-    } catch (err) {
-      if (err.response?.status === 401) {
-        // Token expirado - no hacer nada, api.js ya loguea el error
-        schools = []
-      } else {
-        throw err // Re-lanzar otros errores
-      }
-    }
+    // Cargar colegios
+    console.log('📚 Cargando colegios...')
+    const schoolsRes = await getAllColegios()
+    const schools = schoolsRes.data?.data || schoolsRes.data || []
+    console.log('✅ Colegios recibidos:', schools.length, schools)
     
-    if (Array.isArray(schools)) {
+    if (Array.isArray(schools) && schools.length > 0) {
       schoolOptions.value = schools.map(s => ({
         label: s.name,
         value: s._id
       }))
+      console.log('✅ schoolOptions mapeados:', schoolOptions.value.length)
     } else {
+      console.warn('⚠️ No hay colegios disponibles')
       schoolOptions.value = []
     }
 
-    // Cargar usuarios (estudiantes y acudientes) con manejo de errores
-    let users = []
-    try {
-      const usersRes = await getAllUsers()
-      users = usersRes.data || []
-    } catch (err) {
-      if (err.response?.status === 401) {
-        // Token expirado - no hacer nada
-        users = []
-      } else {
-        throw err
-      }
-    }
+    // Cargar usuarios (estudiantes y acudientes)
+    console.log('👥 Cargando usuarios...')
+    const usersRes = await getAllUsers()
+    const users = usersRes.data || []
+    console.log('✅ Usuarios recibidos:', users.length)
 
-    if (Array.isArray(users)) {
+    if (Array.isArray(users) && users.length > 0) {
       // Filtrar estudiantes
-      studentOptions.value = users
-        .filter(u => u.roles && Array.isArray(u.roles) && u.roles.includes('estudiante'))
-        .map(u => ({
-          label: `${u.names || ''} ${u.lastNames || ''}`.trim(),
-          value: u._id,
-          document: u.numberDocument || 'Sin documento',
-          email: u.email || 'Sin email'
-        }))
+      const estudiantes = users.filter(u => u.roles && Array.isArray(u.roles) && u.roles.includes('estudiante'))
+      console.log('👨‍🎓 Estudiantes encontrados:', estudiantes.length)
+      
+      studentOptions.value = estudiantes.map(u => ({
+        label: `${u.names || ''} ${u.lastNames || ''}`.trim(),
+        value: u._id,
+        document: u.numberDocument || 'Sin documento',
+        email: u.email || 'Sin email'
+      }))
 
       filteredStudents.value = studentOptions.value
+      console.log('✅ studentOptions configurados:', studentOptions.value.length)
 
       // Filtrar acudientes
-      attendantOptions.value = users
-        .filter(u => u.roles && Array.isArray(u.roles) && u.roles.includes('acudiente'))
-        .map(u => ({
-          label: `${u.names || ''} ${u.lastNames || ''}`.trim(),
-          value: u._id,
-          document: u.numberDocument || 'Sin documento',
-          email: u.email || 'Sin email'
-        }))
+      const acudientes = users.filter(u => u.roles && Array.isArray(u.roles) && u.roles.includes('acudiente'))
+      console.log('👨‍👩‍👧 Acudientes encontrados:', acudientes.length)
+      
+      attendantOptions.value = acudientes.map(u => ({
+        label: `${u.names || ''} ${u.lastNames || ''}`.trim(),
+        value: u._id,
+        document: u.numberDocument || 'Sin documento',
+        email: u.email || 'Sin email'
+      }))
 
       filteredAttendants.value = attendantOptions.value
+      console.log('✅ attendantOptions configurados:', attendantOptions.value.length)
     } else {
+      console.warn('⚠️ No hay usuarios disponibles')
       studentOptions.value = []
       attendantOptions.value = []
       filteredStudents.value = []
       filteredAttendants.value = []
     }
+    
+    console.log('🎉 Carga de datos completada exitosamente')
 
   } catch (error) {
-    // NO redirigir, solo mostrar error (el interceptor ya maneja el 401)
-    console.error('Error cargando datos:', error)
+    console.error('❌ Error cargando datos del formulario:', error)
+    console.error('Detalles del error:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    })
     
     // Inicializar arrays vacíos para que el formulario no crashee
     schoolOptions.value = []
@@ -529,9 +539,12 @@ async function loadInitialData() {
     filteredStudents.value = []
     filteredAttendants.value = []
     
-    // Solo mostrar error si no es 401 (el interceptor ya lo maneja)
-    if (error.response?.status !== 401) {
-      showErrorNotify('Error al cargar los datos del formulario')
+    // Mostrar error apropiado
+    if (error.response?.status === 401) {
+      showErrorNotify({ message: 'Sesión expirada. Por favor inicia sesión nuevamente' })
+    } else {
+      const errorMsg = error.response?.data?.msg || 'Error al cargar los datos del formulario'
+      showErrorNotify({ message: errorMsg })
     }
   } finally {
     isLoading.value = false
@@ -563,7 +576,8 @@ async function onSchoolChange(schoolId) {
 
   } catch (error) {
     console.error('Error cargando sedes:', error)
-    showErrorNotify('Error al cargar las sedes')
+    const errorMsg = error.response?.data?.msg || 'Error al cargar las sedes'
+    showErrorNotify({ message: errorMsg })
   }
 }
 
@@ -595,12 +609,13 @@ async function loadGroupsByHeadquarter(headquarterId) {
     }))
 
     if (groupOptions.value.length === 0) {
-      showErrorNotify('No hay grupos disponibles para esta sede')
+      showErrorNotify({ message: 'No hay grupos disponibles para esta sede' })
     }
 
   } catch (error) {
     console.error('Error cargando grupos:', error)
-    showErrorNotify('Error al cargar los grupos')
+    const errorMsg = error.response?.data?.msg || 'Error al cargar los grupos'
+    showErrorNotify({ message: errorMsg })
   }
 }
 
@@ -634,14 +649,14 @@ function filterAttendants(val, update) {
 
 function addAttendant() {
   if (!newAttendant.value.id || !newAttendant.value.relationship) {
-    showErrorNotify('Seleccione un acudiente y el parentesco')
+    showErrorNotify({ message: 'Seleccione un acudiente y el parentesco' })
     return
   }
 
   // Verificar que no esté ya agregado
   const exists = form.value.attendant.some(a => a._id === newAttendant.value.id)
   if (exists) {
-    showErrorNotify('Este acudiente ya fue agregado')
+    showErrorNotify({ message: 'Este acudiente ya fue agregado' })
     return
   }
 
@@ -656,12 +671,12 @@ function addAttendant() {
     relationship: null
   }
 
-  showNotify('Acudiente agregado correctamente')
+  showNotify({ message: 'Acudiente agregado correctamente' })
 }
 
 function removeAttendant(index) {
   form.value.attendant.splice(index, 1)
-  showNotify('Acudiente eliminado')
+  showNotify({ message: 'Acudiente eliminado' })
 }
 
 function getAttendantName(attendantId) {
@@ -672,7 +687,7 @@ function getAttendantName(attendantId) {
 async function submitForm() {
   // Validar que haya al menos un acudiente
   if (form.value.attendant.length === 0) {
-    showErrorNotify('Debe agregar al menos un acudiente')
+    showErrorNotify({ message: 'Debe agregar al menos un acudiente' })
     return
   }
 
@@ -691,7 +706,7 @@ async function submitForm() {
 
     await registrationService.create(data)
     
-    showNotify('Matrícula creada exitosamente')
+    showNotify({ message: 'Matrícula creada exitosamente' })
     
     // Redirigir a la lista después de 1 segundo
     setTimeout(() => {
@@ -701,7 +716,7 @@ async function submitForm() {
   } catch (error) {
     console.error('Error creando matrícula:', error)
     const errorMsg = error.response?.data?.msg || 'Error al crear la matrícula'
-    showErrorNotify(errorMsg)
+    showErrorNotify({ message: errorMsg })
   } finally {
     isSaving.value = false
   }

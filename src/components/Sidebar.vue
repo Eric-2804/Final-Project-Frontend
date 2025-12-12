@@ -54,8 +54,7 @@ const linksByRole = {
   secretaria: [
     { title: 'Dashboard', icon: 'dashboard', link: '/secretaria/dashboard' },
     { title: 'Sedes', icon: 'business', link: '/secretaria/headquarters' },
-    { title: 'Matrículas', icon: 'assignment', link: '/secretaria/enrollments' },
-    { title: 'Gestión Matrículas', icon: 'app_registration', link: '/secretaria/registrations' },
+    { title: 'Matrículas', icon: 'app_registration', link: '/secretaria/registrations' },
     { title: 'Gestión Académica', icon: 'work', link: '/secretaria/academicManagement' },
     { title: 'Profesores', icon: 'school', link: '/secretary/teacher' },
     { title: 'Grupos', icon: 'group', link: '/secretary/group' },

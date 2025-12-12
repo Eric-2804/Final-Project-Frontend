@@ -19,6 +19,8 @@ import Notifications from '../views/notifications.vue'
 import Groups from '../views/groups.vue'
 import RegistrationListView from '../views/RegistrationListView.vue'
 import RegistrationCreateView from '../views/RegistrationCreateView.vue'
+import RegistrationDetailView from '../views/RegistrationDetailView.vue'
+import RegistrationEditView from '../views/RegistrationEditView.vue'
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
@@ -40,6 +42,8 @@ const routes = [
       { path: 'secretaria/calificacion', name: "Gestion_Calificaciones", component: CalificacionView },
       { path: 'secretaria/registrations', name: "Gestion_Matriculas", component: RegistrationListView},
       { path: 'secretaria/registrations/create', name: "Crear_Matricula", component: RegistrationCreateView},
+      { path: 'secretaria/registrations/:id', name: "Detalles_Matrícula", component: RegistrationDetailView},
+      { path: 'secretaria/registrations/:id/edit', name: "Editar_Matricula", component: RegistrationEditView},
       { path: 'secretaria/periodo', name: "Gestion_Periodos", component: PeriodoView},
       { path: 'secretaria/profile', name: "Perfil", component: Profile},
       { path: 'secretaria/register', name: "Registro", component: Register},

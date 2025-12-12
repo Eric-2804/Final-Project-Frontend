@@ -9,7 +9,10 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
 
   if (token) {
-    config.headers['x-token'] = token; 
+    config.headers['x-token'] = token;
+    console.log('🔑 Token enviado en header x-token:', token.substring(0, 30) + '...');
+  } else {
+    console.warn('⚠️ No hay token para enviar');
   }
 
   return config;

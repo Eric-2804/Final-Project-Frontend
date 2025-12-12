@@ -371,16 +371,17 @@ async function loadRegistrations() {
     registrations.value = data
     
     if (data.length > 0) {
-      showNotify(`${data.length} matrículas cargadas correctamente`)
+      showNotify({ message: `${data.length} matrículas cargadas correctamente` })
     }
   } catch (error) {
     if (error.response?.status === 401) {
-      showErrorNotify('Sesión expirada. Por favor inicia sesión nuevamente')
+      showErrorNotify({ message: 'Sesión expirada. Por favor inicia sesión nuevamente' })
       localStorage.removeItem('token')
       setTimeout(() => router.push('/'), 1000)
     } else {
       console.error('Error cargando matrículas:', error)
-      showErrorNotify('Error al cargar las matrículas')
+      const errorMsg = error.response?.data?.msg || 'Error al cargar las matrículas'
+      showErrorNotify({ message: errorMsg })
     }
     registrations.value = []
   } finally {
@@ -406,9 +407,7 @@ function viewDetails(row) {
 }
 
 function editRegistration(row) {
-  // TODO: Implementar cuando se cree la vista de edición
-  showNotify('Función de edición próximamente')
-  // router.push({ name: 'Editar_Matricula', params: { id: row._id } })
+  router.push({ name: 'Editar_Matricula', params: { id: row._id } })
 }
 
 function goToCreate() {
@@ -437,14 +436,15 @@ async function changeState(row, newState) {
         throw new Error('Estado no válido')
     }
 
-    showNotify(`Estado cambiado a ${newState}`)
+    showNotify({ message: `Estado cambiado a ${newState}` })
     
     // Recargar las matrículas
     await loadRegistrations()
     
   } catch (error) {
     console.error('Error cambiando estado:', error)
-    showErrorNotify('Error al cambiar el estado de la matrícula')
+    const errorMsg = error.response?.data?.msg || 'Error al cambiar el estado de la matrícula'
+    showErrorNotify({ message: errorMsg })
   } finally {
     isLoading.value = false
   }
