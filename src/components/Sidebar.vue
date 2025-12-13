@@ -60,10 +60,10 @@ const linksByRole = {
     { title: 'Grupos', icon: 'group', link: '/secretary/group' },
     { title: 'Áreas y Materias', icon: 'class', link: '/management/materia-area' },
     { title: 'Periodos', icon: 'event', link: '/secretaria/periodo' },
+    { title: 'Usuarios', icon: 'people', link: '/secretaria/users' },
     // Comentadas temporalmente: rutas no implementadas aún
     // { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
     // { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
-    // { title: 'Usuarios', icon: 'people', link: '/management/usuarios-colegio' },
     // {
     //   title: 'Configuraciones',
     //   icon: 'settings',

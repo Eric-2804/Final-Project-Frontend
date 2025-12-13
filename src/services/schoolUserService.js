@@ -1,26 +1,45 @@
 import { postData, getData, putData, deleteData } from './httpService';
 import { API_ENDPOINTS } from './apiEndpoints';
 
+const { USERS } = API_ENDPOINTS;
+
 export const createUser = (userData) => {
-  return postData(API_ENDPOINTS.USERS.BASE, userData);
+  // Usar el endpoint correcto según la especificación: POST /api/users/register
+  return postData('/api/users/register', userData);
 };
 
 export const getAllUsers = () => {
-  return getData(API_ENDPOINTS.USERS.BASE);
+  return getData(USERS.BASE || '/api/users');
 };
 
 export const getUsersByRol = (rol) => {
-  return getData(API_ENDPOINTS.USERS.GET_BY_ROL(rol));
+  return getData(USERS.GET_BY_ROL(rol));
+};
+
+export const getUsersByRole = (rol) => {
+  return getData(USERS.GET_BY_ROL(rol));
 };
 
 export const getUserById = (id) => {
-  return getData(`${API_ENDPOINTS.USUARIOS_COLEGIO.BASE}/${id}`);
+  return getData(USERS.GET_BY_ID(id));
 };
 
 export const updateUser = (id, userData) => {
-  return putData(`${API_ENDPOINTS.USUARIOS_COLEGIO.UPDATE}/${id}`, userData);
+  return putData(USERS.UPDATE(id), userData);
+};
+
+export const activateUser = (id) => {
+  // Según la documentación del backend: POST /api/users/:id/activate
+  // No requiere body
+  return postData(USERS.ACTIVATE(id), {});
+};
+
+export const deactivateUser = (id) => {
+  // Según la documentación del backend: POST /api/users/:id/deactivate
+  // No requiere body
+  return postData(USERS.DESACTIVATE(id), {});
 };
 
 export const deleteUser = (id) => {
-  return deleteData(`${API_ENDPOINTS.USUARIOS_COLEGIO.DELETE}/${id}`);
+  return deleteData(USERS.DELETE(id));
 };

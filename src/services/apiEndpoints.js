@@ -207,7 +207,7 @@ export const API_ENDPOINTS = {
     UPDATE_PASSWORD: `/api/users/update-password`,
   
     ACTIVATE: (id) => `/api/users/${id}/activate`,
-    DESACTIVATE: (id) => `/api/users/${id}/desactivate`,
+    DESACTIVATE: (id) => `/api/users/${id}/deactivate`,
     
     UPDATE: (id) => `/api/users/${id}`,
     DELETE: (id) => `/api/users/${id}`,
