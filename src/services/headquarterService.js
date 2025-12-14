@@ -15,6 +15,9 @@ export const getSedesByColegio = (colegioId) => {
   return getData(HEADQUARTERS.BASE + HEADQUARTERS.BY_COLEGIO(colegioId));
 };
 
+// Alias para compatibilidad
+export const getHeadquartersBySchool = getSedesByColegio;
+
 export const createSede = (data) => {
   return postData(HEADQUARTERS.BASE + HEADQUARTERS.CREATE, data);
 };

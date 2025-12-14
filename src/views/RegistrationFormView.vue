@@ -41,7 +41,7 @@
             </div>
 
             <div class="text-right q-mt-lg">
-              <q-btn label="Registrar Matrícula" color="primary" icon="save" type="submit" />
+              <q-btn :loading="loading" label="Registrar Matrícula" color="primary" icon="save" type="submit" />
             </div>
 
           </q-form>
@@ -53,10 +53,16 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useNotify } from '../composables/useNotify'
+import registrationService from '../services/registrationService.js'
+import { useAuthStore } from '../stores/auth.js'
 
+const router = useRouter()
 const { showNotify, showErrorNotify } = useNotify()
+const auth = useAuthStore()
 
+const loading = ref(false)
 const form = ref({
   nombre: '',
   identificacion: '',
@@ -86,18 +92,32 @@ const grados = [
   'Undécimo'
 ]
 
-function submitForm() {
+async function submitForm() {
   if (!form.value.nombre || !form.value.identificacion || !form.value.grado) {
     showErrorNotify('Por favor completa los campos obligatorios')
     return
   }
 
-  showNotify('Matrícula registrada correctamente')
-  console.log('Datos enviados:', form.value)
-
-  // Reiniciar formulario
-  Object.keys(form.value).forEach(k => form.value[k] = '')
-  form.value.año = new Date().getFullYear()
+  loading.value = true
+  try {
+    await registrationService.create(form.value)
+    showNotify('Matrícula registrada correctamente')
+    
+    // Reiniciar formulario
+    Object.keys(form.value).forEach(k => form.value[k] = '')
+    form.value.año = new Date().getFullYear()
+    
+    // Redirigir a la lista de matrículas después de 1 segundo
+    setTimeout(() => {
+      router.push({ name: 'Mis_Matrícula' })
+    }, 1000)
+  } catch (error) {
+    console.error('Error al crear matrícula:', error)
+    const msg = error?.response?.data?.msg || error?.response?.data?.error || 'Error al registrar la matrícula'
+    showErrorNotify(msg)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
