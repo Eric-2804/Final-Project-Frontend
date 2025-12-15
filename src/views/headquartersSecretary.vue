@@ -175,19 +175,16 @@ const schoolOptions = ref([])
 const filter = ref(""); 
 
 const fetchSchools = async () => {
-  // Si la secretaria ya tiene colegio asignado, no se listan colegios
-  if (authStore.user?.college?._id) return
-
   try {
-    const response = await api.get("/api/schools")
-    const items = Array.isArray(response.data) ? response.data : []
+    const response = await getAllColegios();
+    const items = Array.isArray(response.data) ? response.data : (response.data?.schools || []);
     schoolOptions.value = items.map(s => ({
       label: s.name,
       value: s._id
-    }))
+    }));
   } catch (err) {
-    // ⚠️ Esto NO es un error crítico
-    console.warn('No se pudieron cargar colegios (usuario sin permisos)')
+    console.error('Error al cargar colegios:', err);
+    error('No se pudieron cargar los colegios. Es posible que no tenga permisos.');
   }
 }
 
@@ -322,6 +319,6 @@ onMounted(() => {
 </script>
 <style scoped>
 .actionButtonContainer {
-  margin-left: 800px;
+  margin-left: 960px;
 }
 </style>

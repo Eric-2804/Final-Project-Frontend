@@ -105,7 +105,7 @@ const processedRows = computed(() => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-  width: 90%;
+  width: 95%;
   max-width: 1200px;
 }
 

@@ -10,7 +10,7 @@ api.interceptors.request.use((config) => {
 
   if (token) {
     config.headers['x-token'] = token;
-    console.log('🔑 Token enviado en header x-token:', token.substring(0, 30) + '...');
+    console.log('🔑 Token enviado en header x-token:');
   } else {
     console.warn('⚠️ No hay token para enviar');
   }

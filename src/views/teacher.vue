@@ -7,7 +7,9 @@
     </div>
 
     <div v-else>
-      <div class="text-h4 text-bold q-mb-lg title">Gestión de Profesores</div>
+      <div class="container-card">
+      <div class="text-h4 title">Bienvenido a gestión de Profesores</div>
+      </div>
 
       <div class="cards-container">
         <q-card class="stat-card card-blue">
@@ -25,6 +27,12 @@
           <div class="value">{{ inactiveTeachers }}</div>
         </q-card>
       </div>
+
+
+
+<div class="container-card">
+
+      <div class="text-h4 text-bold q-mb-lg title">Listado de profesores</div>
 
       <!-- TABLA -->
       <TableComponent
@@ -44,6 +52,7 @@
           </q-chip>
         </template>
       </TableComponent>
+    </div>
     </div>
   </div>
 </template>
@@ -68,33 +77,31 @@
   ];
   
   const activeTeachers = computed(() =>
-    teachers.value.filter(t => t.isActive).length
+    teachers.value.filter((t) => t.isActive === true).length
   );
   
   const inactiveTeachers = computed(() =>
-    teachers.value.filter(t => !t.isActive).length
+    teachers.value.filter((t) => t.isActive === false).length
   );
   
   const loadTeachers = async () => {
     try {
       const res = await getUsersByRol("profesor");
   
-      
       const data =
-        res?.users ||      
-        res?.data?.users || 
-        res?.data ||        
-        res || [];         
+        res?.users ||
+        res?.data?.users ||
+        res?.data ||
+        res ||
+        [];
   
       if (!Array.isArray(data)) {
-        throw new Error("Respuesta del servidor inválida");
+        throw new Error("El servidor no devolvió una lista válida");
       }
   
       teachers.value = data;
   
-      showNotify({
-        message: "Profesores cargados correctamente"
-      });
+      showNotify({ message: "Profesores cargados correctamente" });
   
     } catch (err) {
       console.error("Error cargando profesores:", err);
@@ -103,10 +110,10 @@
         message:
           err.response?.data?.msg ||
           err.message ||
-          "Error cargando profesores. El backend puede estar dormido."
+          "No se pudieron cargar los profesores."
       });
   
-      teachers.value = []; 
+      teachers.value = [];
     } finally {
       loading.value = false;
     }
@@ -114,6 +121,7 @@
   
   onMounted(loadTeachers);
   </script>
+  
   
 
 <style scoped>
@@ -133,9 +141,19 @@
 
 .title {
   text-align: left;
-  margin-bottom: 30px;
-  margin-left: 30px;
+  font-weight: bold;  
+  margin-left: 20px;
+
 }
+
+.container-card{
+  
+padding: 20px;
+  box-shadow: 0 2px 5px rgb(90, 87, 87);
+  transition: 0.2s ease-in-out;
+
+}
+
 
 .cards-container {
   display: flex;
@@ -144,6 +162,7 @@
   margin-bottom: 40px;
   flex-wrap: wrap;
   margin-left: 130px;
+  margin-top: 30px;
 }
 
 .stat-card {
@@ -158,7 +177,7 @@
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-7px);
 }
 
 .card-blue {

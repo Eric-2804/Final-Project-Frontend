@@ -21,6 +21,7 @@ import RegistrationListView from '../views/RegistrationListView.vue'
 import RegistrationCreateView from '../views/RegistrationCreateView.vue'
 import RegistrationDetailView from '../views/RegistrationDetailView.vue'
 import RegistrationEditView from '../views/RegistrationEditView.vue'
+import UsersView from '../views/UsersView.vue'
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
@@ -34,15 +35,8 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      {
-        path: '/configuracion/sistema',
-        name: 'SystemConfiguration',
-        component: () => import('../views/systemConfiguration.vue'),
-        meta: { requiresAuth: true, roles: ['secretaria'] }
-      },
-
-
-      // secretaria
+      
+      { path: 'secretaria/teacher', name : 'Gestion de profesores', component: teacher },
       { path: 'secretaria/dashboard', name: 'SecretariaDashboard', component: DashboardSecretaria },
       { path: 'secretaria/headquarters', name: 'sedes_Secretaria', component: SedesSecretaria },
       { path: 'secretaria/academicManagement', name: "Gestion_Academica", component: AcademicManagementView },
@@ -56,7 +50,8 @@ const routes = [
       { path: 'secretaria/register', name: "Registro", component: Register},
       { path: 'management/materia-area', name: "Gestion_Materias_Areas", component: SubjectView},
       { path: 'secretaria/notifications', name: "Notificaciones", component: Notifications},
-      { path: 'secretary/group', name: 'Groups', component: Groups}
+      { path: 'secretary/group', name: 'Groups', component: Groups},
+      { path: 'secretaria/users', name: "Gestion_Usuarios", component: UsersView}
     ]
   }
 ]

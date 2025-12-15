@@ -198,20 +198,23 @@ export const API_ENDPOINTS = {
     DEACTIVATE: (id) => `/${id}/deactivate`,
   },
 
- USERS: {
+ 
+  USERS: {
     GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
     GET_BY_ID: (id) => `/api/users/${id}`,
+  
+    CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
+    UPDATE_PASSWORD: `/api/users/update-password`,
+  
+    ACTIVATE: (id) => `/api/users/${id}/activate`,
+    DESACTIVATE: (id) => `/api/users/${id}/deactivate`,
+    
     UPDATE: (id) => `/api/users/${id}`,
     DELETE: (id) => `/api/users/${id}`,
-    ACTIVATE: (id) => `/api/users/activate/${id}`,
-    DESACTIVATE: (id) => `/api/users/desactivate/${id}`,
-    CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
-    UPDATE_PASSWORD: "/api/users/update-password",
-    REFRESH_TOKEN: "/api/users/refresh-token",
-  },
+  
+    REFRESH_TOKEN: `/api/users/refresh-token`
+  }
+  
 
-  COLEGIOS: {
-    BASE: '/api/schools',
-    BY_DIRECCION_NUCLEO: (id) => `/direcciones-nucleo/${id}/colegios`,
-  },
+  
 };
