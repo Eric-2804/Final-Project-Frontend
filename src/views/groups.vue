@@ -112,13 +112,13 @@ watch(groups, (newGroups) => {
 
 async function fetchDirectors() {
   try {
-    const response = await getUsersByRole("profesor") 
+    const response = await getUsersByRole("profesor")
 
     const users =
       Array.isArray(response?.users) ? response.users :
-      Array.isArray(response?.data?.users) ? response.data.users :
-      Array.isArray(response?.data) ? response.data :
-      Array.isArray(response) ? response : []
+        Array.isArray(response?.data?.users) ? response.data.users :
+          Array.isArray(response?.data) ? response.data :
+            Array.isArray(response) ? response : []
 
     directors.value = users
 
@@ -164,22 +164,37 @@ function openEditModal(row) {
 async function handleSubmit() {
   loading.value = true
   try {
-    formData.year = currentYear
+    const payload = {
+      headquarters: formData.headquarters,
+      year: currentYear,
+      cycle: formData.cycle,
+      level: formData.level,
+      grade: formData.grade,
+      groupIdentifier: formData.groupIdentifier,
+      session: formData.session,
+      groupDirector: formData.groupDirector
+    }
+
+    console.log('📤 Payload enviado:', payload)
+
     if (modalMode.value === 'create') {
-      await createGroup(formData.headquarters, formData)
+      await createGroup(formData.headquarters, payload)
       showNotify('Grupo creado exitosamente')
     } else {
-      await updateGroup(formData._id, formData)
+      await updateGroup(formData._id, payload)
       showNotify('Grupo actualizado')
     }
+
     await fetchGroups()
   } catch (e) {
+    console.error(e)
     showErrorNotify('Error guardando grupo')
   } finally {
     loading.value = false
     isModalOpen.value = false
   }
 }
+
 
 async function toggleState(row) {
   loading.value = true
