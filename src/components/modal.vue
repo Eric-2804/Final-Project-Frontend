@@ -17,45 +17,85 @@
 
             <!-- SEDE -->
             <div class="col-12">
-              <q-select v-model="localForm.headquarters" :options="headquarters" option-value="_id" option-label="name"
-                emit-value map-options label="Sede" outlined :rules="[val => !!val || 'La sede es obligatoria']" />
+              <q-select
+                v-model="localForm.headquarters"
+                :options="headquarters"
+                option-value="_id"
+                option-label="name"
+                emit-value map-options
+                label="Sede"
+                outlined
+                :rules="[val => !!val || 'La sede es obligatoria']"
+              />
             </div>
 
             <!-- CICLO -->
             <div class="col-12 col-md-6">
-              <q-input v-model="localForm.cycle" label="Ciclo" outlined
-                :rules="[val => !!val || 'El ciclo es obligatorio']" />
+              <q-select
+                v-model="localForm.cycle"
+                :options="cycleOptions"
+                label="Ciclo"
+                outlined
+                :rules="[val => !!val || 'El ciclo es obligatorio']"
+              />
             </div>
 
             <!-- NIVEL -->
             <div class="col-12 col-md-6">
-              <q-input v-model="localForm.level" label="Nivel" outlined
-                :rules="[val => !!val || 'El nivel es obligatorio']" />
+              <q-select
+                v-model="localForm.level"
+                :options="levelOptions"
+                label="Nivel"
+                outlined
+                @update:model-value="localForm.grade = ''"
+                :rules="[val => !!val || 'El nivel es obligatorio']"
+              />
             </div>
 
             <!-- GRADO -->
             <div class="col-12 col-md-6">
-              <q-input v-model="localForm.grade" label="Grado" outlined
-                :rules="[val => !!val || 'El grado es obligatorio']" />
+              <q-select
+                v-model="localForm.grade"
+                :options="gradeOptions"
+                label="Grado"
+                outlined
+                :disable="!localForm.level"
+                :rules="[val => !!val || 'El grado es obligatorio']"
+              />
             </div>
 
             <!-- IDENTIFICADOR -->
             <div class="col-12 col-md-6">
-              <q-input v-model="localForm.groupIdentifier" label="Identificador" outlined
-                :rules="[val => !!val || 'El identificador es obligatorio']" />
+              <q-select
+                v-model="localForm.groupIdentifier"
+                :options="identifierOptions"
+                label="Identificador"
+                outlined
+                :rules="[val => !!val || 'El identificador es obligatorio']"
+              />
             </div>
 
             <!-- JORNADA -->
             <div class="col-12 col-md-6">
-              <q-input v-model="localForm.session" label="Jornada" outlined
-                :rules="[val => !!val || 'La jornada es obligatoria']" />
+              <q-select
+                v-model="localForm.session"
+                :options="sessionOptions"
+                label="Jornada"
+                outlined
+                :rules="[val => !!val || 'La jornada es obligatoria']"
+              />
             </div>
 
             <!-- DIRECTOR (SOLO INSTRUCTORES) -->
             <div class="col-12 col-md-6">
-              <q-select v-model="localForm.groupDirector" :options="directorsFormatted" emit-value map-options
-                label="Director del grupo" outlined :rules="[val => !!val || 'El director es obligatorio']" />
-
+              <q-select
+                v-model="localForm.groupDirector"
+                :options="directorsFormatted"
+                emit-value map-options
+                label="Director del grupo"
+                outlined
+                :rules="[val => !!val || 'El director es obligatorio']"
+              />
             </div>
 
           </div>
@@ -115,13 +155,30 @@ const localForm = reactive({
   groupDirector: ''
 })
 
-/* ✅ DIRECTORES FORMATEADOS (SIN FILTRO ERRÓNEO) */
+/* OPCIONES FIJAS */
+const cycleOptions = ['normal', 'semestral']
+const levelOptions = ['PRIMARIA', 'SECUNDARIA']
+const sessionOptions = ['MAÑANA', 'TARDE', 'NOCHE']
+const identifierOptions = ['A', 'B', 'C', 'D', 'E']
+
+/* GRADOS DINÁMICOS SEGÚN NIVEL */
+const gradeOptions = computed(() => {
+  if (localForm.level === 'PRIMARIA') {
+    return ['1°', '2°', '3°', '4°', '5°']
+  }
+  if (localForm.level === 'SECUNDARIA') {
+    return ['6°', '7°', '8°', '9°', '10°', '11°']
+  }
+  return []
+})
+
+/* DIRECTORES FORMATEADOS (SIN FILTRO ERRÓNEO) */
 const directorsFormatted = computed(() =>
   Array.isArray(props.directors)
     ? props.directors.map(user => ({
-      value: user._id,
-      label: `${user.names} ${user.lastNames}`
-    }))
+        value: user._id,
+        label: `${user.names} ${user.lastNames}`
+      }))
     : []
 )
 
