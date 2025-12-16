@@ -362,7 +362,7 @@ import { useAuthStore } from '@/stores/auth'
 import registrationService from '@/services/registrationService'
 import { getUsersByRole, getUserById } from '@/services/schoolUserService'
 import { getAllGroupByYear } from '@/services/groupsService'
-import { getHeadquartersBySchool } from '@/services/headquarterService'
+import { getSedesByColegio } from '@/services/headquarterService'
 import * as colegiosService from '@/services/colegiosService'
 
 const router = useRouter()
@@ -564,7 +564,7 @@ async function onSchoolChange(schoolId) {
   
   try {
     // Cargar sedes del colegio
-    const headquartersRes = await getHeadquartersBySchool(schoolId)
+    const headquartersRes = await getSedesByColegio(schoolId)
     
     const headquarters = headquartersRes.data?.data || headquartersRes.data || []
     

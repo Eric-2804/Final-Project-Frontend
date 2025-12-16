@@ -19,7 +19,7 @@ export const getAllUsers = () => {
 };
 
 // Obtener usuarios por rol
-export const getUsersByRol = (rol) => {
+export const getUsersByRole = (rol) => {
   return getData(
     `${USUARIOS_COLEGIO.BASE}${USUARIOS_COLEGIO.GET_BY_ROL(rol)}`
   );
