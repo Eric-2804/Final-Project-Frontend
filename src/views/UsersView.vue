@@ -92,15 +92,6 @@
                 </q-td>
               </template>
 
-              <template v-slot:body-cell-assignment="props">
-                <q-td :props="props">
-                  <div v-if="props.value">
-                    <q-icon name="location_on" size="xs" class="q-mr-xs" />
-                    {{ props.value }}
-                  </div>
-                  <span v-else class="text-grey-6">—</span>
-                </q-td>
-              </template>
 
               <template v-slot:body-cell-active="props">
                 <q-td :props="props">
@@ -285,9 +276,10 @@
                             :disable="isEditMode"
                             :rules="[
                               val => !!val || 'Campo requerido',
-                              val => !val || /^\d+$/.test(val) || 'Solo números'
+                              val => !val || /^\d+$/.test(val) || 'Solo números',
+                              val => !val || val.length >= 10 || 'Mínimo 10 números'
                             ]"
-                            hint="No se puede cambiar al editar"
+                            hint="Mínimo 10 números. No se puede cambiar al editar"
                           />
                         </div>
 
@@ -418,7 +410,7 @@
                                 <q-item-section>
                                   <q-item-label>{{ scope.opt.label }}</q-item-label>
                                   <q-item-label caption>
-                                    {{ scope.opt.needsHeadquarters ? 'Nivel Sede' : 'Nivel Colegio' }}
+                                    Nivel Colegio
                                   </q-item-label>
                                 </q-item-section>
                               </q-item>
@@ -434,15 +426,16 @@
 
                     <q-separator class="q-my-md" />
 
-                    <!-- Sección: Información Administrativa -->
-                    <div class="q-mb-md">
+                    <!-- Sección: Información Administrativa - Solo para roles que lo requieren -->
+                    <div class="q-mb-md" v-if="needsCollege">
                       <div class="text-subtitle2 text-primary q-mb-sm">
                         <q-icon name="business" class="q-mr-xs" />
-                        Información Administrativa
+                        Información Institucional
                       </div>
                       <div class="row q-col-gutter-md">
                         <div class="col-12">
                           <q-select
+                            v-if="collegeOptions.length > 0"
                             v-model="formData.college"
                             :options="collegeOptions"
                             label="Colegio *"
@@ -450,48 +443,63 @@
                             dense
                             emit-value
                             map-options
-                            :rules="[val => !!val || 'Campo requerido']"
+                            :rules="needsCollege ? [val => !!val || 'Campo requerido'] : []"
                             @update:model-value="onCollegeChange"
                             :loading="loadingColleges"
                             :disable="isEditMode"
-                            hint="No se puede cambiar al editar"
+                            :hint="isEditMode ? 'No se puede cambiar al editar' : ''"
+                            use-input
+                            input-debounce="0"
+                            @filter="filterColleges"
+                            :options-filter="(options, searchTerm) => options.filter(opt => opt.label.toLowerCase().includes(searchTerm.toLowerCase()) || opt.value.toString().includes(searchTerm))"
                             clearable
                           >
                             <template v-slot:no-option>
                               <q-item>
                                 <q-item-section class="text-grey">
-                                  {{ loadingColleges ? 'Cargando colegios...' : 'No hay colegios disponibles' }}
+                                  No se encontraron coincidencias
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                            <template v-slot:option="scope">
+                              <q-item v-bind="scope.itemProps">
+                                <q-item-section>
+                                  <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                  <q-item-label caption>ID: {{ scope.opt.value }}</q-item-label>
                                 </q-item-section>
                               </q-item>
                             </template>
                           </q-select>
-                        </div>
-
-                        <!-- Selector de Sede - Solo para coordinador y secretaria -->
-                        <div class="col-12" v-if="needsHeadquarters">
-                          <q-select
-                            v-model="formData.headquarters"
-                            :options="headquartersOptions"
-                            label="Sede *"
+                          
+                          <q-input
+                            v-else
+                            v-model="formData.college"
+                            label="ID del Colegio *"
                             outlined
                             dense
-                            emit-value
-                            map-options
-                            :rules="[val => !!val || 'Campo requerido']"
-                            :disable="!formData.college || isEditMode"
-                            :loading="loadingHeadquarters"
-                            :hint="!formData.college ? 'Seleccione primero un colegio' : (isEditMode ? 'No se puede cambiar la sede al editar' : '')"
-                            clearable
+                            :rules="needsCollege ? [
+                              val => !!val || 'Campo requerido',
+                              val => /^[0-9a-fA-F]{24}$/.test(val) || 'Debe ser un ID válido (24 caracteres hexadecimales)'
+                            ] : []"
+                            :loading="loadingColleges"
+                            :disable="isEditMode"
+                            :hint="isEditMode ? 'No se puede cambiar al editar' : 'Ingrese el ID del colegio'"
+                            placeholder="Ejemplo: 507f1f77bcf86cd799439011"
                           >
-                            <template v-slot:no-option>
-                              <q-item>
-                                <q-item-section class="text-grey">
-                                  {{ loadingHeadquarters ? 'Cargando sedes...' : (!formData.college ? 'Seleccione un colegio primero' : 'No hay sedes disponibles para este colegio') }}
-                                </q-item-section>
-                              </q-item>
+                            <template v-slot:prepend>
+                              <q-icon name="school" />
                             </template>
-                          </q-select>
+                            <template v-slot:append v-if="loadingColleges">
+                              <q-spinner size="20px" />
+                            </template>
+                          </q-input>
+                          
+                          <div v-if="collegeOptions.length === 0 && !loadingColleges" class="text-caption text-warning q-mt-xs q-ml-sm">
+                            <q-icon name="warning" size="xs" class="q-mr-xs" />
+                            No se pudieron cargar los colegios. Por favor, ingrese el ID del colegio manualmente.
                         </div>
+                        </div>
+
                       </div>
                     </div>
 
@@ -546,38 +554,46 @@
                       <div class="text-subtitle2 text-primary q-mb-sm">
                         <q-icon name="info" class="q-mr-xs" />
                         Información Adicional
+                        <span v-if="!requiresAdditionalInfo" class="text-caption text-grey-6 q-ml-sm">
+                          (Opcional para usuarios administrativos)
+                        </span>
                       </div>
                       <div class="row q-col-gutter-md">
                         <div class="col-12 col-md-4">
                           <q-select
                             v-model="formData.stratum"
                             :options="stratumOptions"
-                            label="Estratum *"
+                            :label="requiresAdditionalInfo ? 'Estratum *' : 'Estratum'"
                             outlined
                             dense
                             emit-value
                             map-options
-                            :rules="[val => !!val || 'Campo requerido']"
+                            :rules="requiresAdditionalInfo ? [val => !!val || 'Campo requerido'] : []"
+                            hint="Requerido para estudiantes y acudientes"
                           />
                         </div>
 
                         <div class="col-12 col-md-4">
                           <q-input 
                             v-model="formData.sisben" 
-                            label="SISBEN *" 
+                            :label="requiresAdditionalInfo ? 'SISBEN *' : 'SISBEN'"
                             outlined
                             dense
-                            :rules="[val => !!val || 'Campo requerido']"
+                            :rules="requiresAdditionalInfo ? [val => (val && val.trim() && val.trim() !== 'N/A') || 'Campo requerido'] : []"
+                            hint="Requerido para estudiantes y acudientes"
+                            @update:model-value="() => {}"
                           />
                         </div>
 
                         <div class="col-12 col-md-4">
                           <q-input 
                             v-model="formData.eps" 
-                            label="EPS *" 
+                            :label="requiresAdditionalInfo ? 'EPS *' : 'EPS'"
                             outlined
                             dense
-                            :rules="[val => !!val || 'Campo requerido']"
+                            :rules="requiresAdditionalInfo ? [val => (val && val.trim() && val.trim() !== 'N/A') || 'Campo requerido'] : []"
+                            hint="Requerido para estudiantes y acudientes"
+                            @update:model-value="() => {}"
                           />
                         </div>
 
@@ -585,19 +601,20 @@
                           <q-select
                             v-model="formData.typeBlood"
                             :options="typeBloodOptions"
-                            label="Tipo de Sangre *"
+                            :label="requiresAdditionalInfo ? 'Tipo de Sangre *' : 'Tipo de Sangre'"
                             outlined
                             dense
                             emit-value
                             map-options
-                            :rules="[val => !!val || 'Campo requerido']"
+                            :rules="requiresAdditionalInfo ? [val => !!val || 'Campo requerido'] : []"
+                            hint="Requerido para estudiantes y acudientes"
                           />
                         </div>
 
                         <div class="col-12 col-md-4">
                           <q-toggle
                             v-model="formData.victimPopulation"
-                            label="Población Víctima *"
+                            :label="requiresAdditionalInfo ? 'Población Víctima *' : 'Población Víctima'"
                             color="primary"
                             left-label
                           />
@@ -607,12 +624,13 @@
                           <q-select
                             v-model="formData.disability"
                             :options="disabilityOptions"
-                            label="Discapacidad *"
+                            :label="requiresAdditionalInfo ? 'Discapacidad *' : 'Discapacidad'"
                             outlined
                             dense
                             emit-value
                             map-options
-                            :rules="[val => !!val || 'Campo requerido']"
+                            :rules="requiresAdditionalInfo ? [val => !!val || 'Campo requerido'] : []"
+                            hint="Requerido para estudiantes y acudientes"
                           />
                         </div>
 
@@ -620,12 +638,13 @@
                           <q-select
                             v-model="formData.ethnic"
                             :options="ethnicOptions"
-                            label="Etnia *"
+                            :label="requiresAdditionalInfo ? 'Etnia *' : 'Etnia'"
                             outlined
                             dense
                             emit-value
                             map-options
-                            :rules="[val => !!val || 'Campo requerido']"
+                            :rules="requiresAdditionalInfo ? [val => !!val || 'Campo requerido'] : []"
+                            hint="Requerido para estudiantes y acudientes"
                           />
                         </div>
                       </div>
@@ -692,7 +711,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, computed, nextTick } from "vue"
 import { useAuthStore } from '../stores/auth.js';
 import Table from "../components/tables.vue"
 import { useNotify } from "../composables/useNotify.js"
@@ -705,8 +724,6 @@ import {
   deleteUser,
   createUser
 } from '../services/schoolUserService.js';
-import { getSedesByColegio, getAllSedes } from '../services/headquarterService.js';
-import { getAllColegios } from '../services/colegiosService.js';
 import { getData } from '../services/httpService.js';
 import { API_ENDPOINTS } from '../services/apiEndpoints.js';
 
@@ -779,22 +796,28 @@ const ethnicOptions = [
 ];
 
 const roleTypeOptions = [
-  { label: 'Rector', value: 'rector', roleValue: 'rector', needsHeadquarters: false, description: 'Asignado a nivel de Colegio' },
-  { label: 'Secretaria', value: 'secretaria', roleValue: 'secretaria', needsHeadquarters: true, description: 'Asignada a nivel de Sede' },
-  { label: 'Coordinador', value: 'coordinador', roleValue: 'coordinador', needsHeadquarters: true, description: 'Asignado a nivel de Sede' },
+  { label: 'Rector', value: 'rector', roleValue: 'rector', needsHeadquarters: false, needsCollege: true, description: 'Asignado a nivel de Colegio' },
+  { label: 'Secretaria', value: 'secretaria', roleValue: 'secretaria', needsHeadquarters: true, needsCollege: true, description: 'Asignada a nivel de Sede' },
+  { label: 'Coordinador', value: 'coordinador', roleValue: 'coordinador', needsHeadquarters: true, needsCollege: true, description: 'Asignado a nivel de Sede' },
+  { label: 'Profesor', value: 'profesor', roleValue: 'profesor', needsHeadquarters: false, needsCollege: true, description: 'Asignado a nivel de Colegio' },
+  { label: 'Estudiante', value: 'estudiante', roleValue: 'estudiante', needsHeadquarters: false, needsCollege: true, description: 'Asignado a nivel de Colegio' },
+  { label: 'Acudiente', value: 'acudiente', roleValue: 'acudiente', needsHeadquarters: false, needsCollege: false, description: 'No requiere asignación institucional' },
 ];
 
 // Variable para mantener el objeto completo del tipo seleccionado
 const selectedRoleTypeValue = ref(null);
 
-// Roles permitidos
-const allowedRoles = ['secretaria', 'coordinador', 'rector'];
+// Roles permitidos - todos los roles del sistema
+const allowedRoles = ['secretaria', 'coordinador', 'rector', 'profesor', 'estudiante', 'acudiente'];
 
 // Opciones de roles para el filtro
 const roleOptions = [
   { label: 'Secretaria', value: 'secretaria' },
   { label: 'Coordinador', value: 'coordinador' },
   { label: 'Rector', value: 'rector' },
+  { label: 'Profesor', value: 'profesor' },
+  { label: 'Estudiante', value: 'estudiante' },
+  { label: 'Acudiente', value: 'acudiente' },
 ];
 
 // Datos del formulario
@@ -809,7 +832,6 @@ const formData = ref({
   dateBorn: '',
   gender: 'M',
   college: '',
-  headquarters: '',
   roles: ['rector'],
   password: '',
   confirmPassword: '',
@@ -826,9 +848,7 @@ const formData = ref({
 });
 
 const collegeOptions = ref([])
-const headquartersOptions = ref([])
 const loadingColleges = ref(false)
-const loadingHeadquarters = ref(false)
 const selectedRoleType = ref(null)
 const previewPhoto = ref(false)
 
@@ -837,9 +857,32 @@ const userRole = computed(() => authStore.user?.rol)
 const canCreate = computed(() => userRole.value === 'secretaria')
 const canEdit = computed(() => userRole.value === 'secretaria')
 
-// Determinar si necesita selector de sede
-const needsHeadquarters = computed(() => {
-  return selectedRoleType.value?.needsHeadquarters || false;
+// Obtener el colegio del usuario actual si está disponible
+const currentUserCollege = computed(() => {
+  const user = authStore.user;
+  if (user?.college) {
+    if (typeof user.college === 'string') {
+      return user.college;
+    } else if (user.college?._id) {
+      return user.college._id;
+    } else if (user.college?.id) {
+      return user.college.id;
+    }
+  }
+  return null;
+});
+
+
+// Determinar si necesita selector de colegio
+const needsCollege = computed(() => {
+  return selectedRoleType.value?.needsCollege !== false; // Por defecto true, excepto para acudiente
+});
+
+// Determinar si los campos de información adicional son requeridos según el rol
+const requiresAdditionalInfo = computed(() => {
+  const role = selectedRoleType.value?.roleValue || formData.value.roles?.[0];
+  const adminRoles = ['rector', 'secretaria', 'coordinador', 'profesor'];
+  return !adminRoles.includes(role);
 });
 
 // Funciones helper para roles
@@ -848,6 +891,9 @@ const getRoleLabel = (rol) => {
     secretaria: 'Secretaria',
     coordinador: 'Coordinador',
     rector: 'Rector',
+    profesor: 'Profesor',
+    estudiante: 'Estudiante',
+    acudiente: 'Acudiente',
   };
   return roleMap[rol] || rol;
 };
@@ -857,6 +903,9 @@ const getRoleIcon = (rol) => {
     secretaria: 'admin_panel_settings',
     coordinador: 'supervisor_account',
     rector: 'school',
+    profesor: 'person_outline',
+    estudiante: 'school',
+    acudiente: 'family_restroom',
   };
   return iconMap[rol] || 'person';
 };
@@ -866,163 +915,210 @@ const getRoleColor = (rol) => {
     secretaria: 'purple',
     coordinador: 'blue',
     rector: 'indigo',
+    profesor: 'teal',
+    estudiante: 'green',
+    acudiente: 'orange',
   };
   return colorMap[rol] || 'grey';
 };
 
-// Obtener texto de asignación para la tabla
-const getAssignmentText = (user) => {
-  const role = user.rol || user.roles?.[0];
+
+
+// Helper para extraer ID y nombre de colegio
+const extractCollegeInfo = (college) => {
+  if (!college) return { id: null, name: 'Colegio' };
   
-  if (role === 'rector') {
-    const collegeName = user.collegeInfo?.name || user.college?.nameSchool || user.college?.name || user.college?.nombre;
-    return collegeName ? `Colegio: ${collegeName}` : 'N/A';
-  }
+  const id = typeof college === 'string' 
+    ? college 
+    : (college._id || college.id || null);
   
-  if (role === 'coordinador' || role === 'secretaria') {
-    if (user.headquarters) {
-      const hqName = typeof user.headquarters === 'object' 
-        ? (user.headquarters.name || user.headquarters.nameSchool || user.headquarters.nombre)
-        : null;
-      if (hqName) {
-        return `Sede: ${hqName}`;
-      }
-    }
-    if (role === 'secretaria' && user.collegeInfo) {
-      return `Colegio: ${user.collegeInfo.name}`;
-    }
-    return 'N/A';
-  }
+  const name = typeof college === 'object'
+    ? (college.name || college.nameSchool || college.nombre || 'Colegio')
+    : 'Colegio';
   
-  return 'N/A';
+  return { id, name };
 };
 
-// Cargar colegios directamente desde la API
+// Cargar colegios disponibles
 const fetchColleges = async () => {
   try {
     loadingColleges.value = true;
-    const response = await getAllColegios();
+    collegeOptions.value = [];
     
-    let schools = [];
-    if (Array.isArray(response)) {
-      schools = response;
-    } else if (response?.data) {
-      schools = Array.isArray(response.data) ? response.data : [response.data];
-    } else if (response?.schools) {
-      schools = Array.isArray(response.schools) ? response.schools : [response.schools];
-    } else if (response && typeof response === 'object') {
-      schools = [response];
+    // Obtener colegio del usuario actual
+    let userCollegeInfo = extractCollegeInfo(authStore.user?.college);
+    let userCollegeId = currentUserCollege.value || userCollegeInfo.id;
+    let userCollegeName = userCollegeInfo.name;
+    
+    // Si no hay colegio en el store, intentar obtenerlo del endpoint
+    if (!userCollegeId && authStore.user?._id) {
+      try {
+        const userData = await getUserById(authStore.user._id);
+        const fullUser = userData?.data || userData || authStore.user;
+        if (fullUser.college) {
+          userCollegeInfo = extractCollegeInfo(fullUser.college);
+          userCollegeId = userCollegeInfo.id;
+          userCollegeName = userCollegeInfo.name;
+        }
+      } catch (userError) {
+        // Continuar sin el colegio del endpoint
+      }
     }
     
-    collegeOptions.value = schools
-      .filter(school => {
-        const hasId = school._id || school.id;
-        const hasName = school.name || school.nameSchool || school.nombre;
-        return hasId && hasName;
-      })
-      .map(school => ({
-        label: school.name || school.nameSchool || school.nombre,
-        value: school._id || school.id
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-
+    // Inicializar con el colegio del usuario actual si está disponible
+    if (userCollegeId) {
+      collegeOptions.value = [{
+        label: userCollegeName,
+        value: userCollegeId
+      }];
+    }
+    
+    // Intentar obtener más colegios desde /api/headquarters
+    try {
+      const { HEADQUARTERS } = API_ENDPOINTS;
+      const response = await getData(HEADQUARTERS.BASE || '/api/headquarters');
+      
+      if (response?.headquarters && Array.isArray(response.headquarters)) {
+        const schoolsMap = new Map();
+        
+        // Agregar el colegio del usuario actual primero
+        if (userCollegeId) {
+          schoolsMap.set(userCollegeId, {
+            _id: userCollegeId,
+            name: userCollegeName,
+            nameSchool: userCollegeName,
+            nombre: userCollegeName
+          });
+        }
+        
+        // Agregar colegios de las sedes
+        response.headquarters.forEach(hq => {
+          if (hq.school) {
+            const schoolInfo = extractCollegeInfo(hq.school);
+            if (schoolInfo.id && !schoolsMap.has(schoolInfo.id)) {
+              schoolsMap.set(schoolInfo.id, {
+                _id: schoolInfo.id,
+                name: schoolInfo.name
+              });
+            }
+          }
+        });
+        
+        if (schoolsMap.size > 0) {
+          collegeOptions.value = Array.from(schoolsMap.values())
+            .map(school => ({
+              label: school.name || 'Colegio',
+              value: school._id
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label));
+        }
+      }
+    } catch (headquartersError) {
+      // Continuar con el colegio del usuario si está disponible
+    }
+    
+    if (collegeOptions.value.length === 0) {
+      if (userCollegeId) {
+        collegeOptions.value = [{
+          label: userCollegeName || 'Colegio',
+          value: userCollegeId
+        }];
+      } else {
+        // Intentar usar localStorage como fallback
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser.college) {
+              const collegeInfo = extractCollegeInfo(parsedUser.college);
+              if (collegeInfo.id) {
+                collegeOptions.value = [{
+                  label: 'Colegio',
+                  value: collegeInfo.id
+                }];
+              }
+            }
+          } catch (e) {
+            // Ignorar errores de parsing
+          }
+        }
+      }
+    }
+    
   } catch (err) {
-    console.error('Error cargando colegios:', err);
-    const errorMsg = err.response?.data?.message || 
-                     err.response?.data?.msg || 
-                     err.message || 
-                     'No se pudieron cargar los colegios';
-    error({
-      message: errorMsg,
-      position: 'top'
-    });
+    // Fallback final
+    const collegeInfo = extractCollegeInfo(authStore.user?.college);
+    if (collegeInfo.id) {
+      collegeOptions.value = [{
+        label: collegeInfo.name,
+        value: collegeInfo.id
+      }];
+    }
   } finally {
     loadingColleges.value = false;
   }
 };
 
-// Cargar sedes por colegio
-const fetchHeadquarters = async (collegeId) => {
-  if (!collegeId) {
-    headquartersOptions.value = [];
-    return;
-  }
-  
-  try {
-    loadingHeadquarters.value = true;
-    const { HEADQUARTERS } = API_ENDPOINTS;
-    const url = `${HEADQUARTERS.BASE}${HEADQUARTERS.BY_COLEGIO(collegeId)}`;
-    const response = await getData(url);
-    
-    let data = [];
-    if (Array.isArray(response)) {
-      data = response;
-    } else if (response?.data) {
-      data = Array.isArray(response.data) ? response.data : [response.data];
-    } else if (response?.sedes || response?.headquarters) {
-      const sedesData = response.sedes || response.headquarters;
-      data = Array.isArray(sedesData) ? sedesData : [sedesData];
-    } else if (response && typeof response === 'object') {
-      data = [response];
-    }
-
-    const mappedHeadquarters = data
-      .filter(headquarters => {
-        const hasName = headquarters?.name || headquarters?.nameSchool || headquarters?.nombre;
-        const hasId = headquarters?._id || headquarters?.id;
-        return hasName && hasId;
-      })
-      .map(headquarters => ({
-        label: headquarters.name || headquarters.nameSchool || headquarters.nombre || 'Sin nombre',
-        value: headquarters._id || headquarters.id
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-    
-    headquartersOptions.value = mappedHeadquarters;
-  } catch (err) {
-    const errorMsg = err.response?.data?.message || err.response?.data?.msg || err.message || 'Error al cargar las sedes';
-    error({
-      message: errorMsg,
-      position: 'top'
-    });
-  } finally {
-    loadingHeadquarters.value = false;
-  }
-};
 
 // Manejar cambio de tipo de rol
-const onRoleTypeChange = (roleTypeValue) => {
+const onRoleTypeChange = async (roleTypeValue) => {
   const roleType = roleTypeOptions.find(r => r.value === roleTypeValue);
   if (roleType) {
     selectedRoleType.value = roleType;
     formData.value.roles = [roleType.roleValue];
     
-    if (!roleType.needsHeadquarters) {
-      formData.value.headquarters = '';
-      headquartersOptions.value = [];
+    const adminRoles = ['rector', 'secretaria', 'coordinador', 'profesor'];
+    const isAdminRole = adminRoles.includes(roleType.roleValue);
+    
+    if (isAdminRole) {
+      formData.value.stratum = formData.value.stratum || 3;
+      formData.value.sisben = 'N/A';
+      formData.value.eps = 'N/A';
+      formData.value.typeBlood = formData.value.typeBlood || 'O+';
+      formData.value.disability = formData.value.disability || 'NINGUNA';
+      formData.value.ethnic = formData.value.ethnic || 'NINGUNA';
     } else {
-      if (formData.value.college) {
-        fetchHeadquarters(formData.value.college);
+      if (formData.value.sisben === 'N/A' || !formData.value.sisben) {
+        formData.value.sisben = '';
+      }
+      if (formData.value.eps === 'N/A' || !formData.value.eps) {
+        formData.value.eps = '';
       }
     }
+    
+    await nextTick();
   } else {
     selectedRoleType.value = null;
   }
 };
 
 // Manejar cambio de colegio
-const onCollegeChange = async (collegeId) => {
-  formData.value.headquarters = '';
-  headquartersOptions.value = [];
-  
-  if (needsHeadquarters.value && collegeId) {
-    await fetchHeadquarters(collegeId);
+const onCollegeChange = () => {
+  // No se requiere acción adicional
+};
+
+// Filtrar colegios en el selector
+const filterColleges = (val, update) => {
+  // Permitir que el usuario ingrese un ID manualmente si no hay opciones
+  if (collegeOptions.value.length === 0 && val && val.trim()) {
+    // Si el usuario ingresa un ID válido (MongoId), permitirlo
+    const mongoIdRegex = /^[0-9a-fA-F]{24}$/;
+    if (mongoIdRegex.test(val.trim())) {
+      update(() => {
+        collegeOptions.value = [{
+          label: `Colegio (ID: ${val.trim()})`,
+          value: val.trim()
+        }];
+      });
+      return;
+    }
   }
+  update();
 };
 
 // Manejar error de imagen
 const handleImageError = () => {
-  console.warn('Error al cargar la imagen de perfil');
+  // El placeholder se mostrará automáticamente
 };
 
 // Cerrar diálogo
@@ -1036,32 +1132,43 @@ const closeDialog = () => {
   formRef.value?.resetValidation();
 }
 
-// Enriquecer usuarios con información de colegio y sede
+// Enriquecer usuarios con información de colegio
 const enrichUsers = async (users) => {
   try {
-    const response = await getAllColegios();
+    // Intentar obtener colegios desde /api/headquarters (puede fallar con 401)
+    let normalizedSchools = [];
     
-    let schools = [];
-    if (Array.isArray(response)) {
-      schools = response;
-    } else if (response?.data) {
-      schools = Array.isArray(response.data) ? response.data : [response.data];
-    } else if (response?.schools) {
-      schools = Array.isArray(response.schools) ? response.schools : [response.schools];
-    } else if (response && typeof response === 'object') {
-      schools = [response];
+    try {
+      const { HEADQUARTERS } = API_ENDPOINTS;
+      const response = await getData(HEADQUARTERS.BASE || '/api/headquarters');
+      
+      if (response?.headquarters && Array.isArray(response.headquarters)) {
+        // Extraer colegios únicos de las sedes
+        const schoolsMap = new Map();
+        
+        response.headquarters.forEach(hq => {
+          if (hq.school) {
+            const schoolId = typeof hq.school === 'object' ? hq.school._id : hq.school;
+            const schoolName = typeof hq.school === 'object' 
+              ? (hq.school.name || hq.school.nameSchool || hq.school.nombre)
+              : null;
+            
+            if (schoolId && !schoolsMap.has(schoolId)) {
+              schoolsMap.set(schoolId, {
+                _id: schoolId,
+                name: schoolName || 'Colegio',
+                nameSchool: schoolName,
+                nombre: schoolName
+              });
+            }
+          }
+        });
+        
+        normalizedSchools = Array.from(schoolsMap.values());
+      }
+    } catch (error) {
+      // Si falla, continuar sin enriquecer (no es crítico para la visualización)
     }
-    
-    const normalizedSchools = schools
-      .filter(school => {
-        const hasId = school._id || school.id;
-        const hasName = school.name || school.nameSchool || school.nombre;
-        return hasId && hasName;
-      })
-      .map(school => ({
-        _id: school._id || school.id,
-        name: school.name || school.nameSchool || school.nombre || 'Sin nombre'
-      }));
     
     let enrichedUsers = users.map(user => {
       const collegeId = typeof user.college === 'string' ? user.college : (user.college?._id || user.college?.id || null);
@@ -1072,42 +1179,6 @@ const enrichUsers = async (users) => {
         collegeInfo: school || null
       };
     });
-    
-    // Para coordinador y secretaria, obtener información de sede desde Validity
-    const coordSecretariaUsers = enrichedUsers.filter(u => {
-      const role = u.rol || u.roles?.[0];
-      return role === 'coordinador' || role === 'secretaria';
-    });
-    
-    if (coordSecretariaUsers.length > 0) {
-      try {
-        const validityUrl = '/api/validity/activa';
-        const validityResponse = await getData(validityUrl);
-        const validity = validityResponse?.data || validityResponse;
-        
-        if (validity?.headquarterInfo && Array.isArray(validity.headquarterInfo)) {
-          enrichedUsers = enrichedUsers.map(user => {
-            const userId = user._id || user.id;
-            
-            for (const hqInfo of validity.headquarterInfo) {
-              const coordinatorId = hqInfo.coordinator?._id || hqInfo.coordinator?.toString();
-              const secretaryId = hqInfo.secretary?._id || hqInfo.secretary?.toString();
-              
-              if ((coordinatorId && coordinatorId === userId) || (secretaryId && secretaryId === userId)) {
-                return {
-                  ...user,
-                  headquarters: hqInfo.headquarter || hqInfo.headquarters,
-                  assignmentType: coordinatorId === userId ? 'coordinador' : 'secretaria'
-                };
-              }
-            }
-            return user;
-          });
-        }
-      } catch (error) {
-        console.error('Error obteniendo información de sede desde Validity:', error);
-      }
-    }
     
     return enrichedUsers.map(user => {
       const role = user.rol || user.roles?.[0];
@@ -1131,23 +1202,15 @@ const enrichUsers = async (users) => {
         active: user.isActive !== undefined ? user.isActive : (user.active !== undefined ? user.active : true),
         fullName: `${names} ${lastNames}`.trim() || 'Sin nombre',
         document: typeDocument && numberDocument ? `${typeDocument}: ${numberDocument}` : (numberDocument || 'Sin documento'),
-        assignment: getAssignmentText({
-          ...user,
-          rol: role,
-          collegeInfo: user.collegeInfo,
-          headquarters: user.headquarters
-        })
       };
     });
   } catch (error) {
-    console.error('Error enriqueciendo usuarios:', error);
     return users.map(user => {
       const role = user.rol || user.roles?.[0];
       return {
         ...user,
         fullName: `${user.names || ''} ${user.lastNames || ''}`.trim(),
         document: user.typeDocument ? `${user.typeDocument}: ${user.numberDocument || ''}` : (user.numberDocument || ''),
-        assignment: 'N/A'
       };
     });
   }
@@ -1227,7 +1290,6 @@ const baseColumns = [
   { name: "email", label: "Email", field: "email", align: "left", sortable: true },
   { name: "cellphone", label: "Teléfono", field: "cellphone", align: "center", sortable: true },
   { name: "rol", label: "Rol", field: "rol", align: "center", sortable: true },
-  { name: "assignment", label: "Asignación", field: "assignment", align: "left", sortable: true },
   { name: "active", label: "Estado", field: "active", align: "center", sortable: true },
 ];
 
@@ -1271,7 +1333,6 @@ const toggleStatus = async (user) => {
     // Recargar la lista de usuarios para reflejar el cambio
     await fetchUsers();
   } catch (err) {
-    console.error('Error al cambiar estado del usuario:', err);
     const errorMsg = err.response?.data?.message || err.response?.data?.msg || err.message || 'Error al cambiar el estado del usuario';
     error({
       message: errorMsg,
@@ -1316,6 +1377,16 @@ const confirmDelete = async () => {
   }
 }
 
+// Enriquecer un usuario individual con información de colegio
+const enrichSingleUser = (user) => {
+  const collegeInfo = extractCollegeInfo(user.college);
+  return {
+    ...user,
+    collegeInfo: user.collegeInfo || (typeof user.college === 'object' ? user.college : null),
+    college: collegeInfo.id || user.college
+  };
+};
+
 // Abre el diálogo para editar
 const handleEdit = async (user) => {
   try {
@@ -1324,27 +1395,36 @@ const handleEdit = async (user) => {
     
     selectedRoleType.value = null;
     selectedRoleTypeValue.value = null;
-    headquartersOptions.value = [];
     
+    // 1. Obtener datos del backend
     const userData = await getUserById(user._id);
-    const fullUser = userData?.data || userData || user;
+    let fullUser = userData?.data || userData || user;
+    
+    // 2. Enriquecer con información de colegio
+    // Usar el usuario de la lista que ya tiene información enriquecida si está disponible
+    if (user.collegeInfo) {
+      fullUser = { ...fullUser, ...user };
+    } else {
+      // Si no, intentar enriquecer desde cero
+      fullUser = await enrichSingleUser(fullUser);
+    }
     
     const userRole = Array.isArray(fullUser.roles) ? fullUser.roles[0] : (fullUser.rol || fullUser.roles || 'rector');
     
+    // 3. Obtener ID del colegio
     const collegeId = typeof fullUser.college === 'string' 
       ? fullUser.college 
-      : (fullUser.college?._id || fullUser.college?.id || '');
+      : (fullUser.college?._id || fullUser.college?.id || fullUser.collegeInfo?._id || '');
     
-    let headquartersId = '';
-    if ((userRole === 'coordinador' || userRole === 'secretaria') && user.headquarters) {
-      if (typeof user.headquarters === 'string') {
-        headquartersId = user.headquarters;
-      } else if (user.headquarters?._id) {
-        headquartersId = user.headquarters._id;
+    // Cargar colegios solo si el rol lo requiere
+    const roleType = roleTypeOptions.find(r => r.roleValue === userRole || r.value === userRole);
+    if (roleType?.needsCollege !== false) {
+      try {
+        await fetchColleges();
+      } catch (err) {
+        // El error ya se maneja en fetchColleges, continuar con la edición
       }
     }
-    
-    await fetchColleges();
     
     formData.value = {
       _id: fullUser._id || fullUser.id || user._id,
@@ -1358,7 +1438,6 @@ const handleEdit = async (user) => {
       dateBorn: fullUser.dateBorn || user.dateBorn || '',
       gender: fullUser.gender || user.gender || 'M',
       college: collegeId,
-      headquarters: headquartersId,
       roles: Array.isArray(fullUser.roles) ? fullUser.roles : [userRole],
       password: '',
       confirmPassword: '',
@@ -1370,35 +1449,27 @@ const handleEdit = async (user) => {
       disability: fullUser.disability || 'NINGUNA',
       ethnic: fullUser.ethnic || 'NINGUNA',
       profilePhoto: fullUser.profilePhoto || user.profilePhoto || '',
+      signDigital: fullUser.signDigital || fullUser.firmaDisignDigitalgital || '',
     };
     
-    let roleType = null;
-    if (userRole === 'rector') {
-      roleType = roleTypeOptions.find(r => r.value === 'rector');
-    } else if (userRole === 'coordinador') {
-      roleType = roleTypeOptions.find(r => r.value === 'coordinador');
-    } else if (userRole === 'secretaria') {
-      roleType = roleTypeOptions.find(r => r.value === 'secretaria');
+    // Buscar el tipo de rol en las opciones disponibles o crear uno genérico
+    let finalRoleType = roleType;
+    if (!finalRoleType && userRole) {
+      const needsCollegeForRole = userRole !== 'acudiente';
+      
+      finalRoleType = {
+        label: getRoleLabel(userRole),
+        value: userRole,
+        roleValue: userRole,
+        needsCollege: needsCollegeForRole,
+        description: 'Usuario del sistema'
+      };
     }
     
-    if (roleType) {
-      selectedRoleType.value = roleType;
-      selectedRoleTypeValue.value = roleType.value;
+    if (finalRoleType) {
+      selectedRoleType.value = finalRoleType;
+      selectedRoleTypeValue.value = finalRoleType.value;
       
-      if (collegeId && roleType.needsHeadquarters) {
-        await fetchHeadquarters(collegeId);
-        
-        if (headquartersId && headquartersOptions.value.length > 0) {
-          const exists = headquartersOptions.value.some(hq => hq.value === headquartersId);
-          if (!exists) {
-            const hqName = user.headquarters?.name || user.headquarters?.nameSchool || user.headquarters?.nombre || 'Sede asignada';
-            headquartersOptions.value.push({
-              label: hqName,
-              value: headquartersId
-            });
-          }
-        }
-      }
     }
     
     showDialog.value = true;
@@ -1421,6 +1492,10 @@ const openCreateDialog = async () => {
   selectedRoleType.value = defaultRoleType;
   selectedRoleTypeValue.value = defaultRoleType.value;
   
+  // Determinar valores por defecto según el rol
+  const adminRoles = ['rector', 'secretaria', 'coordinador', 'profesor'];
+  const isAdminRole = adminRoles.includes(defaultRoleType.roleValue);
+  
   formData.value = {
     names: '',
     lastNames: '',
@@ -1432,22 +1507,34 @@ const openCreateDialog = async () => {
     dateBorn: '',
     gender: 'M',
     college: '',
-    headquarters: '',
     roles: [defaultRoleType.roleValue],
     password: '',
     confirmPassword: '',
-    stratum: '',
-    sisben: '',
-    eps: '',
+    // Para roles administrativos, establecer valores por defecto (aunque sean opcionales visualmente)
+    // Para estudiantes y acudientes, dejar vacíos para que el usuario los complete
+    stratum: isAdminRole ? 3 : '',
+    sisben: isAdminRole ? 'N/A' : '',
+    eps: isAdminRole ? 'N/A' : '',
     typeBlood: 'O+',
     victimPopulation: false,
     disability: 'NINGUNA',
     ethnic: 'NINGUNA',
     profilePhoto: '',
+    signDigital: '',
     _id: null,
   };
   
+  // Cargar colegios siempre (el backend lo requiere para todos los usuarios)
   await fetchColleges();
+  
+  // Pre-seleccionar el colegio del usuario actual si está disponible y no hay selección previa
+  if (collegeOptions.value.length > 0 && !formData.value.college && currentUserCollege.value) {
+    // Verificar si el colegio del usuario está en las opciones
+    const userCollegeExists = collegeOptions.value.some(opt => opt.value === currentUserCollege.value);
+    if (userCollegeExists) {
+      formData.value.college = currentUserCollege.value;
+    }
+  }
   showDialog.value = true;
 }
 
@@ -1515,15 +1602,19 @@ const validateForm = () => {
     error({ message: 'El género es requerido', position: 'top' });
     return false;
   }
-  if (!formData.value.college) {
+  // Validar colegio solo si el rol lo requiere
+  if (needsCollege.value && !formData.value.college) {
     error({ message: 'Debe seleccionar un colegio', position: 'top' });
     return false;
   }
-  if (needsHeadquarters.value && !formData.value.headquarters) {
-    error({ message: 'Debe seleccionar una sede', position: 'top' });
-    return false;
-  }
   
+  // Validar campos de información adicional solo si son requeridos según el rol
+  const role = formData.value.roles?.[0] || selectedRoleType.value?.roleValue;
+  const adminRoles = ['rector', 'secretaria', 'coordinador', 'profesor'];
+  const isAdminRole = adminRoles.includes(role);
+  
+  if (!isAdminRole) {
+    // Para estudiantes y acudientes, estos campos son requeridos
   if (!formData.value.stratum) {
     error({ message: 'El estrato es requerido', position: 'top' });
     return false;
@@ -1551,6 +1642,7 @@ const validateForm = () => {
   if (!formData.value.ethnic?.trim()) {
     error({ message: 'La etnia es requerida', position: 'top' });
     return false;
+    }
   }
   
   if (!isEditMode.value) {
@@ -1570,6 +1662,21 @@ const validateForm = () => {
 const preparePayload = () => {
   const roleValue = formData.value.roles?.[0] || selectedRoleType.value?.roleValue || 'rector';
   
+  // Determinar si es un rol administrativo
+  const adminRoles = ['rector', 'secretaria', 'coordinador', 'profesor'];
+  const isAdminRole = adminRoles.includes(roleValue);
+  
+  // Validar que stratum sea un número válido
+  let stratumValue = formData.value.stratum;
+  if (stratumValue) {
+    stratumValue = parseInt(stratumValue);
+    if (isNaN(stratumValue)) {
+      stratumValue = isAdminRole ? 3 : null;
+    }
+  } else {
+    stratumValue = isAdminRole ? 3 : null;
+  }
+  
   const payload = {
     names: formData.value.names.trim(),
     lastNames: formData.value.lastNames.trim(),
@@ -1578,26 +1685,75 @@ const preparePayload = () => {
     direction: formData.value.direction.trim(),
     dateBorn: formData.value.dateBorn,
     gender: formData.value.gender,
-    stratum: parseInt(formData.value.stratum),
-    sisben: formData.value.sisben.trim(),
-    eps: formData.value.eps.trim(),
-    typeBlood: formData.value.typeBlood,
-    victimPopulation: formData.value.victimPopulation || false,
-    disability: formData.value.disability.trim(),
-    ethnic: formData.value.ethnic.trim(),
+    // Para roles administrativos, usar valores por defecto si no se proporcionan
+    // El backend los requiere, así que siempre debemos enviarlos
+    // IMPORTANTE: El backend valida que estos campos no estén vacíos
+    // El backend valida con .notEmpty().escape() que espera un string
+    // Pero el modelo es Number, Mongoose lo convertirá automáticamente
+    stratum: String(stratumValue || (isAdminRole ? 3 : 1)),
+    sisben: (formData.value.sisben?.trim() || 'N/A'), // Backend requiere no vacío
+    eps: (formData.value.eps?.trim() || 'N/A'), // Backend requiere no vacío
+    typeBlood: formData.value.typeBlood || 'O+', // Asegurar valor por defecto
+    victimPopulation: formData.value.victimPopulation !== undefined ? Boolean(formData.value.victimPopulation) : false,
+    disability: (formData.value.disability?.trim() || 'NINGUNA'), // Backend requiere no vacío
+    ethnic: (formData.value.ethnic?.trim() || 'NINGUNA'), // Backend requiere no vacío
   };
   
   if (!isEditMode.value) {
+    // Campos solo para creación
     payload.typeDocument = formData.value.typeDocument;
     payload.numberDocument = formData.value.numberDocument.trim();
     payload.password = formData.value.password;
+    // Enviar roles como string (el backend lo acepta así según validaciones)
+    // Aunque el modelo es array, Mongoose puede convertir string a array
     payload.roles = roleValue;
-    payload.college = formData.value.college;
-    payload.profilePhoto = formData.value.profilePhoto?.trim() || '';
-    payload.signDigital = '';
+    
+    // PROBLEMA: El backend SIEMPRE requiere college (validationsRegister línea 43)
+    // Asegurar que siempre se envíe un colegio
+    if (formData.value.college) {
+      // Si hay un colegio seleccionado, usarlo
+      payload.college = formData.value.college;
+    } else {
+      // Si no hay colegio seleccionado, usar el colegio del usuario actual como fallback
+      const fallbackCollege = currentUserCollege.value || 
+                             (typeof authStore.user?.college === 'string' 
+                               ? authStore.user.college 
+                               : (authStore.user?.college?._id || authStore.user?.college?.id));
+      
+      if (fallbackCollege) {
+        payload.college = fallbackCollege;
+      } else {
+        // Si no hay fallback, intentar desde localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser.college) {
+              const defaultCollegeId = typeof parsedUser.college === 'string' 
+                ? parsedUser.college 
+                : (parsedUser.college._id || parsedUser.college.id);
+              if (defaultCollegeId) {
+                payload.college = defaultCollegeId;
+              }
+            }
+          } catch (e) {
+            // Ignorar errores de parsing
+          }
+        }
+      }
+    }
+    
+    // El backend requiere que estos campos no estén vacíos
+    payload.profilePhoto = formData.value.profilePhoto?.trim() || 'https://via.placeholder.com/150';
+    payload.signDigital = formData.value.signDigital?.trim() || 'https://via.placeholder.com/150';
   } else {
+    // Para edición, solo incluir campos que se pueden actualizar
     if (formData.value.profilePhoto !== undefined) {
       payload.profilePhoto = formData.value.profilePhoto?.trim() || '';
+    }
+    // Incluir roles si se necesita actualizar (aunque normalmente no se cambia)
+    if (formData.value.roles && formData.value.roles.length > 0) {
+      payload.roles = formData.value.roles[0];
     }
   }
   
@@ -1614,16 +1770,19 @@ const submitForm = async () => {
     
     if (isEditMode.value) {
       try {
+        // Intentar actualizar usando PUT /api/users/:id
         await updateUser(editingItem.value._id, payload);
         info({
           message: 'Usuario actualizado correctamente',
           position: 'top'
         });
       } catch (updateError) {
-        if (updateError.response?.status === 404) {
+        // Si el endpoint no existe (404) o método no permitido (405), informar al usuario
+        if (updateError.response?.status === 404 || updateError.response?.status === 405) {
           error({
-            message: 'Error: El endpoint PUT /api/users/:id no está disponible en el backend.',
-            position: 'top'
+            message: 'La funcionalidad de edición no está disponible en el backend. Por favor, contacte al administrador.',
+            position: 'top',
+            timeout: 5000
           });
           return;
         }
@@ -1636,24 +1795,165 @@ const submitForm = async () => {
       }
     } else {
       try {
+        // Validar que todos los campos requeridos estén presentes antes de enviar
+        if (!payload.college) {
+          error({
+            message: 'Error: El backend requiere un colegio para crear usuarios. Por favor, seleccione un colegio o ingrese el ID manualmente.',
+            position: 'top',
+            timeout: 5000
+          });
+          return;
+        }
+        
+        // Validar que college sea un ObjectId válido
+        const mongoIdRegex = /^[0-9a-fA-F]{24}$/;
+        if (!mongoIdRegex.test(payload.college)) {
+          error({
+            message: 'Error: El ID del colegio no es válido. Debe ser un ObjectId de MongoDB (24 caracteres hexadecimales).',
+            position: 'top',
+            timeout: 5000
+          });
+          return;
+        }
+        
+        // Validar que los campos requeridos por el backend tengan valores válidos
+        if (!payload.profilePhoto || payload.profilePhoto.trim() === '') {
+          payload.profilePhoto = 'https://via.placeholder.com/150';
+        }
+        if (!payload.signDigital || payload.signDigital.trim() === '') {
+          payload.signDigital = 'https://via.placeholder.com/150';
+        }
+        // stratum debe ser string para pasar .notEmpty().escape(), Mongoose lo convertirá a Number
+        if (!payload.stratum || payload.stratum === '') {
+          payload.stratum = String(isAdminRole ? 3 : 1);
+        } else if (typeof payload.stratum !== 'string') {
+          payload.stratum = String(payload.stratum);
+        }
+        if (!payload.sisben || payload.sisben.trim() === '') {
+          payload.sisben = 'N/A';
+        }
+        if (!payload.eps || payload.eps.trim() === '') {
+          payload.eps = 'N/A';
+        }
+        if (!payload.typeBlood || payload.typeBlood.trim() === '') {
+          payload.typeBlood = 'O+';
+        }
+        // victimPopulation debe ser boolean para pasar .isBoolean()
+        // El backend valida con .notEmpty().isBoolean() que es contradictorio
+        // pero necesitamos enviarlo como boolean
+        if (payload.victimPopulation === undefined || payload.victimPopulation === null) {
+          payload.victimPopulation = false;
+        } else {
+          // Asegurar que sea boolean, no string "true"/"false"
+          payload.victimPopulation = Boolean(payload.victimPopulation);
+        }
+        if (!payload.disability || payload.disability.trim() === '') {
+          payload.disability = 'NINGUNA';
+        }
+        if (!payload.ethnic || payload.ethnic.trim() === '') {
+          payload.ethnic = 'NINGUNA';
+        }
+        
         const result = await createUser(payload);
-        const message = typeof result === 'string' ? result : (result?.message || 'Usuario creado correctamente');
+        
+        // Mostrar mensaje de éxito
         info({
-          message: message,
-          position: 'top'
+          message: 'Usuario creado exitosamente',
+          position: 'top',
+          timeout: 3000
         });
+        
+        // Recargar la lista de usuarios
+        await fetchUsers();
+        
+        // Cerrar el diálogo
+        closeDialog();
       } catch (createError) {
-        const errorMsg = createError.response?.data?.message || createError.response?.data?.msg || createError.message || 'Error al crear el usuario';
+        // Mejorar manejo de errores para mostrar mensajes específicos
+        let errorMsg = 'Error al crear el usuario';
+        
+        if (createError.response) {
+          const status = createError.response.status;
+          const data = createError.response.data;
+          
+          // Error 400: Validación fallida
+          if (status === 400) {
+            // Intentar extraer mensajes de error de diferentes formatos
+            if (data?.message && typeof data.message === 'string') {
+              errorMsg = `Error de validación: ${data.message}`;
+            } else if (data?.msg && typeof data.msg === 'string') {
+              errorMsg = `Error de validación: ${data.msg}`;
+            } else if (data?.errors) {
+              // Si hay errores de validación específicos
+              let errorsArray = [];
+              
+              if (Array.isArray(data.errors)) {
+                errorsArray = data.errors.map(err => {
+                  if (typeof err === 'string') return err;
+                  if (err?.msg) return err.msg;
+                  if (err?.message) return err.message;
+                  return JSON.stringify(err);
+                });
+              } else if (typeof data.errors === 'object') {
+                // Si es un objeto, extraer los valores
+                errorsArray = Object.entries(data.errors).map(([field, error]) => {
+                  if (typeof error === 'string') return `${field}: ${error}`;
+                  if (error?.msg) return `${field}: ${error.msg}`;
+                  if (error?.message) return `${field}: ${error.message}`;
+                  if (Array.isArray(error)) return `${field}: ${error.join(', ')}`;
+                  return `${field}: ${JSON.stringify(error)}`;
+                });
+              }
+              
+              if (errorsArray.length > 0) {
+                // Mejorar mensaje si es sobre número de documento
+                let formattedErrors = errorsArray.map(err => {
+                  if (err.toLowerCase().includes('numberdocument') || err.toLowerCase().includes('número de documento')) {
+                    if (err.toLowerCase().includes('length') || err.toLowerCase().includes('longitud') || err.toLowerCase().includes('min')) {
+                      return 'El número de documento debe tener al menos 10 dígitos según las validaciones del backend. Si su documento tiene menos dígitos, contacte al administrador.';
+                    }
+                  }
+                  return err;
+                });
+                errorMsg = `Error de validación: ${formattedErrors.join('. ')}`;
+              } else {
+                errorMsg = 'Error de validación: Verifique que todos los campos requeridos estén completos.';
+              }
+            } else if (typeof data === 'string' && data.includes('college')) {
+              errorMsg = 'Error: El colegio es requerido. Por favor, seleccione un colegio.';
+            } else {
+              errorMsg = 'Error de validación: Verifique que todos los campos requeridos estén completos y tengan el formato correcto.';
+            }
+          } 
+          // Error 401: No autenticado
+          else if (status === 401) {
+            errorMsg = 'Error de autenticación: Su sesión ha expirado. Por favor, inicie sesión nuevamente.';
+          }
+          // Error 500: Error del servidor
+          else if (status === 500) {
+            errorMsg = 'Error del servidor: Por favor, contacte al administrador.';
+          }
+          // Otros errores
+          else {
+            const msg = data?.message || data?.msg || data?.error;
+            if (typeof msg === 'string') {
+              errorMsg = msg;
+            } else {
+              errorMsg = `Error ${status}: ${createError.message || 'Error desconocido'}`;
+            }
+          }
+        } else {
+          errorMsg = createError.message || 'Error al crear el usuario';
+        }
+        
         error({
           message: errorMsg,
-          position: 'top'
+          position: 'top',
+          timeout: 6000
         });
         return;
       }
     }
-    
-    await fetchUsers();
-    closeDialog();
   } catch (err) {
     const errorMsg = err.response?.data?.message || err.response?.data?.msg || err.message || 'Error al procesar la solicitud';
     error({

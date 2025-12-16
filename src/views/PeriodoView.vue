@@ -46,10 +46,8 @@ onMounted(async () => {
 const onSubmit = async () => {
   try {
     await createPeriodo(form.value);
-    console.log('Periodo created successfully');
     // Optionally, reset form or show a success message
   } catch (error) {
-    console.error('Error creating periodo:', error);
   }
 };
 </script>

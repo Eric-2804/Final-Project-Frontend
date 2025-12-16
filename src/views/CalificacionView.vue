@@ -70,10 +70,8 @@ onMounted(async () => {
 const onSubmit = async () => {
   try {
     await createCalificacion(form.value);
-    console.log('Calificacion created successfully');
     // Optionally, reset form or show a success message
   } catch (error) {
-    console.error('Error creating Calificacion:', error);
   }
 };
 </script>

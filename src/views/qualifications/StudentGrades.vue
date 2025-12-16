@@ -55,7 +55,6 @@ async function fetch() {
     const res = await qualificationsService.listByStudent(studentId.value, year.value);
     rows.value = res.data || res; // según tu httpService
   } catch (err) {
-    console.error(err);
   } finally { loading.value = false; }
 }
 
@@ -70,6 +69,6 @@ async function save(payload) {
     const idx = rows.value.findIndex(r => r._id === res.data._id || r._id === res._id);
     rows.value[idx] = res.data || res;
     editDialog.value = false;
-  } catch (err) { console.error(err); }
+  } catch (err) { }
 }
 </script>

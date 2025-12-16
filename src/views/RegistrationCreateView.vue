@@ -27,23 +27,6 @@
                 </div>
 
                 <div class="row q-col-gutter-md">
-                  <!-- Año -->
-                  <div class="col-12 col-md-6">
-                    <q-select
-                      v-model="form.year"
-                      :options="yearOptions"
-                      label="Año *"
-                      filled
-                      emit-value
-                      map-options
-                      :rules="[val => !!val || 'El año es requerido']"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="event" />
-                      </template>
-                    </q-select>
-                  </div>
-
                   <!-- Fecha de matrícula -->
                   <div class="col-12 col-md-6">
                     <q-input
@@ -379,7 +362,8 @@ import { useAuthStore } from '@/stores/auth'
 import registrationService from '@/services/registrationService'
 import { getUsersByRole, getUserById } from '@/services/schoolUserService'
 import { getAllGroupByYear } from '@/services/groupsService'
-import { getSedesByColegio } from '@/services/headquarterService.js'
+import { getHeadquartersBySchool } from '@/services/headquarterService'
+import * as colegiosService from '@/services/colegiosService'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -408,12 +392,6 @@ const newAttendant = ref({
 })
 
 // Opciones
-const yearOptions = ref([
-  { label: '2024', value: 2024 },
-  { label: '2025', value: 2025 },
-  { label: '2026', value: 2026 }
-])
-
 const relationshipOptions = [
   { label: 'Madre', value: 'madre' },
   { label: 'Padre', value: 'padre' },
@@ -447,11 +425,9 @@ const selectedGroup = computed(() => {
 // Funciones de carga
 async function loadInitialData() {
   isLoading.value = true
-  console.log('🔄 Iniciando carga de datos del formulario...')
   
   // Verificar token
   const token = localStorage.getItem('token')
-  console.log('🔑 Token en localStorage:', token ? `${token.substring(0, 20)}...` : 'NO HAY TOKEN')
   
   if (!token) {
     showErrorNotify({ message: 'No hay sesión activa. Redirigiendo al login...' })
@@ -461,20 +437,15 @@ async function loadInitialData() {
   }
   
   try {
-    console.log('👤 Usuario inicial:', authStore.user)
-    
     // Si el usuario no tiene college, cargar datos completos
     if (!authStore.user?.college) {
-      console.log('⚠️ Usuario sin college, cargando datos completos...')
       
       if (authStore.user?.id) {
         try {
           const fullUser = await getUserById(authStore.user.id)
-          console.log('✅ Datos completos del usuario obtenidos:', fullUser)
           
           // Actualizar el store con los datos completos
           authStore.setUser(fullUser)
-          console.log('✅ Usuario actualizado en el store')
         } catch (error) {
           console.error('❌ Error al cargar datos completos del usuario:', error)
         }
@@ -483,53 +454,53 @@ async function loadInitialData() {
     
     // Intentar obtener el colegio/sede del usuario (puede tener diferentes nombres)
     const userCollege = authStore.user?.college || authStore.user?.sede || authStore.user?.school
-    console.log('🏫 College encontrado:', userCollege)
     
-    if (userCollege) {
-      let schoolId = null
-      
-      // Si college es un objeto poblado
-      if (typeof userCollege === 'object' && userCollege._id) {
-        schoolId = userCollege._id
-        form.value.school = schoolId
-        schoolOptions.value = [{
-          label: userCollege.name || userCollege.nameSchool || 'Mi Colegio',
-          value: schoolId
-        }]
-        console.log('✅ Colegio del usuario (objeto):', userCollege)
-      } 
-      // Si college es solo un ID string
-      else if (typeof userCollege === 'string') {
-        schoolId = userCollege
-        form.value.school = schoolId
-        schoolOptions.value = [{
-          label: 'Mi Colegio',
-          value: schoolId
-        }]
-        console.log('✅ ID del colegio del usuario:', schoolId)
-      }
-      
-      // Cargar sedes automáticamente
-      if (schoolId) {
-        console.log('📍 Cargando sedes del colegio', schoolId)
-        await onSchoolChange(schoolId)
-      }
+    let schoolId = null
+    
+    // Validar si college es un objeto válido (no null, no {data: null})
+    if (typeof userCollege === 'object' && userCollege && userCollege._id) {
+      schoolId = userCollege._id
+      form.value.school = schoolId
+      schoolOptions.value = [{
+        label: userCollege.name || userCollege.nameSchool || 'Mi Colegio',
+        value: schoolId
+      }]
+    } 
+    // Si college es solo un ID string
+    else if (typeof userCollege === 'string') {
+      schoolId = userCollege
+      form.value.school = schoolId
+      schoolOptions.value = [{
+        label: 'Mi Colegio',
+        value: schoolId
+      }]
     } else {
-      console.error('❌ Usuario no tiene sede/colegio asignado después de cargar datos completos')
-      console.error('❌ Usuario final:', authStore.user)
-      showErrorNotify({ message: 'Tu usuario no tiene una sede asignada. Contacta al administrador.' })
-      isLoading.value = false
-      return
+      // Cargar todos los colegios disponibles para que el usuario seleccione
+      try {
+        const schoolsRes = await colegiosService.getAllColegios()
+        const schools = schoolsRes.data || []
+        
+        if (Array.isArray(schools) && schools.length > 0) {
+          schoolOptions.value = schools.map(s => ({
+            label: s.nameSchool || s.name || 'Sin nombre',
+            value: s._id
+          }))
+        }
+      } catch (error) {
+        console.error('❌ Error cargando colegios:', error)
+      }
+    }
+    
+    // Cargar sedes automáticamente si hay schoolId
+    if (schoolId) {
+      await onSchoolChange(schoolId)
     }
 
     // Cargar estudiantes por rol
-    console.log('👨‍🎓 Cargando estudiantes...')
     const estudiantesRes = await getUsersByRol('estudiante')
-    console.log('👨‍🎓 Respuesta completa de estudiantes:', estudiantesRes)
     
     // La respuesta puede venir como array directamente o en .data
     const estudiantes = Array.isArray(estudiantesRes) ? estudiantesRes : (estudiantesRes.data || [])
-    console.log('✅ Estudiantes procesados:', estudiantes.length, estudiantes)
 
     if (Array.isArray(estudiantes) && estudiantes.length > 0) {
       studentOptions.value = estudiantes.map(u => ({
@@ -540,21 +511,16 @@ async function loadInitialData() {
       }))
 
       filteredStudents.value = studentOptions.value
-      console.log('✅ studentOptions configurados:', studentOptions.value.length)
     } else {
-      console.warn('⚠️ No hay estudiantes disponibles')
       studentOptions.value = []
       filteredStudents.value = []
     }
 
     // Cargar acudientes por rol
-    console.log('👨‍👩‍👧 Cargando acudientes...')
     const acudientesRes = await getUsersByRol('acudiente')
-    console.log('👨‍👩‍👧 Respuesta completa de acudientes:', acudientesRes)
     
     // La respuesta puede venir como array directamente o en .data
     const acudientes = Array.isArray(acudientesRes) ? acudientesRes : (acudientesRes.data || [])
-    console.log('✅ Acudientes procesados:', acudientes.length, acudientes)
     
     if (Array.isArray(acudientes) && acudientes.length > 0) {
       attendantOptions.value = acudientes.map(u => ({
@@ -564,22 +530,13 @@ async function loadInitialData() {
         email: u.email || 'Sin email'
       }))
       filteredAttendants.value = attendantOptions.value
-      console.log('✅ attendantOptions configurados:', attendantOptions.value.length)
     } else {
-      console.warn('⚠️ No hay acudientes disponibles')
       attendantOptions.value = []
       filteredAttendants.value = []
     }
-    
-    console.log('🎉 Carga de datos completada exitosamente')
 
   } catch (error) {
-    console.error('❌ Error cargando datos del formulario:', error)
-    console.error('Detalles del error:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message
-    })
+    console.error('Error cargando datos del formulario:', error)
     
     // Inicializar arrays vacíos para que el formulario no crashee
     schoolOptions.value = []
@@ -602,28 +559,21 @@ async function loadInitialData() {
 
 async function onSchoolChange(schoolId) {
   if (!schoolId) {
-    console.warn('⚠️ onSchoolChange llamado sin schoolId')
     return
   }
-
-  console.log('📍 onSchoolChange - Cargando sedes para colegio:', schoolId)
   
   try {
     // Cargar sedes del colegio
-    const headquartersRes = await getSedesByColegio(schoolId)
-    console.log('📍 Respuesta de sedes:', headquartersRes)
+    const headquartersRes = await getHeadquartersBySchool(schoolId)
     
     const headquarters = headquartersRes.data?.data || headquartersRes.data || []
-    console.log('📍 Sedes procesadas:', headquarters)
     
     if (Array.isArray(headquarters) && headquarters.length > 0) {
       headquarterOptions.value = headquarters.map(h => ({
         label: h.name,
         value: h._id
       }))
-      console.log('✅ Sedes configuradas:', headquarterOptions.value.length, headquarterOptions.value)
     } else {
-      console.warn('⚠️ No hay sedes disponibles o la respuesta no es un array:', headquarters)
       headquarterOptions.value = []
     }
 
@@ -637,7 +587,6 @@ async function onSchoolChange(schoolId) {
     
     // Si es 404, el colegio no tiene sedes - cargar todos los grupos directamente
     if (error.response?.status === 404) {
-      console.log('ℹ️ El colegio no tiene sedes registradas - cargando todos los grupos del año')
       headquarterOptions.value = []
       
       // Cargar todos los grupos del año actual sin filtrar por sede
@@ -651,7 +600,6 @@ async function onSchoolChange(schoolId) {
             label: `${g.name} - ${g.level || ''}`,
             value: g._id
           }))
-          console.log('✅ Grupos cargados sin filtro de sede:', groupOptions.value.length)
         }
       } catch (groupError) {
         console.error('Error cargando grupos:', groupError)
@@ -667,12 +615,12 @@ async function loadGroupsByHeadquarter(headquarterId) {
   if (!headquarterId) return
 
   try {
-    // Cargar todos los grupos
-    const groupsRes = await getAllGroups()
+    // Cargar todos los grupos del año actual
+    const currentYear = new Date().getFullYear()
+    const groupsRes = await getAllGroupByYear(currentYear)
     const allGroups = groupsRes.data?.data || groupsRes.data || []
 
     if (!Array.isArray(allGroups)) {
-      console.warn('La respuesta de grupos no es un array:', allGroups)
       groupOptions.value = []
       return
     }
@@ -683,12 +631,23 @@ async function loadGroupsByHeadquarter(headquarterId) {
       return groupHeadquarter === headquarterId
     })
 
-    groupOptions.value = filteredGroups.map(g => ({
-      label: `${g.level || ''} ${g.grade || ''}${g.groupIdentifier || ''} - ${g.session || ''}`.trim(),
-      value: g._id,
-      level: g.level || '',
-      session: g.session || ''
-    }))
+    groupOptions.value = filteredGroups.map(g => {
+      const parts = []
+      if (g.level) parts.push(g.level)
+      if (g.grade) parts.push(g.grade)
+      if (g.groupIdentifier) parts.push(g.groupIdentifier)
+      const mainLabel = parts.join(' ') || 'Sin nivel'
+      const session = g.session || 'Sin jornada'
+      
+      const label = `${mainLabel} - ${session}`
+      
+      return {
+        label,
+        value: g._id,
+        level: g.level || '',
+        session: g.session || ''
+      }
+    })
 
     if (groupOptions.value.length === 0) {
       showErrorNotify({ message: 'No hay grupos disponibles para esta sede' })
@@ -775,28 +734,22 @@ async function submitForm() {
 
   isSaving.value = true
   
-  // 🔍 Logs de diagnóstico
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  console.log('🔍 Verificación pre-submit:');
-  console.log('  - Token presente:', !!token);
-  console.log('  - Token (primeros 30):', token?.substring(0, 30));
-  console.log('  - Usuario:', user);
-  console.log('  - Rol usuario:', user?.rol || user?.roles);
-  
   try {
+    // Extraer año de la fecha si no está definido
+    const yearFromDate = form.value.registrationDate ? 
+      new Date(form.value.registrationDate).getFullYear() : 
+      form.value.year
+
     const data = {
       student: form.value.student,
-      attendant: form.value.attendant,
+      attendant: form.value.attendant || [],
       group: form.value.group,
-      year: form.value.year,
+      year: yearFromDate || form.value.year,
       registrationDate: form.value.registrationDate,
-      registrationNumber: form.value.registrationNumber,
-      description: form.value.description,
+      registrationNumber: form.value.registrationNumber || '',
+      description: form.value.description || '',
       school: form.value.school
     }
-    
-    console.log('📤 Enviando payload:', data);
 
     await registrationService.create(data)
     
@@ -808,19 +761,13 @@ async function submitForm() {
     }, 1000)
 
   } catch (error) {
-    console.error('❌ Error al crear matrícula:', error)
-    console.error('  - Status:', error.response?.status);
-    console.error('  - Data:', error.response?.data);
-    console.error('  - Headers:', error.response?.headers);
-    
-    const errorMsg = error.response?.data?.msg || 'Error al crear la matrícula'
-    showErrorNotify({ message: errorMsg })
-    
-    // Si es 401, verificar token
-    if (error.response?.status === 401) {
-      console.error('🚨 Error 401 - Verificando autenticación...');
-      const currentToken = localStorage.getItem('token');
-      console.error('  - Token actual en localStorage:', currentToken ? 'Existe' : 'NO EXISTE');
+    // Manejar errores de validación del backend
+    if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+      const errorMessages = error.response.data.errors.map(err => err.msg || err.message).join(', ')
+      showErrorNotify({ message: errorMessages })
+    } else {
+      const errorMsg = error.response?.data?.msg || 'Error al crear la matrícula'
+      showErrorNotify({ message: errorMsg })
     }
   } finally {
     isSaving.value = false

@@ -341,36 +341,24 @@ const loadDashboard = async () => {
   // 1. Iniciar el estado de carga y limpiar errores previos.
   loading.value = true;
   error.value = null;
-  console.log('🔄 Inciando la carga de datos del dashboard...');
 
   try {
     // Obtener el año actual para las consultas.
     const currentYear = new Date().getFullYear();
-    console.log(`El año actual es: ${currentYear}`);
 
     // 2. Obtener el período académico activo para el año actual.
-    console.log(`🔍 Buscando período activo para el año ${currentYear}...`);
     const activePeriod = await getActivePeriod(currentYear);
-    if (activePeriod) {
-      console.log('✅ Período activo encontrado:', activePeriod);
-    } else {
-      console.warn('⚠️ No se encontró un período activo para este año.');
-    }
 
     // 3. Obtener los grupos del año actual.
-    console.log(`📚 Obteniendo grupos para el año ${currentYear}...`);
     const response = await getAllGroupByYear(currentYear);
-    console.log('✅ Grupos asignados al usuario:', response);
     const assignedGroups = response.data;
 
     // 5. Obtener detalles adicionales para cada grupo (estudiantes, notas).
     // `Promise.all` ejecuta todas las promesas en paralelo para mayor eficiencia.
-    console.log('🔄 Obteniendo detalles (estudiantes) para cada grupo...');
     const groupsWithStudents = await Promise.all(
       Array.from(assignedGroups).map(async (group) => {
         try {
           const students = await getStudentsByGroup(group._id);
-          console.log(`Respuesta de getStudentsByGroup para el grupo ${group._id}:`, students.data.student);
           return {
             ...group,
             studentCount: students?.length || 0,
@@ -387,7 +375,6 @@ const loadDashboard = async () => {
       })
     );
 
-    console.log('🔄 Obteniendo detalles (notas) para cada grupo...');
     const groupsWithDetails = await Promise.all(
       groupsWithStudents.map(async (group) => {
         try {
@@ -409,7 +396,6 @@ const loadDashboard = async () => {
     );
 
     // 6. Calcular los totales para las tarjetas de estadísticas (KPIs).
-    console.log('📊 Calculando estadísticas generales...');
     // Sumar el número de estudiantes de todos los grupos.
     const totalEstudiantes = groupsWithDetails.reduce(
       (sum, group) => sum + group.studentCount,
@@ -429,8 +415,6 @@ const loadDashboard = async () => {
     };
 
     authStore.gruposMaterias = groupsWithDetails;
-
-    console.log('🎉 ¡Dashboard cargado exitosamente!');
 
     // 8. Mostrar una notificación de éxito al usuario.
     $q.notify({
@@ -454,7 +438,6 @@ const loadDashboard = async () => {
   } finally {
     // 9. Finalizar el estado de carga, sin importar si hubo éxito o error.
     loading.value = false;
-    console.log('🏁 Proceso de carga finalizado.');
   }
 };
 
@@ -573,7 +556,6 @@ const saveGroup = async (updatedGroup) => {
  * ha sido añadido al DOM. Es el lugar ideal para cargar datos iniciales.
  */
 onMounted(async () => {
-  console.log('🚀 Componente Dashboard montado. Iniciando carga de datos...');
   // Llama a la función principal para cargar todo el dashboard.
   await loadDashboard();
 });

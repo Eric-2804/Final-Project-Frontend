@@ -54,7 +54,7 @@ import { getUsersByRole } from '../services/schoolUserService.js'
 const { showNotify, showErrorNotify } = useNotify()
 
 const groups = ref([])
-const headquarters = ref([]) // ⬅️ SE MANTIENE
+const headquarters = ref([])
 const directors = ref([])
 const loading = ref(false)
 const isModalOpen = ref(false)
@@ -110,12 +110,9 @@ watch(groups, (newGroups) => {
   headquarters.value = Array.from(map.values())
 }, { immediate: true })
 
-/* =========================
-   DIRECTORES (SE DEJA IGUAL)
-========================= */
 async function fetchDirectors() {
   try {
-    const response = await getUsersByRole("profesor") // ← correcto según tu BD
+    const response = await getUsersByRole("profesor") 
 
     const users =
       Array.isArray(response?.users) ? response.users :
@@ -164,9 +161,6 @@ function openEditModal(row) {
   isModalOpen.value = true
 }
 
-/* =========================
-   CRUD
-========================= */
 async function handleSubmit() {
   loading.value = true
   try {
@@ -218,9 +212,6 @@ async function confirmDelete(row) {
   }
 }
 
-/* =========================
-   MOUNT
-========================= */
 onMounted(() => {
   fetchGroups()
   fetchDirectors()

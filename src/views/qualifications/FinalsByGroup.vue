@@ -29,7 +29,7 @@ async function fetch() {
   try {
     const res = await qualificationService.listFinalsByGroup(groupId.value, year.value);
     rows.value = res.data || res;
-  } catch (err) { console.error(err); }
+  } catch (err) { }
   finally { loading.value = false; }
 }
 </script>
