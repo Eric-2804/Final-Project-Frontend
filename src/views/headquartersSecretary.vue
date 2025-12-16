@@ -40,6 +40,17 @@
           new-item-label="Nueva Sede"
           @new="openCreateDialog"
         >
+
+          <template v-slot:body-cell-isActive="props">
+            <q-td :props="props">
+              <q-badge
+               rounded
+                :color="props.row.isActive ? 'green' : 'red'"
+                :label="props.row.isActive ? 'Activo' : 'Inactivo'"
+              />
+            </q-td>
+          </template>
+
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" class="q-gutter-x-sm">
               <q-btn
@@ -53,7 +64,7 @@
               </q-btn>
               <q-btn dense flat round @click="toggleStatus(props.row)">
                 <q-avatar
-                  :color="props.row.isActive ? 'green-5' : 'red-5'"
+                  :color="props.row.isActive ? 'green-6' : 'red-6'"
                   text-color="white"
                   :icon="props.row.isActive ? 'check' : 'close'"
                   size="28px"
