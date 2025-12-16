@@ -1118,11 +1118,7 @@ const filterColleges = (val, update) => {
 
 // Manejar error de imagen
 const handleImageError = () => {
-<<<<<<< HEAD
-
-=======
   // El placeholder se mostrará automáticamente
->>>>>>> fdd1feb082c60f9ae6e2b5ad40376aad18400723
 };
 
 // Cerrar diálogo
