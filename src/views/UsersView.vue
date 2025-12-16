@@ -700,8 +700,8 @@ import {
   getUsersByRole,
   getUserById,
   updateUser,
-  activateUser,
-  deactivateUser,
+  // activateUser,
+  // deactivateUser,
   deleteUser,
   createUser
 } from '../services/schoolUserService.js';

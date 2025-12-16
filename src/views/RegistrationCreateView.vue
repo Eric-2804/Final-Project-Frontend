@@ -377,9 +377,9 @@ import Spinner from '@/components/Spinner.vue'
 import { useNotify } from '@/composables/useNotify'
 import { useAuthStore } from '@/stores/auth'
 import registrationService from '@/services/registrationService'
-import { getUsersByRol, getUserById } from '@/services/schoolUserService'
+import { getUsersByRole, getUserById } from '@/services/schoolUserService'
 import { getAllGroupByYear } from '@/services/groupsService'
-import { getHeadquartersBySchool } from '@/services/headquarterService'
+import { getSedesByColegio } from '@/services/headquarterService.js'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -610,7 +610,7 @@ async function onSchoolChange(schoolId) {
   
   try {
     // Cargar sedes del colegio
-    const headquartersRes = await getHeadquartersBySchool(schoolId)
+    const headquartersRes = await getSedesByColegio(schoolId)
     console.log('📍 Respuesta de sedes:', headquartersRes)
     
     const headquarters = headquartersRes.data?.data || headquartersRes.data || []
