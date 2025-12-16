@@ -112,7 +112,7 @@ export const API_ENDPOINTS = {
   },
   USUARIOS_COLEGIO: {
     BASE: '/api/users',
-    CREATE: () => '/',                 // POST
+    CREATE: () => '/register',         // POST - Crear usuario
     GET_ALL: () => '/',                // GET
     GET_BY_ID: (id) => `/${id}`,        // GET
     GET_BY_ROL: (rol) => `/rol/${rol}`, // GET

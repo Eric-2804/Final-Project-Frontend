@@ -497,7 +497,7 @@ async function loadInitialData() {
     }
 
     // Cargar estudiantes por rol
-    const estudiantesRes = await getUsersByRol('estudiante')
+    const estudiantesRes = await getUsersByRole('estudiante')
     
     // La respuesta puede venir como array directamente o en .data
     const estudiantes = Array.isArray(estudiantesRes) ? estudiantesRes : (estudiantesRes.data || [])
@@ -517,7 +517,7 @@ async function loadInitialData() {
     }
 
     // Cargar acudientes por rol
-    const acudientesRes = await getUsersByRol('acudiente')
+    const acudientesRes = await getUsersByRole('acudiente')
     
     // La respuesta puede venir como array directamente o en .data
     const acudientes = Array.isArray(acudientesRes) ? acudientesRes : (acudientesRes.data || [])

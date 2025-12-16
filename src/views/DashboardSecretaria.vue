@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <div v-if="loading" class="flex flex-center">
-      <q-spinner-cube color="primary" size="5.5em" />
+      <q-spinner color="primary" size="5.5em" />
       <div class="q-ml-md text-h6">Cargando datos...</div>
     </div>
 
@@ -221,6 +221,7 @@ import { useQuasar } from 'quasar';
 import TablesComponent from '../components/tables.vue';
 import { getActivePeriod } from '../services/periodService.js';
 import { getAllGroupByYear, getStudentsByGroup, updateGroup } from '../services/groupsService.js';
+import { getQualificationsByGroup } from '../services/qualificationsSecretary.js';
 import EditGroupDialog from '../components/EditGroupDialog.vue';
 
 const $q = useQuasar();
@@ -378,7 +379,7 @@ const loadDashboard = async () => {
     const groupsWithDetails = await Promise.all(
       groupsWithStudents.map(async (group) => {
         try {
-          const grades = await getGradesByGroup(group._id, currentYear);
+          const grades = await getQualificationsByGroup(group._id, currentYear);
           return {
             ...group,
             grades: grades || [],

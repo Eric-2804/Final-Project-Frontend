@@ -113,6 +113,7 @@ const columns = [
   { name: 'cycle', label: 'Ciclo', field: 'cycle', align: 'center' },
   { name: 'level', label: 'Nivel', field: 'level', align: 'center' },
   { name: 'grade', label: 'Grado', field: 'grade', align: 'center' },
+  { name: 'groupIdentifier', label: 'Grupo', field: 'groupIdentifier', align: 'center'},
   { name: 'session', label: 'Jornada', field: 'session', align: 'center' },
   { name: 'director', label: 'Director', field: row => row.groupDirector?.names, align: 'center' },
   { name: 'isActive', label: 'Estado', field: 'isActive', align: 'center' },

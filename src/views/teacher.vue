@@ -2,7 +2,7 @@
   <div class="q-pa-lg">
     <!-- Spinner mientras carga -->
     <div v-if="loading" class="loading-container">
-      <q-spinner-cube color="primary" size="90px" />
+      <q-spinner color="primary" size="90px" />
       <div class="loading-text">Cargando datos...</div>
     </div>
 
@@ -42,14 +42,27 @@
         flat
         bordered
       >
-        <template #body-cell-isActive="{ row }">
-          <q-chip
-            dense
-            :color="row.isActive ? 'positive' : 'negative'"
-            text-color="white"
-          >
-            {{ row.isActive ? "Activo" : "Inactivo" }}
-          </q-chip>
+        <template #body-cell-status="{ row }">
+          <q-td class="text-center">
+            <q-chip
+              dense
+              :color="row.isActive ? 'positive' : 'negative'"
+              text-color="white"
+            >
+              {{ row.isActive ? "Activo" : "Inactivo" }}
+            </q-chip>
+          </q-td>
+        </template>
+
+        <template #body-cell-actions="{ row }">
+          <q-td class="text-center">
+            <q-toggle
+              :model-value="row.isActive"
+              @update:model-value="(val) => toggleTeacherStatus(row._id, val)"
+              color="positive"
+              size="sm"
+            />
+          </q-td>
         </template>
       </TableComponent>
     </div>
@@ -60,7 +73,7 @@
 <script setup>
   import { ref, computed, onMounted } from "vue";
   import TableComponent from "../components/tables.vue";
-  import { getUsersByRol } from "../services/apiteacher";
+  import { getUsersByRol, activateUser, desactivateUser } from "../services/apiteacher";
   import { useNotify } from "../composables/useNotify";
   
   const { showNotify, showErrorNotify } = useNotify();
@@ -73,7 +86,8 @@
     { name: "lastNames", label: "Apellidos", field: "lastNames", align: "left" },
     { name: "email", label: "Correo", field: "email", align: "left" },
     { name: "roles", label: "Rol", field: "roles", align: "left" },
-    { name: "isActive", label: "Estado", field: "isActive", align: "center" },
+    { name: "status", label: "Estado", field: "isActive", align: "center" },
+    { name: "actions", label: "Acciones", field: "actions", align: "center" },
   ];
   
   const activeTeachers = computed(() =>
@@ -104,7 +118,6 @@
       showNotify({ message: "Profesores cargados correctamente" });
   
     } catch (err) {
-      console.error("Error cargando profesores:", err);
   
       showErrorNotify({
         message:
@@ -116,6 +129,29 @@
       teachers.value = [];
     } finally {
       loading.value = false;
+    }
+  };
+
+  const toggleTeacherStatus = async (teacherId, newStatus) => {
+    try {
+      if (newStatus) {
+        await activateUser(teacherId);
+        showNotify({ message: "Profesor activado correctamente" });
+      } else {
+        await desactivateUser(teacherId);
+        showNotify({ message: "Profesor desactivado correctamente" });
+      }
+
+      // Actualizar el estado local
+      const teacher = teachers.value.find(t => t._id === teacherId);
+      if (teacher) {
+        teacher.isActive = newStatus;
+      }
+
+    } catch (err) {
+      showErrorNotify({
+        message: err.response?.data?.msg || "No se pudo cambiar el estado del profesor"
+      });
     }
   };
   

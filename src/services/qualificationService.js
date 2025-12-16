@@ -20,3 +20,17 @@ export const updateCalificacion = (id, data) => {
 export const deleteCalificacion = (id) => {
   return deleteData(`${API_ENDPOINTS.CALIFICACIONES.DELETE}/${id}`);
 };
+
+export const getByStudent = (studentId, year = null) => {
+  const url = `${API_ENDPOINTS.QUALIFICATIONS.BASE}${API_ENDPOINTS.QUALIFICATIONS.GET_BY_STUDENT(studentId)}`;
+  return getData(year ? `${url}?year=${year}` : url);
+};
+
+export const getByGroup = (groupId, year = null) => {
+  const url = `${API_ENDPOINTS.QUALIFICATIONS.BASE}${API_ENDPOINTS.QUALIFICATIONS.GET_BY_GROUP(groupId)}`;
+  return getData(year ? `${url}?year=${year}` : url);
+};
+
+export const updateQualification = (id, data) => {
+  return putData(`${API_ENDPOINTS.QUALIFICATIONS.BASE}${API_ENDPOINTS.QUALIFICATIONS.UPDATE(id)}`, data);
+};
