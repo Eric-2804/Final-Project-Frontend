@@ -1,9 +1,5 @@
 <template>
-  <q-dialog
-    :model-value="modelValue"
-    @update:model-value="emit('update:modelValue', $event)"
-    persistent
-  >
+  <q-dialog :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)" persistent>
     <q-card style="width: 600px; max-width: 90vw;">
 
       <!-- TÍTULO -->
@@ -21,98 +17,53 @@
 
             <!-- SEDE -->
             <div class="col-12">
-              <q-select
-                v-model="localForm.headquarters"
-                :options="headquarters"
-                option-value="_id"
-                option-label="name"
-                emit-value
-                map-options
-                label="Sede"
-                outlined
-                :rules="[val => !!val || 'La sede es obligatoria']"
-              />
+              <q-select v-model="localForm.headquarters" :options="headquarters" option-value="_id" option-label="name"
+                emit-value map-options label="Sede" outlined :rules="[val => !!val || 'La sede es obligatoria']" />
             </div>
 
             <!-- CICLO -->
             <div class="col-12 col-md-6">
-              <q-input
-                v-model="localForm.cycle"
-                label="Ciclo"
-                outlined
-                :rules="[val => !!val || 'El ciclo es obligatorio']"
-              />
+              <q-input v-model="localForm.cycle" label="Ciclo" outlined
+                :rules="[val => !!val || 'El ciclo es obligatorio']" />
             </div>
 
             <!-- NIVEL -->
             <div class="col-12 col-md-6">
-              <q-input
-                v-model="localForm.level"
-                label="Nivel"
-                outlined
-                :rules="[val => !!val || 'El nivel es obligatorio']"
-              />
+              <q-input v-model="localForm.level" label="Nivel" outlined
+                :rules="[val => !!val || 'El nivel es obligatorio']" />
             </div>
 
             <!-- GRADO -->
             <div class="col-12 col-md-6">
-              <q-input
-                v-model="localForm.grade"
-                label="Grado"
-                outlined
-                :rules="[val => !!val || 'El grado es obligatorio']"
-              />
+              <q-input v-model="localForm.grade" label="Grado" outlined
+                :rules="[val => !!val || 'El grado es obligatorio']" />
             </div>
 
             <!-- IDENTIFICADOR -->
             <div class="col-12 col-md-6">
-              <q-input
-                v-model="localForm.groupIdentifier"
-                label="Identificador"
-                outlined
-                :rules="[val => !!val || 'El identificador es obligatorio']"
-              />
+              <q-input v-model="localForm.groupIdentifier" label="Identificador" outlined
+                :rules="[val => !!val || 'El identificador es obligatorio']" />
             </div>
 
             <!-- JORNADA -->
             <div class="col-12 col-md-6">
-              <q-input
-                v-model="localForm.session"
-                label="Jornada"
-                outlined
-                :rules="[val => !!val || 'La jornada es obligatoria']"
-              />
+              <q-input v-model="localForm.session" label="Jornada" outlined
+                :rules="[val => !!val || 'La jornada es obligatoria']" />
             </div>
 
             <!-- DIRECTOR (SOLO INSTRUCTORES) -->
             <div class="col-12 col-md-6">
-              <q-select
-                v-model="localForm.groupDirector"
-                :options="directorsFormatted"
-                emit-value
-                map-options
-                label="Director del grupo"
-                outlined
-                :rules="[val => !!val || 'El director es obligatorio']"
-              />
+              <q-select v-model="localForm.groupDirector" :options="directorsFormatted" emit-value map-options
+                label="Director del grupo" outlined :rules="[val => !!val || 'El director es obligatorio']" />
+
             </div>
 
           </div>
 
           <!-- BOTONES -->
           <div class="row q-mt-md justify-end">
-            <q-btn
-              flat
-              label="Cancelar"
-              color="grey-7"
-              class="q-mr-sm"
-              v-close-popup
-            />
-            <q-btn
-              type="submit"
-              color="primary"
-              :label="mode === 'create' ? 'Crear grupo' : 'Guardar cambios'"
-            />
+            <q-btn flat label="Cancelar" color="grey-7" class="q-mr-sm" v-close-popup />
+            <q-btn type="submit" color="primary" :label="mode === 'create' ? 'Crear grupo' : 'Guardar cambios'" />
           </div>
 
         </q-form>
@@ -154,34 +105,34 @@ const formRef = ref(null)
 
 /* FORM LOCAL */
 const localForm = reactive({
+  _id: '',
   headquarters: '',
   cycle: '',
   level: '',
   grade: '',
   groupIdentifier: '',
   session: '',
-  groupDirector: '',
-  _id: ''
+  groupDirector: ''
 })
 
-/* SOLO INSTRUCTORES */
+/* ✅ DIRECTORES FORMATEADOS (SIN FILTRO ERRÓNEO) */
 const directorsFormatted = computed(() =>
-  props.directors
-    .filter(user => user.role === 'instructor')
-    .map(user => ({
+  Array.isArray(props.directors)
+    ? props.directors.map(user => ({
       value: user._id,
       label: `${user.names} ${user.lastNames}`
     }))
+    : []
 )
 
-/* SINCRONIZAR AL ABRIR */
+/* SINCRONIZAR AL ABRIR MODAL */
 watch(
   () => props.modelValue,
   (open) => {
     if (open && props.formData) {
       Object.assign(localForm, props.formData)
 
-      // Validación defensiva en editar
+      // Validación defensiva en edición
       const exists = directorsFormatted.value.some(
         d => d.value === localForm.groupDirector
       )

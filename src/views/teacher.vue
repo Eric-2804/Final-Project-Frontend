@@ -1,60 +1,205 @@
 <template>
-    <div class="q-pa-md">
-  
-      <h2 class="text-h5 q-mb-md">Listado de Profesores</h2>
-  
-      <div v-if="loading" class="flex flex-center">
-        <q-spinner-cube color="primary" size="4em" />
-      </div>
-  
-      <div v-else>
-        <q-table
-          :rows="teachers"
-          :columns="columns"
-          row-key="_id"
-          flat
-          bordered
-        />
-      </div>
-  
+  <div class="q-pa-lg">
+    <!-- Spinner mientras carga -->
+    <div v-if="loading" class="loading-container">
+      <q-spinner-cube color="primary" size="90px" />
+      <div class="loading-text">Cargando datos...</div>
     </div>
-  </template>
+
+    <div v-else>
+      <div class="container-card">
+      <div class="text-h4 title">Bienvenido a gestión de Profesores</div>
+      </div>
+
+      <div class="cards-container">
+        <q-card class="stat-card card-blue">
+          <div class="label">Total</div>
+          <div class="value">{{ teachers.length }}</div>
+        </q-card>
+
+        <q-card class="stat-card card-green">
+          <div class="label">Activos</div>
+          <div class="value">{{ activeTeachers }}</div>
+        </q-card>
+
+        <q-card class="stat-card card-red">
+          <div class="label">Inactivos</div>
+          <div class="value">{{ inactiveTeachers }}</div>
+        </q-card>
+      </div>
+
+
+
+<div class="container-card">
+
+      <div class="text-h4 text-bold q-mb-lg title">Listado de profesores</div>
+
+      <!-- TABLA -->
+      <TableComponent
+        :columns="columns"
+        :rows="teachers"
+        row-key="_id"
+        flat
+        bordered
+      >
+        <template #body-cell-isActive="{ row }">
+          <q-chip
+            dense
+            :color="row.isActive ? 'positive' : 'negative'"
+            text-color="white"
+          >
+            {{ row.isActive ? "Activo" : "Inactivo" }}
+          </q-chip>
+        </template>
+      </TableComponent>
+    </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+  import { ref, computed, onMounted } from "vue";
+  import TableComponent from "../components/tables.vue";
+  import { getUsersByRol } from "../services/apiteacher";
+  import { useNotify } from "../composables/useNotify";
   
-  <script>
-  import { ref, onMounted } from "vue";
-  import { getUsersByRol } from "@/services/apiteacher";
+  const { showNotify, showErrorNotify } = useNotify();
   
-  export default {
-    setup() {
-      const teachers = ref([]);
-      const loading = ref(true);
+  const teachers = ref([]);
+  const loading = ref(true);
   
-      const columns = [
-        { name: "nombre", label: "Nombre", field: "lastNames", align: "left" },
-        { name: "email", label: "Correo", field: "email", align: "left" },
-        { name: "rol", label: "Rol", field: "roles", align: "left" },
-        { name: "estado", label: "Estado", field: "estado", align: "left" }
-      ];
+  const columns = [
+    { name: "names", label: "Nombres", field: "names", align: "left" },
+    { name: "lastNames", label: "Apellidos", field: "lastNames", align: "left" },
+    { name: "email", label: "Correo", field: "email", align: "left" },
+    { name: "roles", label: "Rol", field: "roles", align: "left" },
+    { name: "isActive", label: "Estado", field: "isActive", align: "center" },
+  ];
   
-      const loadTeachers = async () => {
-        try {
-          loading.value = true;
+  const activeTeachers = computed(() =>
+    teachers.value.filter((t) => t.isActive === true).length
+  );
   
-          const resp = await getUsersByRol("profesor");
-          console.log("DOCENTES:", resp);
+  const inactiveTeachers = computed(() =>
+    teachers.value.filter((t) => t.isActive === false).length
+  );
   
-          teachers.value = resp.users || resp || [];
-        } catch (error) {
-          console.error("Error cargando docentes", error);
-        } finally {
-          loading.value = false;
-        }
-      };
+  const loadTeachers = async () => {
+    try {
+      const res = await getUsersByRol("profesor");
   
-      onMounted(loadTeachers);
+      const data =
+        res?.users ||
+        res?.data?.users ||
+        res?.data ||
+        res ||
+        [];
   
-      return { teachers, loading, columns };
-    },
+      if (!Array.isArray(data)) {
+        throw new Error("El servidor no devolvió una lista válida");
+      }
+  
+      teachers.value = data;
+  
+      showNotify({ message: "Profesores cargados correctamente" });
+  
+    } catch (err) {
+      console.error("Error cargando profesores:", err);
+  
+      showErrorNotify({
+        message:
+          err.response?.data?.msg ||
+          err.message ||
+          "No se pudieron cargar los profesores."
+      });
+  
+      teachers.value = [];
+    } finally {
+      loading.value = false;
+    }
   };
+  
+  onMounted(loadTeachers);
   </script>
   
+  
+
+<style scoped>
+.loading-container {
+  margin-top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 20px;
+  color: #1a237e;
+}
+
+.title {
+  text-align: left;
+  font-weight: bold;  
+  margin-left: 20px;
+
+}
+
+.container-card{
+  
+padding: 20px;
+  box-shadow: 0 2px 5px rgb(90, 87, 87);
+  transition: 0.2s ease-in-out;
+
+}
+
+
+.cards-container {
+  display: flex;
+  gap: 20px;
+  justify-content: left;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  margin-left: 130px;
+  margin-top: 30px;
+}
+
+.stat-card {
+  width: 250px;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 14px rgb(90, 87, 87);
+  transition: 0.2s ease-in-out;
+  margin-right: 80px;
+}
+
+.stat-card:hover {
+  transform: translateY(-7px);
+}
+
+.card-blue {
+  background: linear-gradient(135deg, #2962ff, #6e92ff);
+}
+
+.card-green {
+  background: linear-gradient(135deg, #0baa4b, #66d27a);
+}
+
+.card-red {
+  background: linear-gradient(135deg, #e53935, #ff8a80);
+}
+
+.label {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+.value {
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+</style>

@@ -72,6 +72,7 @@ import { useRouter } from "vue-router";
 import Spinner from "../components/Spinner.vue";
 import { useNotify } from "../composables/useNotify.js";
 import { useAuthStore } from '../stores/auth.js';
+import registrationService from '../services/registrationService.js';
 
 const router = useRouter();
 const { showNotify, showErrorNotify } = useNotify();
@@ -127,7 +128,7 @@ async function loadEnrollments() {
 }
 
 function viewDetails(row) {
-  router.push({ name: 'EnrollmentsDetailsView', params: { id: row.id } });
+  router.push({ name: 'Detalles_Matrícula', params: { id: row.id } });
 }
 
 </script>

@@ -17,6 +17,9 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async login(token, user) {
+      // Limpiar cualquier sesión anterior antes de guardar la nueva
+      this.logout();
+      
       this.token = token;
       localStorage.setItem('token', token);
 

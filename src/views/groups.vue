@@ -35,11 +35,10 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import Tables from '@/components/tables.vue'
-import Spinner from '@/components/spinner.vue'
+import Spinner from '@/components/Spinner.vue'
 import Modal from '@/components/modal.vue'
 import { useNotify } from '@/composables/useNotify'
 import {
@@ -50,11 +49,12 @@ import {
   disableGroup,
   deleteGroup
 } from '../services/groupsService.js'
-import { getAllSedes } from '../services/headquarterService.js'
-import { getUsersByRol } from '../services/schoolUserService.js'
+import { getUsersByRole } from '../services/schoolUserService.js'
+
 const { showNotify, showErrorNotify } = useNotify()
+
 const groups = ref([])
-const headquarters = ref([])
+const headquarters = ref([]) // ⬅️ SE MANTIENE
 const directors = ref([])
 const loading = ref(false)
 const isModalOpen = ref(false)
@@ -73,69 +73,62 @@ const formData = reactive({
 })
 
 const columns = [
-  { name: 'headquarters', label: 'Sede', field: row => row.headquarters?.name, align: 'left' },
-  { name: 'cycle', label: 'Ciclo', field: 'cycle' },
-  { name: 'level', label: 'Nivel', field: 'level' },
-  { name: 'grade', label: 'Grado', field: 'grade' },
-  { name: 'session', label: 'Jornada', field: 'session' },
-  { name: 'director', label: 'Director', field: row => row.groupDirector?.names },
+  { name: 'headquarters', label: 'Sede', field: row => row.headquarters?.name, align: 'center' },
+  { name: 'cycle', label: 'Ciclo', field: 'cycle', align: 'center' },
+  { name: 'level', label: 'Nivel', field: 'level', align: 'center' },
+  { name: 'grade', label: 'Grado', field: 'grade', align: 'center' },
+  { name: 'session', label: 'Jornada', field: 'session', align: 'center' },
+  { name: 'director', label: 'Director', field: row => row.groupDirector?.names, align: 'center' },
   { name: 'isActive', label: 'Estado', field: 'isActive', align: 'center' },
-  { name: 'actions', label: 'Acciones', field: 'actions' }
+  { name: 'actions', label: 'Acciones', field: 'actions', align: 'center' }
 ]
 
 async function fetchGroups() {
   loading.value = true
   try {
     const { data } = await getAllGroupByYear(currentYear)
-    console.log("API response:", data)
     groups.value = Array.isArray(data) ? data : []
   } catch (e) {
     groups.value = []
     showErrorNotify('Error cargando grupos')
-  }
-  loading.value = false
-}
-
-// NUEVA FUNCIÓN: Cargar todas las sedes
-async function fetchHeadquarters() {
-  try {
-    const response = await getAllSedes() // Ajusta según tu service
-    console.log("Sedes response:", response) // DEBUG: Ver qué retorna
-
-    // La API retorna { headquarters: [...] }
-    headquarters.value = Array.isArray(response.headquarters) ? response.headquarters :
-      Array.isArray(response.data?.headquarters) ? response.data.headquarters :
-        Array.isArray(response.data) ? response.data :
-          Array.isArray(response) ? response : []
-
-    console.log("Sedes cargadas:", headquarters.value) // DEBUG
-  } catch (e) {
-    console.error("Error cargando sedes:", e) // DEBUG
-    headquarters.value = []
-    showErrorNotify('Error cargando sedes')
+  } finally {
+    loading.value = false
   }
 }
 
-// NUEVA FUNCIÓN: Cargar directores (usuarios con rol profesor)
+watch(groups, (newGroups) => {
+  const map = new Map()
+
+  newGroups.forEach(group => {
+    if (group.headquarters && group.headquarters._id) {
+      map.set(group.headquarters._id, {
+        _id: group.headquarters._id,
+        name: group.headquarters.name
+      })
+    }
+  })
+  headquarters.value = Array.from(map.values())
+}, { immediate: true })
+
+/* =========================
+   DIRECTORES (SE DEJA IGUAL)
+========================= */
 async function fetchDirectors() {
   try {
-    const response = await getUsersByRol('profesor') // Ajusta según tu service
-    console.log("Users response:", response) // DEBUG: Ver qué retorna
+    const response = await getUsersByRole("profesor") // ← correcto según tu BD
 
-    // Ajusta según la estructura de tu respuesta (puede ser response.users o response.data)
-    const allUsers = Array.isArray(response.users) ? response.users :
-      Array.isArray(response.data?.users) ? response.data.users :
-        Array.isArray(response.data) ? response.data :
-          Array.isArray(response) ? response : []
+    const users =
+      Array.isArray(response?.users) ? response.users :
+      Array.isArray(response?.data?.users) ? response.data.users :
+      Array.isArray(response?.data) ? response.data :
+      Array.isArray(response) ? response : []
 
-    // Filtrar solo usuarios que tengan el rol 'profesor'
-    directors.value = allUsers.filter(user =>
-      user.roles && user.roles.some(roleObj => roleObj.role === 'profesor')
-    )
+    directors.value = users
 
-    console.log("Directores cargados:", directors.value) // DEBUG
+    console.log('🎯 Directores reales cargados:', users)
+    console.log('🎯 Directors reactive:', directors.value)
+
   } catch (e) {
-    console.error("Error cargando directores:", e) // DEBUG
     directors.value = []
     showErrorNotify('Error cargando directores')
   }
@@ -144,15 +137,20 @@ async function fetchDirectors() {
 function openCreateModal() {
   modalMode.value = 'create'
   Object.assign(formData, {
-    _id: '', headquarters: '', cycle: '', level: '', grade: '', groupIdentifier: '', session: '', groupDirector: ''
+    _id: '',
+    headquarters: '',
+    cycle: '',
+    level: '',
+    grade: '',
+    groupIdentifier: '',
+    session: '',
+    groupDirector: ''
   })
   isModalOpen.value = true
 }
 
 function openEditModal(row) {
   modalMode.value = 'edit'
-  // Al abrir el modal, normalizamos: si vienen objetos populated (headquarters/groupDirector),
-  // guardamos los _id en el form para enviar al backend en la actualización
   Object.assign(formData, {
     _id: row._id,
     headquarters: row.headquarters?._id ?? row.headquarters,
@@ -166,12 +164,15 @@ function openEditModal(row) {
   isModalOpen.value = true
 }
 
+/* =========================
+   CRUD
+========================= */
 async function handleSubmit() {
   loading.value = true
   try {
     formData.year = currentYear
     if (modalMode.value === 'create') {
-      await createGroup(formData._id, formData)
+      await createGroup(formData.headquarters, formData)
       showNotify('Grupo creado exitosamente')
     } else {
       await updateGroup(formData._id, formData)
@@ -180,30 +181,30 @@ async function handleSubmit() {
     await fetchGroups()
   } catch (e) {
     showErrorNotify('Error guardando grupo')
+  } finally {
+    loading.value = false
+    isModalOpen.value = false
   }
-  loading.value = false
-  isModalOpen.value = false
 }
 
 async function toggleState(row) {
   loading.value = true
   try {
-    if (row.isActive) {
-      await disableGroup(row._id)
-    } else {
-      await activateGroup(row._id)
-    }
+    row.isActive
+      ? await disableGroup(row._id)
+      : await activateGroup(row._id)
+
     showNotify('Estado actualizado')
     await fetchGroups()
   } catch (e) {
     showErrorNotify('Error actualizando estado')
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
 async function confirmDelete(row) {
-  const proceed = confirm('¿Eliminar este grupo? Esta acción no se puede deshacer.')
-  if (!proceed) return
+  if (!confirm('¿Eliminar este grupo?')) return
 
   loading.value = true
   try {
@@ -212,20 +213,17 @@ async function confirmDelete(row) {
     await fetchGroups()
   } catch (e) {
     showErrorNotify('Error eliminando grupo')
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
+/* =========================
+   MOUNT
+========================= */
 onMounted(() => {
   fetchGroups()
-  fetchHeadquarters() // Cargar sedes al montar
-  fetchDirectors() // Cargar directores al montar
+  fetchDirectors()
 })
-</script>
 
-<!-- <style scoped>
-.row-actions {
-  display: flex;
-  align-items: center;
-} -->
-<!-- </style> -->
+</script>

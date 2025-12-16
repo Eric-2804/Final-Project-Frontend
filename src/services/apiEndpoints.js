@@ -1,6 +1,6 @@
 export const API_ENDPOINTS = {
   REGISTRATIONS: {
-    BASE: '/api/matriculas',
+    BASE: '/api/registration',  // ⚠️ CORREGIDO: era /api/matriculas
     CREATE: '/',	// Crear 
     GET_BY_YEAR: (year) => `/year/${year}`,  // Obtener matriculas por año
     GET_BY_ID: (id) => `/${id}`, // Obtener por ID
@@ -62,6 +62,17 @@ export const API_ENDPOINTS = {
     UPDATE_FINAL: (id) => `/finales/${id}`,       // PUT /api/qualifications/finales/:id - Actualizar calificación final
     DELETE: (id) => `/${id}`,                     // DELETE /api/qualifications/:id
   },
+  COLEGIOS: {
+    BASE: '/api/schools',
+    CREATE: '/',
+    GET_ALL: '/',
+    GET_BY_ID: (id) => `/${id}`,
+     BY_DIRECCION_NUCLEO: (id) => `/direcciones-nucleo/${id}/colegios`,
+    UPDATE: (id) => `/${id}`,
+    ACTIVATE: (id) => `/${id}/activate`,
+    DISABLE: (id) => `/${id}/deactivate`,
+    DELETE: (id) => `/${id}`
+  },
   SUBJECTS: {
     BASE: '/api/subjects',
     CREATE: '/', // Crear nueva materia
@@ -75,17 +86,17 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `/${id}`, // Eliminar
   },
   GROUPS: {
-    BASE: '/api',
+    BASE: '/api/groups',
     CREATE: (sedeId) => `/sedes/${sedeId}/grupos`, // Crear grupos en sedes existentes
-    GET_ALL_BY_YEAR: (year) => `/groups/year/${year}`,  // Obtener todos por año
+    GET_ALL_BY_YEAR: (year) => `/year/${year}`,  // Obtener todos por año
     GET_BY_ID: (id) => `/${id}`, // Obtener por ID
-    GET_GUARDIAN_BY_GROUP: (id) => `/groups/${id}/acudientes`, // Listar los acudientes por grupo
-    GET_GROUP_BY_HEADQUARTERS: (sedeId) => `/groups/sedes/${sedeId}/grupos`, // Grupos por sede. 
-    GET_STUDENT_BY_GROUP: (id) => `/groups/${id}/estudiantes`,  // Estudiantes por grupo
-    UPDATE: (id) => `/groups/${id}`, // Actualizar
-    ACTIVATE: (id) => `/groups/${id}/activar`, // Activar
-    DISABLE: (id) => `/groups/${id}/desactivar`, // Desactivar
-    DELETE: (id) => `/groups/${id}`, // Eliminar
+    GET_GUARDIAN_BY_GROUP: (id) => `/${id}/acudientes`, // Listar los acudientes por grupo
+    GET_GROUP_BY_HEADQUARTERS: (sedeId) => `/sedes/${sedeId}/grupos`, // Grupos por sede. 
+    GET_STUDENT_BY_GROUP: (id) => `/${id}/estudiantes`,  // Estudiantes por grupo
+    UPDATE: (id) => `/${id}`, // Actualizar
+    ACTIVATE: (id) => `/${id}/activar`, // Activar
+    DISABLE: (id) => `/${id}/desactivar`, // Desactivar
+    DELETE: (id) => `/${id}`, // Eliminar
   },
   ACADEMIC_LOAD: { // Carga académica (AcademicLoad)
     BASE: '/api/AcademicLoad',
@@ -118,7 +129,7 @@ export const API_ENDPOINTS = {
   HEADQUARTERS: {
     BASE: '/api/headquarters',
     CREATE: () => '/', // Crear sedes
-    GET_ALL: '/',  // Listar todas las sedes
+    GET_ALL: () => '/',  // Listar todas las sedes
     GET_BY_ID: (id) => `/${id}`, // Obtener por ID
     BY_COLEGIO: (id) => `/school/${id}/headquarters`, // Obtener sedes por colegio
     UPDATE: (id) => `/${id}`,  // Actualizar sede
@@ -167,4 +178,47 @@ export const API_ENDPOINTS = {
     CUADRO_HONOR: (añoColegio, periodoId) => `/cuadro-honor/${añoColegio}/${periodoId}`, // GET /api/reportes/cuadro-honor/:añoColegio/:periodoId
     LIST_STUDENTS: (añoColegio, colegioId, grupoId) => `/listar-estudiantes/${añoColegio}/${colegioId}/${grupoId}`, // GET /api/reportes/listar-estudiantes/:añoColegio/:colegioId/:grupoId
   },
+
+  SEDES: {
+    BASE: '/api/headquarters',
+    UPDATE: (id) => `/${id}`,
+    BY_COLEGIO: (id) => `/api/headquarters/school/${id}/headquarters`,
+    ACTIVATE: (id) => `/${id}/activar`,
+    DEACTIVATE: (id) => `/${id}/inactivar`,
+  },
+
+  VIGENCIAS: {
+    BASE: '/api/vigencias',
+    BY_YEAR: '/año',
+    ACTIVE: '/activa',
+    ACTIVATE: (id) => `/${id}/activar`,
+    DEACTIVATE: (id) => `/${id}/desactivar`,
+  },
+
+  PERIODOS: {
+    BASE: '/api/periods',
+    BY_YEAR: (year) => `/year/${year}`,
+    ACTIVATE: (id) => `/${id}/activate`,
+    DEACTIVATE: (id) => `/${id}/deactivate`,
+  },
+
+ 
+  USERS: {
+    GET_BY_ROL: (rol) => `/api/users/rol/${rol}`,
+    GET_BY_ID: (id) => `/api/users/${id}`,
+  
+    CHANGE_PASSWORD: (id) => `/api/users/change-password/${id}`,
+    UPDATE_PASSWORD: `/api/users/update-password`,
+  
+    ACTIVATE: (id) => `/api/users/${id}/activate`,
+    DESACTIVATE: (id) => `/api/users/${id}/deactivate`,
+    
+    UPDATE: (id) => `/api/users/${id}`,
+    DELETE: (id) => `/api/users/${id}`,
+  
+    REFRESH_TOKEN: `/api/users/refresh-token`
+  }
+  
+
+  
 };
