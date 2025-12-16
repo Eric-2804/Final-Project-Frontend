@@ -147,7 +147,8 @@
 import { ref, onMounted } from "vue"
 import api from '../services/api.js'; 
 import { useAuthStore } from '../stores/auth';
-import { getAllSedes, createSede, updateSede } from '../services/headquarterService'; 
+import { getAllSedes, createSede, updateSede, activateSede, deactivateSede } from '../services/headquarterService'; 
+import { getAllColegios } from '../services/colegiosService';
 import Table from "../components/tables.vue"
 import { useNotify } from "../composables/useNotify.js"
 const { showNotify: info, showErrorNotify: error } = useNotify()
@@ -177,7 +178,7 @@ const filter = ref("");
 const fetchSchools = async () => {
   try {
     const response = await getAllColegios();
-    const items = Array.isArray(response.data) ? response.data : (response.data?.schools || []);
+    const items = Array.isArray(response.data.schools) ? response.data.schools : [];
     schoolOptions.value = items.map(s => ({
       label: s.name,
       value: s._id
@@ -190,26 +191,15 @@ const fetchSchools = async () => {
 
 const toggleStatus = async (headquartersItem) => {
   try {
-    const schoolId = headquartersItem.school?._id || headquartersItem.school;
-    if (!schoolId) {
-      error("No se puede cambiar el estado de una sede sin un colegio asignado. Por favor, edite la sede y asigne un colegio.");
-      return;
-    }
     const newIsActiveState = !headquartersItem.isActive;
 
-    const dataToUpdate = {
-      school: schoolId,
-      name: headquartersItem.name,
-      abbreviation: headquartersItem.abbreviation,
-      code: headquartersItem.code,
-      address: headquartersItem.address,
-      phone: headquartersItem.phone,
-      isActive: newIsActiveState, 
-    };
+    if (newIsActiveState) {
+      await activateSede(headquartersItem._id);
+    } else {
+      await deactivateSede(headquartersItem._id);
+    }
 
-    await updateSede(headquartersItem._id, dataToUpdate);
-
-    info(`Sede ${newIsActiveState ? 'activada' : 'inactivada'} correctamente`);
+    info(`Sede ${newIsActiveState ? 'activada' : 'desactivada'} correctamente`);
     const index = headquartersList.value.findIndex(h => h._id === headquartersItem._id);
     if (index !== -1) {
       headquartersList.value[index].isActive = newIsActiveState;

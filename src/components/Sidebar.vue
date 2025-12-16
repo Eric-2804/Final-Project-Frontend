@@ -64,13 +64,6 @@ const linksByRole = {
     // Comentadas temporalmente: rutas no implementadas aún
     // { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
     // { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
-    // {
-    //   title: 'Configuraciones',
-    //   icon: 'settings',
-    //   children: [
-    //     { title: 'Configurar Sistema', icon: 'settings_applications', link: '/configuracion/sistema' },
-    //   ],
-    // },
   ],
 };
 
