@@ -1,101 +1,160 @@
 <template>
-  <q-dialog :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)" persistent>
+  <q-dialog
+    :model-value="modelValue"
+    @update:model-value="emit('update:modelValue', $event)"
+    persistent
+  >
     <q-card style="width: 600px; max-width: 90vw;">
+
+      <!-- TÍTULO -->
       <q-card-section>
-        <div class="text-h6">{{ mode === 'create' ? 'Crear Grupo' : 'Editar Grupo' }}</div>
-      </q-card-section>
-
-      <q-card-section>
-        <div class="q-gutter-md">
-
-          <!-- VALIDACIÓN: Cada campo incluye rules para no permitir valores vacíos -->
-
-          <q-input
-            filled
-            v-model="localForm.headquarters"
-            label="Sede"
-            :rules="[val => !!val || 'Este campo es obligatorio']"
-          />
-
-          <q-input
-            filled
-            v-model="localForm.year"
-            label="Año"
-            type="text"
-            :rules="[
-              val => !!val || 'Este campo es obligatorio',
-              val => /^\\d{4}$/.test(val) || 'Debe ser un año válido'
-            ]"
-          />
-
-          <q-input
-            filled
-            v-model="localForm.cycle"
-            label="Ciclo"
-            :rules="[val => !!val || 'Este campo es obligatorio']"
-          />
-
-          <q-input
-            filled
-            v-model="localForm.level"
-            label="Nivel"
-            :rules="[val => !!val || 'Este campo es obligatorio']"
-          />
-
-          <q-input
-            filled
-            v-model="localForm.grade"
-            label="Grado"
-            :rules="[val => !!val || 'Este campo es obligatorio']"
-          />
-
-          <q-input
-            filled
-            v-model="localForm.groupIdentifier"
-            label="Identificador"
-            :rules="[val => !!val || 'Este campo es obligatorio']"
-          />
-
-          <q-input
-            filled
-            v-model="localForm.session"
-            label="Jornada"
-            :rules="[val => !!val || 'Este campo es obligatorio']"
-          />
-
-          <q-input
-            filled
-            v-model="localForm.groupDirector"
-            label="Director del grupo"
-            :rules="[val => !!val || 'Este campo es obligatorio']"
-          />
-
+        <div class="text-h6">
+          {{ mode === 'create' ? 'Crear Grupo' : 'Editar Grupo' }}
         </div>
       </q-card-section>
 
-      <q-card-actions align="right">
-        <q-btn flat label="Cancelar" color="negative" v-close-popup />
-        <q-btn flat label="Guardar" color="primary" @click="validateAndSubmit" />
-      </q-card-actions>
+      <!-- FORMULARIO -->
+      <q-card-section>
+        <q-form ref="formRef" @submit.prevent="onSubmit">
+
+          <div class="row q-col-gutter-md">
+
+            <!-- SEDE -->
+            <div class="col-12">
+              <q-select
+                v-model="localForm.headquarters"
+                :options="headquarters"
+                option-value="_id"
+                option-label="name"
+                emit-value
+                map-options
+                label="Sede"
+                outlined
+                :rules="[val => !!val || 'La sede es obligatoria']"
+              />
+            </div>
+
+            <!-- CICLO -->
+            <div class="col-12 col-md-6">
+              <q-input
+                v-model="localForm.cycle"
+                label="Ciclo"
+                outlined
+                :rules="[val => !!val || 'El ciclo es obligatorio']"
+              />
+            </div>
+
+            <!-- NIVEL -->
+            <div class="col-12 col-md-6">
+              <q-input
+                v-model="localForm.level"
+                label="Nivel"
+                outlined
+                :rules="[val => !!val || 'El nivel es obligatorio']"
+              />
+            </div>
+
+            <!-- GRADO -->
+            <div class="col-12 col-md-6">
+              <q-input
+                v-model="localForm.grade"
+                label="Grado"
+                outlined
+                :rules="[val => !!val || 'El grado es obligatorio']"
+              />
+            </div>
+
+            <!-- IDENTIFICADOR -->
+            <div class="col-12 col-md-6">
+              <q-input
+                v-model="localForm.groupIdentifier"
+                label="Identificador"
+                outlined
+                :rules="[val => !!val || 'El identificador es obligatorio']"
+              />
+            </div>
+
+            <!-- JORNADA -->
+            <div class="col-12 col-md-6">
+              <q-input
+                v-model="localForm.session"
+                label="Jornada"
+                outlined
+                :rules="[val => !!val || 'La jornada es obligatoria']"
+              />
+            </div>
+
+            <!-- DIRECTOR (SOLO INSTRUCTORES) -->
+            <div class="col-12 col-md-6">
+              <q-select
+                v-model="localForm.groupDirector"
+                :options="directorsFormatted"
+                emit-value
+                map-options
+                label="Director del grupo"
+                outlined
+                :rules="[val => !!val || 'El director es obligatorio']"
+              />
+            </div>
+
+          </div>
+
+          <!-- BOTONES -->
+          <div class="row q-mt-md justify-end">
+            <q-btn
+              flat
+              label="Cancelar"
+              color="grey-7"
+              class="q-mr-sm"
+              v-close-popup
+            />
+            <q-btn
+              type="submit"
+              color="primary"
+              :label="mode === 'create' ? 'Crear grupo' : 'Guardar cambios'"
+            />
+          </div>
+
+        </q-form>
+      </q-card-section>
+
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 
+/* PROPS */
 const props = defineProps({
   modelValue: Boolean,
-  mode: String,
-  formData: Object
+  mode: {
+    type: String,
+    default: 'create'
+  },
+  formData: {
+    type: Object,
+    required: true
+  },
+  headquarters: {
+    type: Array,
+    default: () => []
+  },
+  directors: {
+    type: Array,
+    default: () => []
+  }
 })
 
+/* EMITS */
 const emit = defineEmits(['update:modelValue', 'submit'])
 
-// Creamos una copia local para permitir validaciones sin mutar directamente el padre hasta enviar
+/* FORM REF */
+const formRef = ref(null)
+
+/* FORM LOCAL */
 const localForm = reactive({
   headquarters: '',
-  year: '',
   cycle: '',
   level: '',
   grade: '',
@@ -105,31 +164,41 @@ const localForm = reactive({
   _id: ''
 })
 
-// Cuando se abra el modal, sincronizamos los datos
+/* SOLO INSTRUCTORES */
+const directorsFormatted = computed(() =>
+  props.directors
+    .filter(user => user.role === 'instructor')
+    .map(user => ({
+      value: user._id,
+      label: `${user.names} ${user.lastNames}`
+    }))
+)
+
+/* SINCRONIZAR AL ABRIR */
 watch(
   () => props.modelValue,
-  (value) => {
-    if (value) Object.assign(localForm, props.formData)
+  (open) => {
+    if (open && props.formData) {
+      Object.assign(localForm, props.formData)
+
+      // Validación defensiva en editar
+      const exists = directorsFormatted.value.some(
+        d => d.value === localForm.groupDirector
+      )
+
+      if (!exists) {
+        localForm.groupDirector = ''
+      }
+    }
   }
 )
 
-function validateAndSubmit() {
-  // Validación manual por si alguna regla no se ejecuta visualmente
-  const required = [
-    'headquarters', 'year', 'cycle', 'level', 'grade',
-    'groupIdentifier', 'session', 'groupDirector'
-  ]
+/* SUBMIT */
+const onSubmit = async () => {
+  const isValid = await formRef.value.validate()
+  if (!isValid) return
 
-  for (const field of required) {
-    if (!localForm[field]) {
-      alert(`El campo ${field} es obligatorio`)
-      return
-    }
-  }
-
-  // Copiar nuevamente al formData original
   Object.assign(props.formData, localForm)
-
   emit('submit')
 }
 </script>

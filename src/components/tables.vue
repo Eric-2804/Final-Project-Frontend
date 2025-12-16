@@ -38,8 +38,8 @@
         color="primary"
         class="board"
       >
-        <!-- Passthrough para todos los slots -->
-        <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
+        <!-- Passthrough para todos los slots (seguro y opcional) -->
+        <template v-for="(v, slot) in $slots" v-slot:[slot]="scope">
           <slot :name="slot" v-bind="scope" />
         </template>
       </q-table>
@@ -84,7 +84,7 @@ const processedRows = computed(() => {
       return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB;
     });
   }
-  return props.rows;
+  return Array.isArray(props.rows) ? props.rows : [];
 });
 </script>
 

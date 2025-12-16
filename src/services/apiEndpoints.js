@@ -75,17 +75,17 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `/${id}`, // Eliminar
   },
   GROUPS: {
-    BASE: '/api/groups',
-    CREATE: '/', // Crear grupos
-    GET_ALL_BY_YEAR: (year) => `/year/${year}`,  // Obtener todos por año
+    BASE: '/api',
+    CREATE: (sedeId) => `/sedes/${sedeId}/grupos`, // Crear grupos en sedes existentes
+    GET_ALL_BY_YEAR: (year) => `/groups/year/${year}`,  // Obtener todos por año
     GET_BY_ID: (id) => `/${id}`, // Obtener por ID
-    GET_GUARDIAN_BY_GROUP: (id) => `/${id}/acudientes`, // Listar los acudientes por grupo
-    GET_GROUP_BY_HEADQUARTERS: (sedeId) => `/sedes/${sedeId}/grupos`, // Grupos por sede. 
-    GET_STUDENT_BY_GROUP: (id) => `/${id}/estudiantes`,  // Estudiantes por grupo
-    UPDATE: (id) => `/${id}`, // Actualizar
-    ACTIVATE: (id) => `/${id}/activar`, // Activar
-    DISABLE: (id) => `/${id}/desactivar`, // Desactivar
-    DELETE: (id) => `/${id}`, // Eliminar
+    GET_GUARDIAN_BY_GROUP: (id) => `/groups/${id}/acudientes`, // Listar los acudientes por grupo
+    GET_GROUP_BY_HEADQUARTERS: (sedeId) => `/groups/sedes/${sedeId}/grupos`, // Grupos por sede. 
+    GET_STUDENT_BY_GROUP: (id) => `/groups/${id}/estudiantes`,  // Estudiantes por grupo
+    UPDATE: (id) => `/groups/${id}`, // Actualizar
+    ACTIVATE: (id) => `/groups/${id}/activar`, // Activar
+    DISABLE: (id) => `/groups/${id}/desactivar`, // Desactivar
+    DELETE: (id) => `/groups/${id}`, // Eliminar
   },
   ACADEMIC_LOAD: { // Carga académica (AcademicLoad)
     BASE: '/api/AcademicLoad',
@@ -99,10 +99,14 @@ export const API_ENDPOINTS = {
     DEACTIVATE: (id) => `/${id}/deactivate`,                       // PUT /api/AcademicLoad/:id/deactivate
     DELETE: (id) => `/${id}`,                                      // DELETE /api/AcademicLoad/:id
   },
-
   USUARIOS_COLEGIO: {
     BASE: '/api/users',
-    DELETE: '/usuarios-colegio/delete'
+    CREATE: () => '/',                 // POST
+    GET_ALL: () => '/',                // GET
+    GET_BY_ID: (id) => `/${id}`,        // GET
+    GET_BY_ROL: (rol) => `/rol/${rol}`, // GET
+    UPDATE: (id) => `/${id}`,           // PUT
+    DELETE: (id) => `/${id}`,           // DELETE
   },
   AUTH: {
     LOGIN: '/api/users',
