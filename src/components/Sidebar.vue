@@ -53,9 +53,10 @@ const sidebarLinks = {
   secretaria: [
     { title: 'Dashboard', icon: 'dashboard', link: '/secretaria/dashboard' },
     { title: 'Sedes', icon: 'business', link: '/secretaria/headquarters' },
-    { title: 'Matrículas', icon: 'assignment', link: '/secretaria/enrollments' },
+    { title: 'Matrículas', icon: 'assignment', link: '/secretaria/registrations' },
     { title: 'Gestión Académica', icon: 'work', link: '/secretaria/academicManagement' },
     { title: 'Grupos', icon: 'group', link: '/secretary/group' },
+    { title: 'Calificaciones', icon: 'grade', link: '/secretaria/qualifications' },
     { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
     { title: 'Áreas y Materias', icon: 'class', link: '/management/materia-area' },
     { title: 'Periodos', icon: 'event', link: '/secretaria/periodo' },
