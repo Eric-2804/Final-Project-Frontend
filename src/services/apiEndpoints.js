@@ -67,7 +67,7 @@ export const API_ENDPOINTS = {
     CREATE: '/',
     GET_ALL: '/',
     GET_BY_ID: (id) => `/${id}`,
-    BY_DIRECCION_NUCLEO: (direccionId) => `/core-direction/${direccionId}/schools`,
+     BY_DIRECCION_NUCLEO: (id) => `/direcciones-nucleo/${id}/colegios`,
     UPDATE: (id) => `/${id}`,
     ACTIVATE: (id) => `/${id}/activate`,
     DISABLE: (id) => `/${id}/deactivate`,

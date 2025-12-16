@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from './apiEndpoints';
 const { COLEGIOS } = API_ENDPOINTS;
 
 export const getAllColegios = () => {
-  return getData(COLEGIOS.BASE);
+  return getData(`${COLEGIOS.BASE}${COLEGIOS.GET_ALL}`);
 };
 
 export const getColegioById = (id) => {

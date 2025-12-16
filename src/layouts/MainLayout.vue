@@ -101,6 +101,7 @@ watch(() => $q.screen.gt.sm, (isDesktop) => {
   min-height: calc(100vh - 50px);
   transition: padding-left 0.3s ease;
   
+  
   // Padding solo cuando el drawer está en modo mini (empuja el contenido)
   &.with-mini-drawer {
     padding-left: 80px;
