@@ -54,21 +54,11 @@ const sidebarLinks = {
     { title: 'Dashboard', icon: 'dashboard', link: '/secretaria/dashboard' },
     { title: 'Sedes', icon: 'business', link: '/secretaria/headquarters' },
     { title: 'Matrículas', icon: 'assignment', link: '/secretaria/registrations' },
-    { title: 'Gestión Académica', icon: 'work', link: '/secretaria/academicManagement' },
-    { title: 'Grupos', icon: 'group', link: '/secretary/group' },
+    { title: 'Grupos', icon: 'workspaces', link: '/secretary/group' },
     { title: 'Calificaciones', icon: 'grade', link: '/secretaria/qualifications' },
-    { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
+    { title: 'Profesores', icon: 'school', link: '/secretaria/teacher' },
     { title: 'Áreas y Materias', icon: 'class', link: '/management/materia-area' },
-    { title: 'Periodos', icon: 'event', link: '/secretaria/periodo' },
-    { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
     { title: 'Usuarios', icon: 'people', link: '/management/usuarios-colegio' },
-    {
-      title: 'Configuraciones',
-      icon: 'settings',
-      children: [
-        { title: 'Configurar Sistema', icon: 'settings_applications', link: '/configuracion/sistema' },
-      ],
-    },
   ],
 };
 

@@ -21,6 +21,14 @@ import RegistrationListView from '../views/RegistrationListView.vue'
 import RegistrationCreateView from '../views/RegistrationCreateView.vue'
 import RegistrationEditView from '../views/RegistrationEditView.vue'
 import UsersView from '../views/UsersView.vue'
+import QualificationsModule from '../views/qualifications/QualificationsModule.vue'
+import StudentGrades from '../views/qualifications/StudentGrades.vue'
+import GroupGrades from '../views/qualifications/GroupGrades.vue'
+import CreateQualification from '../views/qualifications/CreateQualification.vue'
+import BatchCreate from '../views/qualifications/BatchCreate.vue'
+import GenerateFinals from '../views/qualifications/GenerateFinals.vue'
+import FinalsByYear from '../views/qualifications/FinalsByYear.vue'
+import FinalsByGroup from '../views/qualifications/FinalsByGroup.vue'
 import { useAuthStore } from '../stores/auth';
 
 const routes = [
@@ -50,7 +58,23 @@ const routes = [
       { path: 'management/materia-area', name: "Gestion_Materias_Areas", component: SubjectView},
       { path: 'secretaria/notifications', name: "Notificaciones", component: Notifications},
       { path: 'secretary/group', name: 'Groups', component: Groups},
-      { path: 'secretaria/users', name: "Gestion_Usuarios", component: UsersView}
+      { path: 'management/usuarios-colegio', name: "Gestion_Usuarios", component: UsersView},
+      
+      // Rutas de Calificaciones
+      { 
+        path: 'secretaria/qualifications', 
+        name: "Calificaciones", 
+        component: QualificationsModule,
+        children: [
+          { path: 'student', name: 'Calificaciones_Estudiante', component: StudentGrades },
+          { path: 'group', name: 'Calificaciones_Grupo', component: GroupGrades },
+          { path: 'create', name: 'Crear_Calificacion', component: CreateQualification },
+          { path: 'batch', name: 'Calificaciones_Lote', component: BatchCreate },
+          { path: 'generate', name: 'Generar_Finales', component: GenerateFinals },
+          { path: 'finals-by-year', name: 'Finales_Año', component: FinalsByYear },
+          { path: 'finals-by-group', name: 'Finales_Grupo', component: FinalsByGroup },
+        ]
+      }
     ]
   }
 ]
