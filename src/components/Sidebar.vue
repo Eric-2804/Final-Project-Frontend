@@ -49,28 +49,32 @@ import EssentialLink from './EssentialLink.vue';
 const authStore = useAuthStore();
 const userRole = computed(() => authStore.isAuthReady && authStore.user ? authStore.user.rol : null);
 
-const linksByRole = {
- 
+const sidebarLinks = {
   secretaria: [
     { title: 'Dashboard', icon: 'dashboard', link: '/secretaria/dashboard' },
     { title: 'Sedes', icon: 'business', link: '/secretaria/headquarters' },
-    { title: 'Matrículas', icon: 'app_registration', link: '/secretaria/registrations' },
+    { title: 'Matrículas', icon: 'assignment', link: '/secretaria/enrollments' },
     { title: 'Gestión Académica', icon: 'work', link: '/secretaria/academicManagement' },
-    { title: 'Profesores', icon: 'school', link: '/secretaria/teacher' },
     { title: 'Grupos', icon: 'group', link: '/secretary/group' },
+    { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
     { title: 'Áreas y Materias', icon: 'class', link: '/management/materia-area' },
     { title: 'Periodos', icon: 'event', link: '/secretaria/periodo' },
-    { title: 'Usuarios', icon: 'people', link: '/secretaria/users' },
-    // Comentadas temporalmente: rutas no implementadas aún
-    // { title: 'Indicadores', icon: 'assessment', link: '/management/indicadores' },
-    // { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
+    { title: 'Vigencia', icon: 'today', link: '/management/vigencia' },
+    { title: 'Usuarios', icon: 'people', link: '/management/usuarios-colegio' },
+    {
+      title: 'Configuraciones',
+      icon: 'settings',
+      children: [
+        { title: 'Configurar Sistema', icon: 'settings_applications', link: '/configuracion/sistema' },
+      ],
+    },
   ],
 };
 
 const links = computed(() => {
   const role = userRole.value;
   if (!role) return [];
-  return linksByRole[role.toLowerCase()] || [];
+  return sidebarLinks[role.toLowerCase()] || [];
 });
 </script>
 

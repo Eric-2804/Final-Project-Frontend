@@ -5,13 +5,12 @@
         <!-- Input del buscador -->
         <q-input
           v-model="filter"
-          label="Buscar por nombre, código, ID, tipo..."
+          label="buscar..."
           dense
           clearable
           rounded
           class="seeker"
           :debounce="200"
-          hint="Busca en todos los campos"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -34,13 +33,13 @@
       <q-table
         :rows="processedRows"
         :columns="columns"
-        :filter="customFilter"
+        :filter="filter"
         :row-key="rowKey"
         color="primary"
         class="board"
       >
-        <!-- Passthrough para todos los slots -->
-        <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
+        <!-- Passthrough para todos los slots (seguro y opcional) -->
+        <template v-for="(v, slot) in $slots" v-slot:[slot]="scope">
           <slot :name="slot" v-bind="scope" />
         </template>
       </q-table>
@@ -71,14 +70,10 @@ function toggleSortOrder() {
   sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc';
 }
 
-const customFilter = computed(() => filter.value);
-
 const processedRows = computed(() => {
-  let rows = props.rows;
-  
-  // Aplicar ordenamiento si está habilitado
   if (props.enableSorting) {
-    const rowsArray = Array.isArray(rows) ? [...rows] : [];
+    // Asegurarse de que las filas sean un array antes de ordenar
+    const rowsArray = Array.isArray(props.rows) ? [...props.rows] : [];
     return rowsArray.sort((a, b) => {
       const dateA = new Date(a.lastChange);
       const dateB = new Date(b.lastChange);
@@ -89,8 +84,7 @@ const processedRows = computed(() => {
       return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB;
     });
   }
-  
-  return rows;
+  return Array.isArray(props.rows) ? props.rows : [];
 });
 </script>
 
@@ -105,7 +99,7 @@ const processedRows = computed(() => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-  width: 95%;
+  width: 90%;
   max-width: 1200px;
 }
 

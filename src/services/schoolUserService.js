@@ -1,45 +1,48 @@
 import { postData, getData, putData, deleteData } from './httpService';
 import { API_ENDPOINTS } from './apiEndpoints';
 
-const { USERS } = API_ENDPOINTS;
+const { USUARIOS_COLEGIO } = API_ENDPOINTS;
 
+// Crear usuario
 export const createUser = (userData) => {
-  // Usar el endpoint correcto según la especificación: POST /api/users/register
-  return postData('/api/users/register', userData);
+  return postData(
+    `${USUARIOS_COLEGIO.BASE}${USUARIOS_COLEGIO.CREATE()}`,
+    userData
+  );
 };
 
+// Obtener todos los usuarios
 export const getAllUsers = () => {
-  return getData(USERS.BASE || '/api/users');
+  return getData(
+    `${USUARIOS_COLEGIO.BASE}${USUARIOS_COLEGIO.GET_ALL()}`
+  );
 };
 
-export const getUsersByRol = (rol) => {
-  return getData(USERS.GET_BY_ROL(rol));
-};
-
+// Obtener usuarios por rol
 export const getUsersByRole = (rol) => {
-  return getData(USERS.GET_BY_ROL(rol));
+  return getData(
+    `${USUARIOS_COLEGIO.BASE}${USUARIOS_COLEGIO.GET_BY_ROL(rol)}`
+  );
 };
 
+// Obtener usuario por ID
 export const getUserById = (id) => {
-  return getData(USERS.GET_BY_ID(id));
+  return getData(
+    `${USUARIOS_COLEGIO.BASE}${USUARIOS_COLEGIO.GET_BY_ID(id)}`
+  );
 };
 
+// Actualizar usuario
 export const updateUser = (id, userData) => {
-  return putData(USERS.UPDATE(id), userData);
+  return putData(
+    `${USUARIOS_COLEGIO.BASE}${USUARIOS_COLEGIO.UPDATE(id)}`,
+    userData
+  );
 };
 
-export const activateUser = (id) => {
-  // Según la documentación del backend: POST /api/users/:id/activate
-  // No requiere body
-  return postData(USERS.ACTIVATE(id), {});
-};
-
-export const deactivateUser = (id) => {
-  // Según la documentación del backend: POST /api/users/:id/deactivate
-  // No requiere body
-  return postData(USERS.DESACTIVATE(id), {});
-};
-
+// Eliminar usuario
 export const deleteUser = (id) => {
-  return deleteData(USERS.DELETE(id));
+  return deleteData(
+    `${USUARIOS_COLEGIO.BASE}${USUARIOS_COLEGIO.DELETE(id)}`
+  );
 };

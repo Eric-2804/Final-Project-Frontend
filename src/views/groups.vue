@@ -1,40 +1,65 @@
 <template>
   <div class="q-pa-md">
+
+    <h1 style="font-size: 3rem;">Gestion de Grupos</h1>
+
+    <div class="row justify-end q-mt-md">
+      <q-btn label="Crear Grupo" color="primary" @click="openCreateModal" />
+    </div>
+
     <Spinner v-if="loading" size="4em" class="q-mb-md" />
 
-    <Tables
-      :columns="columns"
-      :rows="groups"
-      actions
-      @edit="openEditModal"
-      @toggleState="toggleState"
-    />
+    <Tables :columns="columns" :rows="groups" actions @edit="openEditModal" @toggleState="toggleState">
 
-    <q-btn label="Crear Grupo" color="primary" @click="openCreateModal" class="q-mt-md" />
+      <template #body-cell-isActive="{ row }">
+        <q-td class="q-pa-none text-center">
 
-    <Modal
-      v-model="isModalOpen"
-      :mode="modalMode"
-      :formData="formData"
-      @submit="handleSubmit"
-    />
+          <q-btn :color="row.isActive ? 'positive' : 'negative'" :label="row.isActive ? 'ACTIVO' : 'INACTIVO'" size="sm"
+            flat @click="toggleState(row)" />
+        </q-td>
+      </template>
+
+      <template #body-cell-actions="{ row }">
+        <q-td class="row-actions q-pa-none q-gutter-sm">
+
+          <q-btn icon="edit" color="primary" flat dense round class="q-mr-sm" @click="openEditModal(row)" />
+
+          <q-btn icon="delete" color="negative" flat dense round @click="confirmDelete(row)" />
+        </q-td>
+      </template>
+    </Tables>
+
+    <Modal v-model="isModalOpen" :mode="modalMode" :formData="formData" :headquarters="headquarters"
+      :directors="directors" @submit="handleSubmit" />
+
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-// import api from "@/services/api.js"
+import { ref, reactive, onMounted, watch } from 'vue'
 import Tables from '@/components/tables.vue'
 import Spinner from '@/components/Spinner.vue'
 import Modal from '@/components/modal.vue'
 import { useNotify } from '@/composables/useNotify'
-import { createGroup, getGroupById, getAllGroupByYear, getGuardiansByGroup, getGroupsByHeadquarters, getStudentsByGroup, updateGroup, activateGroup, disableGroup, deleteGroup } from '../services/groupsService'
+import {
+  createGroup,
+  getAllGroupByYear,
+  updateGroup,
+  activateGroup,
+  disableGroup,
+  deleteGroup
+} from '../services/groupsService.js'
+import { getUsersByRole } from '../services/schoolUserService.js'
 
 const { showNotify, showErrorNotify } = useNotify()
+
 const groups = ref([])
+const headquarters = ref([])
+const directors = ref([])
 const loading = ref(false)
 const isModalOpen = ref(false)
 const modalMode = ref('create')
+const currentYear = new Date().getFullYear()
 
 const formData = reactive({
   _id: '',
@@ -44,61 +69,152 @@ const formData = reactive({
   grade: '',
   groupIdentifier: '',
   session: '',
-  // groupDirector: ''
+  groupDirector: ''
 })
 
 const columns = [
-  { name: 'headquarters', label: 'Sede', field: row => row.headquarters?.name || row.headquarters, align: 'left' },
-  { name: 'cycle', label: 'Ciclo', field: 'cycle' },
-  { name: 'level', label: 'Nivel', field: 'level' },
-  { name: 'grade', label: 'Grado', field: 'grade' },
-  { name: 'groupIdentifier', label: 'Identificador', field: 'groupIdentifier' },
-  { name: 'session', label: 'Jornada', field: 'session' },
-  // { name: 'groupDirector', label: 'Director', field: row => row.groupDirector?.names || row.groupDirector },
-  { name: 'active', label: 'Estado', field: 'isActive' },
-  { name: 'actions', label: 'Acciones', field: 'actions' }
+  { name: 'headquarters', label: 'Sede', field: row => row.headquarters?.name, align: 'center' },
+  { name: 'cycle', label: 'Ciclo', field: 'cycle', align: 'center' },
+  { name: 'level', label: 'Nivel', field: 'level', align: 'center' },
+  { name: 'grade', label: 'Grado', field: 'grade', align: 'center' },
+  { name: 'session', label: 'Jornada', field: 'session', align: 'center' },
+  { name: 'director', label: 'Director', field: row => row.groupDirector?.names, align: 'center' },
+  { name: 'isActive', label: 'Estado', field: 'isActive', align: 'center' },
+  { name: 'actions', label: 'Acciones', field: 'actions', align: 'center' }
 ]
 
 async function fetchGroups() {
   loading.value = true
   try {
-    const { data } = await getAllGroupByYear('2025')
-    groups.value = Array.isArray(data.data) ? data.data : [data.data]
+    const { data } = await getAllGroupByYear(currentYear)
+    groups.value = Array.isArray(data) ? data : []
   } catch (e) {
+    groups.value = []
     showErrorNotify('Error cargando grupos')
+  } finally {
+    loading.value = false
   }
-  loading.value = false
+}
+
+watch(groups, (newGroups) => {
+  const map = new Map()
+
+  newGroups.forEach(group => {
+    if (group.headquarters && group.headquarters._id) {
+      map.set(group.headquarters._id, {
+        _id: group.headquarters._id,
+        name: group.headquarters.name
+      })
+    }
+  })
+  headquarters.value = Array.from(map.values())
+}, { immediate: true })
+
+async function fetchDirectors() {
+  try {
+    const response = await getUsersByRole("profesor") 
+
+    const users =
+      Array.isArray(response?.users) ? response.users :
+      Array.isArray(response?.data?.users) ? response.data.users :
+      Array.isArray(response?.data) ? response.data :
+      Array.isArray(response) ? response : []
+
+    directors.value = users
+
+    console.log('🎯 Directores reales cargados:', users)
+    console.log('🎯 Directors reactive:', directors.value)
+
+  } catch (e) {
+    directors.value = []
+    showErrorNotify('Error cargando directores')
+  }
 }
 
 function openCreateModal() {
   modalMode.value = 'create'
   Object.assign(formData, {
-    _id: '', headquarters: '', year: '', cycle: '', level: '', grade: '', groupIdentifier: '', session: '', groupDirector: ''
+    _id: '',
+    headquarters: '',
+    cycle: '',
+    level: '',
+    grade: '',
+    groupIdentifier: '',
+    session: '',
+    groupDirector: ''
   })
   isModalOpen.value = true
 }
 
 function openEditModal(row) {
   modalMode.value = 'edit'
-  Object.assign(formData, row)
+  Object.assign(formData, {
+    _id: row._id,
+    headquarters: row.headquarters?._id ?? row.headquarters,
+    cycle: row.cycle,
+    level: row.level,
+    grade: row.grade,
+    groupIdentifier: row.groupIdentifier,
+    session: row.session,
+    groupDirector: row.groupDirector?._id ?? row.groupDirector
+  })
   isModalOpen.value = true
 }
 
-async function toggleState(row) {
-  loading.value = true;
+async function handleSubmit() {
+  loading.value = true
   try {
-    if (row.isActive) {
-      await disableGroup(row._id);
+    formData.year = currentYear
+    if (modalMode.value === 'create') {
+      await createGroup(formData.headquarters, formData)
+      showNotify('Grupo creado exitosamente')
     } else {
-      await activateGroup(row._id);
+      await updateGroup(formData._id, formData)
+      showNotify('Grupo actualizado')
     }
-    showNotify('Estado actualizado');
-    fetchGroups();
+    await fetchGroups()
   } catch (e) {
-    showErrorNotify('Error actualizando estado');
+    showErrorNotify('Error guardando grupo')
+  } finally {
+    loading.value = false
+    isModalOpen.value = false
   }
-  loading.value = false;
 }
 
-onMounted(fetchGroups)
+async function toggleState(row) {
+  loading.value = true
+  try {
+    row.isActive
+      ? await disableGroup(row._id)
+      : await activateGroup(row._id)
+
+    showNotify('Estado actualizado')
+    await fetchGroups()
+  } catch (e) {
+    showErrorNotify('Error actualizando estado')
+  } finally {
+    loading.value = false
+  }
+}
+
+async function confirmDelete(row) {
+  if (!confirm('¿Eliminar este grupo?')) return
+
+  loading.value = true
+  try {
+    await deleteGroup(row._id)
+    showNotify('Grupo eliminado')
+    await fetchGroups()
+  } catch (e) {
+    showErrorNotify('Error eliminando grupo')
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchGroups()
+  fetchDirectors()
+})
+
 </script>

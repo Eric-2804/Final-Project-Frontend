@@ -87,7 +87,7 @@ export const API_ENDPOINTS = {
   },
   GROUPS: {
     BASE: '/api/groups',
-    CREATE: '/', // Crear grupos
+    CREATE: (sedeId) => `/sedes/${sedeId}/grupos`, // Crear grupos en sedes existentes
     GET_ALL_BY_YEAR: (year) => `/year/${year}`,  // Obtener todos por año
     GET_BY_ID: (id) => `/${id}`, // Obtener por ID
     GET_GUARDIAN_BY_GROUP: (id) => `/${id}/acudientes`, // Listar los acudientes por grupo
@@ -110,10 +110,14 @@ export const API_ENDPOINTS = {
     DEACTIVATE: (id) => `/${id}/deactivate`,                       // PUT /api/AcademicLoad/:id/deactivate
     DELETE: (id) => `/${id}`,                                      // DELETE /api/AcademicLoad/:id
   },
-
   USUARIOS_COLEGIO: {
     BASE: '/api/users',
-    DELETE: '/usuarios-colegio/delete'
+    CREATE: () => '/',                 // POST
+    GET_ALL: () => '/',                // GET
+    GET_BY_ID: (id) => `/${id}`,        // GET
+    GET_BY_ROL: (rol) => `/rol/${rol}`, // GET
+    UPDATE: (id) => `/${id}`,           // PUT
+    DELETE: (id) => `/${id}`,           // DELETE
   },
   AUTH: {
     LOGIN: '/api/users',
@@ -125,7 +129,7 @@ export const API_ENDPOINTS = {
   HEADQUARTERS: {
     BASE: '/api/headquarters',
     CREATE: () => '/', // Crear sedes
-    GET_ALL: '/',  // Listar todas las sedes
+    GET_ALL: () => '/',  // Listar todas las sedes
     GET_BY_ID: (id) => `/${id}`, // Obtener por ID
     BY_COLEGIO: (id) => `/school/${id}/headquarters`, // Obtener sedes por colegio
     UPDATE: (id) => `/${id}`,  // Actualizar sede

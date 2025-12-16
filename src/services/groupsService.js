@@ -1,8 +1,8 @@
 import { postData, getData, putData, deleteData } from './httpService';
 import { API_ENDPOINTS } from './apiEndpoints';
 
-export const createGroup = (dataGroup) => {
-  return postData(API_ENDPOINTS.GROUPS.BASE + API_ENDPOINTS.GROUPS.CREATE(), dataGroup);
+export const createGroup = (sedeId, dataGroup) => {
+  return postData(API_ENDPOINTS.GROUPS.BASE + API_ENDPOINTS.GROUPS.CREATE(sedeId), dataGroup);
 };
 
 export const getAllGroupByYear = (year) => {
