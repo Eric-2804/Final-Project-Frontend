@@ -159,9 +159,6 @@ async function fetchDirectors() {
 
     directors.value = users
 
-    console.log('🎯 Directores reales cargados:', users)
-    console.log('🎯 Directors reactive:', directors.value)
-
   } catch (e) {
     directors.value = []
     showErrorNotify('Error cargando directores')
@@ -211,8 +208,6 @@ async function handleSubmit() {
       session: formData.session,
       groupDirector: formData.groupDirector
     }
-
-    console.log('📤 Payload enviado:', payload)
 
     if (modalMode.value === 'create') {
       await createGroup(formData.headquarters, payload)
