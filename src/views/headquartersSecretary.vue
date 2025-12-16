@@ -40,6 +40,17 @@
           new-item-label="Nueva Sede"
           @new="openCreateDialog"
         >
+
+          <template v-slot:body-cell-isActive="props">
+            <q-td :props="props">
+              <q-badge
+               rounded
+                :color="props.row.isActive ? 'green' : 'red'"
+                :label="props.row.isActive ? 'Activo' : 'Inactivo'"
+              />
+            </q-td>
+          </template>
+
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" class="q-gutter-x-sm">
               <q-btn
@@ -53,7 +64,7 @@
               </q-btn>
               <q-btn dense flat round @click="toggleStatus(props.row)">
                 <q-avatar
-                  :color="props.row.isActive ? 'green-5' : 'red-5'"
+                  :color="props.row.isActive ? 'green-6' : 'red-6'"
                   text-color="white"
                   :icon="props.row.isActive ? 'check' : 'close'"
                   size="28px"
@@ -80,7 +91,7 @@
                       <q-form @submit.prevent="submitForm">
 
                         <div class="row q-col-gutter-md">
-                          <div class="col-12">
+                          <div class="col-12" v-if="!isEditMode">
                             <q-select
                               v-model="formData.school"
                               :options="schoolOptions"
@@ -144,16 +155,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue"
-import api from '../services/api.js'; // Usado para `fetchSchools` y `fetchHeadquarters` directo
+import { ref, onMounted } from "vue"
+import api from '../services/api.js'; 
 import { useAuthStore } from '../stores/auth';
-import { getAllSedes, createSede, updateSede } from '../services/headquarterService'; // Importar el service
+import { getAllSedes, createSede, updateSede, activateSede, deactivateSede } from '../services/headquarterService'; 
+import { getAllColegios } from '../services/colegiosService';
 import Table from "../components/tables.vue"
 import { useNotify } from "../composables/useNotify.js"
 const { showNotify: info, showErrorNotify: error } = useNotify()
 import HeaderComponent from '../components/Header.vue'
 
-// --- ESTADOS ---
 const isLoading = ref(false)
 const headquartersList = ref([])
 const showDialog = ref(false)
@@ -162,7 +173,7 @@ const editingItem = ref(null)
 const authStore = useAuthStore();
 
 const formData = ref({
-  school: null, // Debe ser null o '' para el selector inicial
+  school: null, 
   name: "",
   abbreviation: "",
   code: "",
@@ -173,58 +184,33 @@ const formData = ref({
 
 const schoolOptions = ref([])
 
-// --- FUNCIONES DE CÁLCULO -- -
-
-// Filtra la lista de sedes (si tienes el input de filtro en el componente Table)
-// **Nota:** No necesitas reescribir esta lógica si tu componente `Table` maneja el filtro.
-// Mantenemos `searchText` solo por si lo usas en el futuro.
 const filter = ref(""); 
 
-// --- FUNCIONES DE CARGA Y LÓGICA ---
-
-// Carga la lista de colegios.
 const fetchSchools = async () => {
   try {
-    const response = await api.get("/api/schools");
-    const res = response.data;
-    
-    // Normalización de la respuesta del API para obtener la lista de items
-    const items = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : [])
-    
-    // Mapea la lista al formato { label, value } requerido por q-select
-    schoolOptions.value = items.map(s => ({ label: s.name, value: s._id }))
+    const response = await getAllColegios();
+    const items = Array.isArray(response.data.schools) ? response.data.schools : [];
+    schoolOptions.value = items.map(s => ({
+      label: s.name,
+      value: s._id
+    }));
   } catch (err) {
     console.error('Error al cargar colegios:', err);
-    error('No se pudieron cargar los colegios')
+    error('No se pudieron cargar los colegios. Es posible que no tenga permisos.');
   }
 }
 
-// Cambia el estado de una sede (Activar/Desactivar).
 const toggleStatus = async (headquartersItem) => {
   try {
-    const schoolId = headquartersItem.school?._id || headquartersItem.school;
-    if (!schoolId) {
-      error("No se puede cambiar el estado de una sede sin un colegio asignado. Por favor, edite la sede y asigne un colegio.");
-      return;
-    }
-    // Invertimos el estado actual
     const newIsActiveState = !headquartersItem.isActive;
 
-    // Creamos el objeto completo para enviar, como en la función de editar
-    const dataToUpdate = {
-      school: schoolId,
-      name: headquartersItem.name,
-      abbreviation: headquartersItem.abbreviation,
-      code: headquartersItem.code,
-      address: headquartersItem.address,
-      phone: headquartersItem.phone,
-      isActive: newIsActiveState, // Usamos el nuevo estado
-    };
+    if (newIsActiveState) {
+      await activateSede(headquartersItem._id);
+    } else {
+      await deactivateSede(headquartersItem._id);
+    }
 
-    // Usamos la función updateSede, que hace un PUT a /api/headquarters/:id
-    await updateSede(headquartersItem._id, dataToUpdate);
-
-    info(`Sede ${newIsActiveState ? 'activada' : 'inactivada'} correctamente`);
+    info(`Sede ${newIsActiveState ? 'activada' : 'desactivada'} correctamente`);
     const index = headquartersList.value.findIndex(h => h._id === headquartersItem._id);
     if (index !== -1) {
       headquartersList.value[index].isActive = newIsActiveState;
@@ -236,14 +222,11 @@ const toggleStatus = async (headquartersItem) => {
   }
 };
 
-// Listado de las sedes.
 const fetchHeadquarters = async () => {
   try {
     isLoading.value = true
-    // Usamos el service para obtener todas las sedes
     const res = await getAllSedes(); 
 
-    // Normalización de la respuesta del API (el backend devuelve { headquarters: [...] })
     headquartersList.value = Array.isArray(res?.headquarters) ? res.headquarters : []
 
   } catch (err) {
@@ -254,10 +237,8 @@ const fetchHeadquarters = async () => {
   }
 }
 
-// Crear una nueva sede.
 const createHeadquarters = async () => {
   try {
-    // Usamos el service. formData.value ya tiene los campos
     await createSede(formData.value) 
     await fetchHeadquarters()
     info("Sede registrada correctamente")
@@ -268,7 +249,6 @@ const createHeadquarters = async () => {
   }
 }
 
-// Actualizar la sede
 const updateHeadquarters = async () => {
   try {
     const dataToUpdate = {
@@ -278,7 +258,7 @@ const updateHeadquarters = async () => {
       code: formData.value.code,
       address: formData.value.address,
       phone: formData.value.phone,
-      isActive: formData.value.isActive, // Se incluye el estado
+      isActive: formData.value.isActive, 
     };
     await updateSede(editingItem.value._id, dataToUpdate);
     await fetchHeadquarters();
@@ -290,22 +270,18 @@ const updateHeadquarters = async () => {
   }
 };
 
-// Abre el diálogo para crear.
 const openCreateDialog = () => {
   isEditMode.value = false
-  // Reinicia el formulario
+  fetchSchools()
   formData.value = { school: null, name: '', abbreviation: '', code: '', address: '', phone: '', isActive: true }
   showDialog.value = true
 }
 
-// Abre el diálogo para editar
 const handleEditHeadquarters = (h) => {
   isEditMode.value = true
   editingItem.value = h
   
-  // Llena el formulario con los datos de la sede seleccionada
   formData.value = {
-    // Usa el ID del colegio (asumiendo que el campo school es el ID)
     school: h?.school?._id || h.school, 
     name: h?.name || '',
     abbreviation: h?.abbreviation || '',
@@ -317,21 +293,17 @@ const handleEditHeadquarters = (h) => {
   showDialog.value = true
 }
 
-// Cierra el diálogo.
 const closeDialog = () => {
   showDialog.value = false
   isEditMode.value = false
   editingItem.value = null
 }
 
-// Determina si se crea o se actualiza.
 const submitForm = () =>
   isEditMode.value ? updateHeadquarters() : createHeadquarters()
 
 
-// Columnas de la Tabla (Añadir la columna de Colegio)
 const columns = [
-  // Añadimos una columna para el nombre del colegio, aunque el campo en la fila es el ID.
   { name: "name", label: "Nombre", field: "name", align: "left" },
   { name: "abbreviation", label: "Abreviatura", field: "abbreviation", align: "left" },
   { name: "code", label: "Código", field: "code", align: "center" },
@@ -341,7 +313,6 @@ const columns = [
   { name: "actions", label: "Acciones", field: "actions", align: "center" },
 ]
 
-// Ciclo de vida: Carga los datos al iniciar el componente
 onMounted(() => {
   fetchSchools()
   fetchHeadquarters()
@@ -349,10 +320,6 @@ onMounted(() => {
 </script>
 <style scoped>
 .actionButtonContainer {
-  /* Clase personalizada para mantener la posición del botón */
-  margin-left: 800px;
+  margin-left: 960px;
 }
 </style>
-
-
-
