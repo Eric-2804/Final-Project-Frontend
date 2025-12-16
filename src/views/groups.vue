@@ -1,36 +1,72 @@
 <template>
-  <div class="q-pa-md">
+  <div class="q-pa-md groups-container">
 
-    <h1 style="font-size: 3rem;">Gestion de Grupos</h1>
+    <div class="groups-header">
+      <h1 class="groups-title">Gestión de Grupos Académicos</h1>
 
-    <div class="row justify-end q-mt-md">
-      <q-btn label="Crear Grupo" color="primary" @click="openCreateModal" />
+      <q-btn
+        label="Crear Grupo"
+        color="primary"
+        icon="add"
+        class="create-btn"
+        @click="openCreateModal"
+      />
     </div>
 
     <Spinner v-if="loading" size="4em" class="q-mb-md" />
 
-    <Tables :columns="columns" :rows="groups" actions @edit="openEditModal" @toggleState="toggleState">
+    <Tables
+      :columns="columns"
+      :rows="groups"
+      actions
+      @edit="openEditModal"
+      @toggleState="toggleState"
+    >
 
       <template #body-cell-isActive="{ row }">
         <q-td class="q-pa-none text-center">
-
-          <q-btn :color="row.isActive ? 'positive' : 'negative'" :label="row.isActive ? 'ACTIVO' : 'INACTIVO'" size="sm"
-            flat @click="toggleState(row)" />
+          <q-btn
+            :color="row.isActive ? 'positive' : 'negative'"
+            :label="row.isActive ? 'ACTIVO' : 'INACTIVO'"
+            size="sm"
+            flat
+            @click="toggleState(row)"
+          />
         </q-td>
       </template>
 
       <template #body-cell-actions="{ row }">
         <q-td class="row-actions q-pa-none q-gutter-sm">
+          <q-btn
+            icon="edit"
+            color="primary"
+            flat
+            dense
+            round
+            @click="openEditModal(row)"
+          />
 
-          <q-btn icon="edit" color="primary" flat dense round class="q-mr-sm" @click="openEditModal(row)" />
-
-          <q-btn icon="delete" color="negative" flat dense round @click="confirmDelete(row)" />
+          <q-btn
+            icon="delete"
+            color="negative"
+            flat
+            dense
+            round
+            @click="confirmDelete(row)"
+          />
         </q-td>
       </template>
+
     </Tables>
 
-    <Modal v-model="isModalOpen" :mode="modalMode" :formData="formData" :headquarters="headquarters"
-      :directors="directors" @submit="handleSubmit" />
+    <Modal
+      v-model="isModalOpen"
+      :mode="modalMode"
+      :formData="formData"
+      :headquarters="headquarters"
+      :directors="directors"
+      @submit="handleSubmit"
+    />
 
   </div>
 </template>
@@ -233,3 +269,27 @@ onMounted(() => {
 })
 
 </script>
+
+<style scoped>
+.groups-container {
+  max-width: 100%;
+}
+
+.groups-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px; 
+}
+
+.groups-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #6b7280; 
+  margin: 0; 
+}
+
+.create-btn {
+  height: 42px;
+}
+</style>
