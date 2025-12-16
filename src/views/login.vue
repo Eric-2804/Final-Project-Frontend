@@ -107,14 +107,7 @@ const passwordRules = [
         return;
      }
 
-     console.log('✅ Login exitoso - Token recibido:', token.substring(0, 30) + '...');
-     console.log('✅ Usuario recibido:', user);
-
      await authStore.login(token, user)
-     
-     // Verificar que se guardó correctamente
-     const savedToken = localStorage.getItem('token');
-     console.log('✅ Token guardado en localStorage:', savedToken ? '✓' : '✗');
 
      const userRole = authStore.user?.rol;
 
@@ -146,7 +139,6 @@ const passwordRules = [
      router.push(redirectPath);
 
    } catch (error) {
-     console.error('Error durante el login:', error);
      if (error.response && error.response.data && error.response.data.message) {
        loginErrorMsg.value = error.response.data.message;
      } else if (error.response) {
@@ -176,7 +168,6 @@ const passwordRules = [
      // Mensaje genérico por seguridad para no confirmar si el usuario existe
      recoverMsg.value = 'Si los datos son correctos, se ha enviado un enlace de recuperación al correo asociado a tu cuenta.'
    } catch (error) {
-     console.error('Error en recuperación:', error);
      // Se muestra el mismo mensaje en caso de error para evitar enumeración de usuarios
      recoverMsg.value = 'Si los datos son correctos, se ha enviado un enlace de recuperación al correo asociado a tu cuenta.'
    } finally {

@@ -18,15 +18,12 @@ export const getPeriodosByYear = (year) => {
 export const getActivePeriod = async (year) => {
   try {
     const url = PERIODOS.BY_YEAR(year);
-    console.log(`URL construida para getActivePeriod: ${url}`);
     const periods = await getData(url);
-    console.log('Períodos recibidos de la API:', periods);
     if (Array.isArray(periods)) {
       return periods.find(p => p.estado === 'activo');
     }
     return null;
   } catch (error) {
-    console.error('Error en getActivePeriod:', error.message);
     // Workaround: Return a default period if the API call fails
     return { nombre: 'Período 2024 (Default)', numero: '2024-1' };
   }

@@ -1022,7 +1022,7 @@ const onCollegeChange = async (collegeId) => {
 
 // Manejar error de imagen
 const handleImageError = () => {
-  console.warn('Error al cargar la imagen de perfil');
+
 };
 
 // Cerrar diálogo

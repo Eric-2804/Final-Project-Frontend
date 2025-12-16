@@ -33,7 +33,6 @@ export const useAuthStore = defineStore('auth', {
             finalUser = fullUserData;
           }
         } catch (error) {
-          console.error("Error al buscar los datos completos del usuario:", error);
           this.logout();
           return;
         }
@@ -45,7 +44,6 @@ export const useAuthStore = defineStore('auth', {
           const sedeData = await getSedeById(finalUser.college);
           finalUser.college = sedeData;
         } catch (error) {
-          console.error("Error al buscar los datos de la sede:", error);
         }
       }
 
@@ -103,14 +101,12 @@ export const useAuthStore = defineStore('auth', {
                 const sedeData = await getSedeById(fullUserData.college);
                 fullUserData.college = sedeData;
               } catch (error) {
-                console.error("Error al refrescar los datos de la sede:", error);
               }
             }
 
             this.setUser(fullUserData);
           }
         } catch (error) {
-          console.error("Error refreshing user data:", error);
         }
       }
     },

@@ -261,6 +261,219 @@
         </q-card>
       </section>
     </div>
+
+    <!-- Modal de Detalles -->
+    <q-dialog v-model="showDetailModal" persistent>
+      <q-card style="min-width: 700px; max-width: 90vw; max-height: 90vh;">
+        <q-card-section class="row items-center q-pb-none bg-primary text-white">
+          <div class="text-h6">
+            <q-icon name="assignment" class="q-mr-sm" />
+            Detalles de la Matrícula
+          </div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section v-if="loadingDetail" class="text-center q-pa-xl">
+          <Spinner size="50px" />
+          <div class="text-caption q-mt-md">Cargando detalles...</div>
+        </q-card-section>
+
+        <q-card-section v-else-if="selectedRegistration" class="q-pa-md" style="max-height: calc(90vh - 150px); overflow-y: auto;">
+          
+          <!-- Información General -->
+          <div class="q-mb-md">
+            <div class="text-subtitle2 text-primary q-mb-sm">
+              <q-icon name="info" class="q-mr-xs" />
+              Información General
+            </div>
+            <q-separator class="q-mb-sm" />
+            <div class="row q-col-gutter-sm">
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7">Número de Matrícula</div>
+                <div class="text-body1 text-weight-medium">
+                  {{ selectedRegistration.registrationNumber || 'N/A' }}
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7">Estado</div>
+                <q-chip 
+                  :color="getStateColor(selectedRegistration.state)" 
+                  text-color="white"
+                  size="sm"
+                >
+                  {{ selectedRegistration.state || 'N/A' }}
+                </q-chip>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7">Año</div>
+                <div class="text-body1">{{ selectedRegistration.year || 'N/A' }}</div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7">Fecha de Matrícula</div>
+                <div class="text-body1">{{ formatDate(selectedRegistration.registrationDate) }}</div>
+              </div>
+              <div class="col-12">
+                <div class="text-caption text-grey-7">Descripción</div>
+                <div class="text-body1">{{ selectedRegistration.description || 'Sin descripción' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <q-separator class="q-my-md" />
+
+          <!-- Información del Estudiante -->
+          <div class="q-mb-md">
+            <div class="text-subtitle2 text-primary q-mb-sm">
+              <q-icon name="person" class="q-mr-xs" />
+              Estudiante
+            </div>
+            <q-separator class="q-mb-sm" />
+            <div class="row q-col-gutter-sm">
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7">Nombre Completo</div>
+                <div class="text-body1 text-weight-medium">
+                  {{ getFullName(selectedRegistration.student) }}
+                </div>
+              </div>
+              <div class="col-12 col-md-6" v-if="selectedRegistration.student?.numberDocument">
+                <div class="text-caption text-grey-7">Documento</div>
+                <div class="text-body1">{{ selectedRegistration.student.numberDocument }}</div>
+              </div>
+              <div class="col-12 col-md-6" v-if="selectedRegistration.student?.email">
+                <div class="text-caption text-grey-7">Email</div>
+                <div class="text-body1">{{ selectedRegistration.student.email }}</div>
+              </div>
+            </div>
+          </div>
+
+          <q-separator class="q-my-md" />
+
+          <!-- Acudientes -->
+          <div class="q-mb-md" v-if="selectedRegistration.attendant && selectedRegistration.attendant.length > 0">
+            <div class="text-subtitle2 text-primary q-mb-sm">
+              <q-icon name="supervisor_account" class="q-mr-xs" />
+              Acudientes ({{ selectedRegistration.attendant.length }})
+            </div>
+            <q-separator class="q-mb-sm" />
+            <q-list separator bordered class="rounded-borders">
+              <q-item v-for="(att, index) in selectedRegistration.attendant" :key="index">
+                <q-item-section avatar>
+                  <q-avatar color="orange" text-color="white" icon="person" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-medium">
+                    {{ getFullName(att._id) }}
+                  </q-item-label>
+                  <q-item-label caption>
+                    Parentesco: {{ att.relationship || 'N/A' }}
+                  </q-item-label>
+                  <q-item-label caption v-if="att._id?.numberDocument">
+                    Doc: {{ att._id.numberDocument }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section side v-if="att._id?.email">
+                  <q-item-label caption>
+                    <q-icon name="email" size="xs" class="q-mr-xs" />
+                    {{ att._id.email }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+
+          <q-separator class="q-my-md" />
+
+          <!-- Información Académica -->
+          <div class="q-mb-md">
+            <div class="text-subtitle2 text-primary q-mb-sm">
+              <q-icon name="school" class="q-mr-xs" />
+              Información Académica
+            </div>
+            <q-separator class="q-mb-sm" />
+            <div class="row q-col-gutter-sm">
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7">Colegio</div>
+                <div class="text-body1 text-weight-medium">
+                  {{ getSchoolName(selectedRegistration.school) }}
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="text-caption text-grey-7">Grupo</div>
+                <div class="text-body1 text-weight-medium">
+                  {{ getGroupName(selectedRegistration.group) }}
+                </div>
+              </div>
+              <div class="col-12 col-md-6" v-if="selectedRegistration.group?.level">
+                <div class="text-caption text-grey-7">Nivel</div>
+                <div class="text-body1">{{ selectedRegistration.group.level }}</div>
+              </div>
+              <div class="col-12 col-md-6" v-if="selectedRegistration.group?.grade">
+                <div class="text-caption text-grey-7">Grado</div>
+                <div class="text-body1">{{ selectedRegistration.group.grade }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Promedios (si existen) -->
+          <div v-if="hasAverages(selectedRegistration)">
+            <q-separator class="q-my-md" />
+            <div class="q-mb-md">
+              <div class="text-subtitle2 text-primary q-mb-sm">
+                <q-icon name="assessment" class="q-mr-xs" />
+                Promedios por Período
+              </div>
+              <q-separator class="q-mb-sm" />
+              <div class="row q-col-gutter-md">
+                <div class="col-6 col-md-3" v-if="selectedRegistration.averagePeriod1 > 0">
+                  <div class="text-caption text-grey-7">Período 1</div>
+                  <div class="text-h6 text-primary">{{ selectedRegistration.averagePeriod1.toFixed(2) }}</div>
+                </div>
+                <div class="col-6 col-md-3" v-if="selectedRegistration.averagePeriod2 > 0">
+                  <div class="text-caption text-grey-7">Período 2</div>
+                  <div class="text-h6 text-primary">{{ selectedRegistration.averagePeriod2.toFixed(2) }}</div>
+                </div>
+                <div class="col-6 col-md-3" v-if="selectedRegistration.averagePeriod3 > 0">
+                  <div class="text-caption text-grey-7">Período 3</div>
+                  <div class="text-h6 text-primary">{{ selectedRegistration.averagePeriod3.toFixed(2) }}</div>
+                </div>
+                <div class="col-6 col-md-3" v-if="selectedRegistration.averagePeriod4 > 0">
+                  <div class="text-caption text-grey-7">Período 4</div>
+                  <div class="text-h6 text-primary">{{ selectedRegistration.averagePeriod4.toFixed(2) }}</div>
+                </div>
+                <div class="col-12" v-if="selectedRegistration.averageGeneralPeriod > 0">
+                  <q-separator class="q-my-md" />
+                  <div class="text-caption text-grey-7">Promedio General</div>
+                  <div class="text-h5 text-positive text-weight-bold">
+                    {{ selectedRegistration.averageGeneralPeriod.toFixed(2) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn 
+            flat 
+            label="Cerrar" 
+            color="grey-8" 
+            v-close-popup 
+          />
+          <q-btn 
+            label="Editar" 
+            color="primary" 
+            icon="edit"
+            @click="editFromModal"
+            v-if="selectedRegistration && selectedRegistration.state !== 'GRADUADO'"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -271,7 +484,7 @@ import Table from '@/components/tables.vue'
 import Spinner from '@/components/Spinner.vue'
 import { useNotify } from '@/composables/useNotify'
 import registrationService from '@/services/registrationService'
-import { getFullRegistrationsByYear, getFullName, getGroupLabel, getStateColor } from '@/services/registrationHelper'
+import { getFullRegistrationsByYear, getFullRegistrationById, getFullName, getGroupLabel, getStateColor } from '@/services/registrationHelper'
 
 const router = useRouter()
 const { showNotify, showErrorNotify } = useNotify()
@@ -281,7 +494,9 @@ const isLoading = ref(false)
 const registrations = ref([])
 const filterYear = ref(new Date().getFullYear())
 const filterState = ref(null)
-
+const showDetailModal = ref(false)
+const selectedRegistration = ref(null)
+const loadingDetail = ref(false)
 // Opciones de filtros
 const yearOptions = [
   { label: '2023', value: 2023 },
@@ -392,22 +607,58 @@ async function loadRegistrations() {
 function formatDate(dateString) {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
-  return date.toLocaleDateString('es-CO', { 
+  return date.toLocaleDateString('es-ES', { 
     year: 'numeric', 
-    month: 'short', 
+    month: 'long', 
     day: 'numeric' 
   })
 }
 
-function viewDetails(row) {
-  router.push({ 
-    name: 'Detalles_Matrícula', 
-    params: { id: row._id } 
-  })
+function getSchoolName(school) {
+  if (!school) return 'N/A'
+  if (typeof school === 'string') return school
+  return school.name || 'N/A'
+}
+
+function getGroupName(group) {
+  if (!group) return 'N/A'
+  if (typeof group === 'string') return group
+  return `${group.grade || ''} ${group.level || ''}`.trim() || 'N/A'
+}
+
+function hasAverages(registration) {
+  if (!registration) return false
+  return registration.averagePeriod1 > 0 ||
+         registration.averagePeriod2 > 0 ||
+         registration.averagePeriod3 > 0 ||
+         registration.averagePeriod4 > 0 ||
+         registration.averageGeneralPeriod > 0
+}
+
+async function viewDetails(row) {
+  loadingDetail.value = true
+  showDetailModal.value = true
+  try {
+    const data = await getFullRegistrationById(row._id)
+    selectedRegistration.value = data
+  } catch (error) {
+    console.error('Error cargando detalle:', error)
+    showErrorNotify({ message: 'Error al cargar los detalles' })
+    showDetailModal.value = false
+  } finally {
+    loadingDetail.value = false
+  }
 }
 
 function editRegistration(row) {
   router.push({ name: 'Editar_Matricula', params: { id: row._id } })
+}
+
+function editFromModal() {
+  if (selectedRegistration.value?._id) {
+    showDetailModal.value = false
+    router.push({ name: 'Editar_Matricula', params: { id: selectedRegistration.value._id } })
+  }
 }
 
 function goToCreate() {

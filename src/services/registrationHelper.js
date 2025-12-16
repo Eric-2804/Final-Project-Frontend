@@ -131,10 +131,6 @@ export async function getFullRegistrationById(id) {
     return populatedRegistration
 
   } catch (error) {
-    // Solo loguear si no es error 401 (ya se maneja en interceptor)
-    if (error.response?.status !== 401) {
-      console.error('Error en getFullRegistrationById:', error)
-    }
     throw error
   }
 }
@@ -157,10 +153,6 @@ export async function getFullRegistrationsByYear(year) {
     // 2. Poblar cada matrícula (en paralelo para ser más rápido)
     const populatedPromises = registrations.map(reg => 
       getFullRegistrationById(reg._id).catch(err => {
-        // Solo loguear si no es error 401
-        if (err.response?.status !== 401) {
-          console.error(`Error poblando matrícula ${reg._id}:`, err)
-        }
         return reg // Retornar sin poblar si falla
       })
     )
@@ -170,10 +162,6 @@ export async function getFullRegistrationsByYear(year) {
     return populatedRegistrations
 
   } catch (error) {
-    // Solo loguear si no es error 401
-    if (error.response?.status !== 401) {
-      console.error('Error en getFullRegistrationsByYear:', error)
-    }
     throw error
   }
 }
@@ -195,7 +183,6 @@ export async function getFullRegistrationByStudent(studentId) {
     return await getFullRegistrationById(registration._id)
 
   } catch (error) {
-    console.error('Error en getFullRegistrationByStudent:', error)
     throw error
   }
 }
@@ -217,7 +204,6 @@ export async function getFullRegistrationByGroup(groupId) {
     return await getFullRegistrationById(registration._id)
 
   } catch (error) {
-    console.error('Error en getFullRegistrationByGroup:', error)
     throw error
   }
 }

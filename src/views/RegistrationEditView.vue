@@ -27,23 +27,6 @@
                 </div>
 
                 <div class="row q-col-gutter-md">
-                  <!-- Año -->
-                  <div class="col-12 col-md-6">
-                    <q-select
-                      v-model="form.year"
-                      :options="yearOptions"
-                      label="Año *"
-                      filled
-                      emit-value
-                      map-options
-                      :rules="[val => !!val || 'El año es requerido']"
-                    >
-                      <template v-slot:prepend>
-                        <q-icon name="event" />
-                      </template>
-                    </q-select>
-                  </div>
-
                   <!-- Fecha de matrícula -->
                   <div class="col-12 col-md-6">
                     <q-input
@@ -248,18 +231,10 @@ const originalData = ref(null)
 
 // Formulario (solo campos editables)
 const form = ref({
-  year: null,
   registrationDate: '',
   registrationNumber: '',
   description: ''
 })
-
-// Opciones
-const yearOptions = ref([
-  { label: '2024', value: 2024 },
-  { label: '2025', value: 2025 },
-  { label: '2026', value: 2026 }
-])
 
 // Funciones de formato
 function getStudentName() {
@@ -310,7 +285,6 @@ async function loadRegistration() {
 
     // Cargar solo los campos editables en el formulario
     form.value = {
-      year: data.year,
       registrationDate: data.registrationDate ? new Date(data.registrationDate).toISOString().split('T')[0] : '',
       registrationNumber: data.registrationNumber,
       description: data.description || ''
@@ -336,19 +310,27 @@ async function submitForm() {
   try {
     const id = route.params.id
 
+    // Extraer año de la fecha de matrícula
+    const yearFromDate = form.value.registrationDate ? 
+      new Date(form.value.registrationDate).getFullYear() : 
+      originalData.value.year
+
     // Preparar datos: combinar campos editables con los no editables
     const updateData = {
       // Campos editables
-      year: form.value.year,
+      year: yearFromDate,
       registrationDate: form.value.registrationDate,
       registrationNumber: form.value.registrationNumber,
       description: form.value.description,
       
       // Campos no editables (mantener originales)
-      student: originalData.value.student._id || originalData.value.student,
-      attendant: originalData.value.attendant,
-      group: originalData.value.group._id || originalData.value.group,
-      school: originalData.value.school._id || originalData.value.school
+      student: originalData.value.student?._id || originalData.value.student,
+      attendant: originalData.value.attendant?.map(att => ({
+        _id: att._id?._id || att._id,
+        relationship: att.relationship
+      })) || [],
+      group: originalData.value.group?._id || originalData.value.group,
+      school: originalData.value.school?._id || originalData.value.school
     }
 
     await registrationService.update(id, updateData)

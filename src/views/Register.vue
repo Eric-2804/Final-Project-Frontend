@@ -134,7 +134,7 @@ const handleRegister = () => {
   // Simular una llamada a la API
   setTimeout(() => {
     loading.value = false;
-    console.log('Form data submitted:', formData.value);
+
     $q.notify({
       color: 'positive',
       message: '¡Registro exitoso! Ahora puedes iniciar sesión.',
